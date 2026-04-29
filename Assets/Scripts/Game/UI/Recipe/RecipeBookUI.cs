@@ -4,13 +4,12 @@ using UnityEngine;
 public class RecipeBookUI : MonoBehaviour
 {
     [Header("UI References")]
-    public GameObject recipeBookPanel;      // 도감 전체 창 (Canvas)
-    public Transform contentParent;         // ScrollView의 Content 오브젝트
-    public RecipeSlotUI slotPrefab;         // 각 레시피를 표시할 프리팹 (버튼 형태)
+    public GameObject recipeBookPanel;
+    public Transform contentParent;
+    public RecipeSlotUI slotPrefab;
 
     private List<RecipeSlotUI> spawnedSlots = new List<RecipeSlotUI>();
 
-    // 버튼 이벤트로 호출하여 도감 열기
     public void OpenRecipeBook()
     {
         recipeBookPanel.SetActive(true);
@@ -24,29 +23,51 @@ public class RecipeBookUI : MonoBehaviour
 
     private void RefreshUI()
     {
-        // 1. 기존에 생성된 슬롯 초기화 (오브젝트 풀링을 쓰면 더 좋습니다)
-        foreach (var slot in spawnedSlots) { Destroy(slot.gameObject); }
+        // 1. 슬롯 초기화 (추후 오브젝트 풀링 적용 권장)
+        for (int i = 0; i < spawnedSlots.Count; i++)
+        {
+            Destroy(spawnedSlots[i].gameObject);
+        }
         spawnedSlots.Clear();
 
-        // 2. 전체 레시피 데이터 가져오기
-        List<FoodData> allRecipes = GameManager.Instance.recipeManager.allRecipesInGame;
+        // 2. 기본 레시피 도감 출력
+        List<FoodData> allRecipes = GameManager.Instance.recipeManager.allFoodDatabase;
         List<RecipeSaveData> savedRecord = DataManager.Instance.CurrentData.unlockedRecipes;
 
-        // 3. 슬롯 생성 및 데이터 주입
-        foreach (FoodData recipe in allRecipes)
+        for (int i = 0; i < allRecipes.Count; i++)
         {
+            FoodData recipe = allRecipes[i];
             RecipeSlotUI newSlot = Instantiate(slotPrefab, contentParent);
 
-            // 이 레시피가 세이브 데이터에 있는지 검색
-            RecipeSaveData myRecord = savedRecord.Find(x => x.foodName == recipe.foodName);
+            RecipeSaveData myRecord = null;
+
+            // 세이브 기록 순회 
+            for (int j = 0; j < savedRecord.Count; j++)
+            {
+                if (savedRecord[j].foodName == recipe.foodName)
+                {
+                    myRecord = savedRecord[j];
+                    break;
+                }
+            }
 
             bool isUnlocked = myRecord != null && myRecord.isUnlocked;
             bool hasPremium = myRecord != null && myRecord.hasPremium;
 
-            // 슬롯 UI 업데이트 (비밀/해금 상태 표시)
             newSlot.SetupSlot(recipe, isUnlocked, hasPremium);
-
             spawnedSlots.Add(newSlot);
+        }
+
+        // 3. 유저가 개발한 커스텀 레시피 도감 출력
+        List<CustomRecipeData> customRecords = DataManager.Instance.CurrentData.customRecipes;
+        for (int i = 0; i < customRecords.Count; i++)
+        {
+            CustomRecipeData customRecipe = customRecords[i];
+            RecipeSlotUI customSlot = Instantiate(slotPrefab, contentParent);
+
+            // 커스텀 레시피용 슬롯 설정 (RecipeSlotUI에 해당 함수 추가 필요)
+            customSlot.SetupCustomSlot(customRecipe.customFoodName, customRecipe.basePrice);
+            spawnedSlots.Add(customSlot);
         }
     }
 }

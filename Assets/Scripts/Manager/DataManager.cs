@@ -2,11 +2,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
+public class CustomRecipeData
+{
+    public string customFoodName;       // 유저가 직접 지은 메뉴 이름
+    public List<int> ingredientIDs = new List<int>(); // 레시피에 들어간 재료 순서
+    public int basePrice;               // 재료 가치에 따른 기본 가격
+}
+
+[System.Serializable]
 public class RecipeSaveData
 {
-    public string foodName;     // FoodData의 이름 (고유 ID 역할)
-    public bool isUnlocked;     // 한 번이라도 만들었는지?
-    public bool hasPremium;     // 프리미엄으로 만들어 본 적 있는지? (왕관 마크 표시용)
+    public string foodName;
+    public bool isUnlocked;
+    public bool hasPremium;
 }
 
 [System.Serializable]
@@ -15,8 +23,9 @@ public class SaveData
     public int currentMoney = 0;
     public int currentDay = 1;
 
-    // 💡 유저의 레시피 도감 진행도 기록
     public List<RecipeSaveData> unlockedRecipes = new List<RecipeSaveData>();
+    // 💡 유저가 새롭게 연구하여 만들어낸 커스텀 레시피 목록
+    public List<CustomRecipeData> customRecipes = new List<CustomRecipeData>();
 }
 
 public class DataManager : MonoBehaviour
@@ -29,10 +38,8 @@ public class DataManager : MonoBehaviour
     private void Awake()
     {
         if (Instance == null) Instance = this;
-        // 💡 GameManager가 통제하도록 여기서 LoadGameData()를 부르지 않고 대기합니다.
     }
 
-    // 💡 GameManager에서 호출할 수 있도록 명시적 초기화 함수를 부활시켰습니다.
     public void Initialize()
     {
         LoadGameData();
