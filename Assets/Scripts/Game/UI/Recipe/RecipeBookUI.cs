@@ -4,12 +4,13 @@ using UnityEngine;
 public class RecipeBookUI : MonoBehaviour
 {
     [Header("UI References")]
-    public GameObject recipeBookPanel;
-    public Transform contentParent;
-    public RecipeSlotUI slotPrefab;
+    public GameObject recipeBookPanel;      // 도감 전체 창 (Canvas)
+    public Transform contentParent;         // ScrollView의 Content 오브젝트
+    public RecipeSlotUI slotPrefab;         // 각 레시피를 표시할 프리팹 (버튼 형태)
 
     private List<RecipeSlotUI> spawnedSlots = new List<RecipeSlotUI>();
 
+    // 버튼 이벤트로 호출하여 도감 열기
     public void OpenRecipeBook()
     {
         recipeBookPanel.SetActive(true);

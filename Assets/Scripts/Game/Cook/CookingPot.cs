@@ -110,14 +110,15 @@ public class CookingPot : MonoBehaviour
     {
         if (contents.Count == 0) return;
 
-        // 개편된 시스템: 커스텀 레시피와 기본 레시피를 모두 확인하여 이름(string)을 반환
-        if (GameManager.Instance.recipeManager.CheckIfRecipeExists(contents, out string recipeName))
+        FoodData result = GameManager.Instance.recipeManager.CheckRecipe(contents);
+
+        if (result != null)
         {
-            Debug.Log($"<color=green>[판별 완료] 현재 요리: {recipeName}</color>");
+            Debug.Log($"<color=green>[판별 완료] 현재 요리: {result.foodName}</color>");
         }
         else
         {
-            Debug.Log("<color=red>[진행 중] 아직 일치하는 레시피가 없습니다.</color>");
+            Debug.Log("<color=red>[판별 실패] 일치하는 레시피가 없습니다.</color>");
         }
     }
 

@@ -13,8 +13,8 @@ public class CustomRecipeData
 public class RecipeSaveData
 {
     public string foodName;
-    public bool isUnlocked;
     public bool hasPremium;
+    public bool isUnlocked;
 }
 
 [System.Serializable]
@@ -25,9 +25,8 @@ public class SaveData
 
     public List<RecipeSaveData> unlockedRecipes = new List<RecipeSaveData>();
     // 💡 유저가 새롭게 연구하여 만들어낸 커스텀 레시피 목록
-    public List<CustomRecipeData> customRecipes = new List<CustomRecipeData>();
+    public List<CustomRecipeData> customRecipes = new List<CustomRecipeData>(); 
 }
-
 public class DataManager : MonoBehaviour
 {
     public static DataManager Instance { get; private set; }
@@ -38,8 +37,10 @@ public class DataManager : MonoBehaviour
     private void Awake()
     {
         if (Instance == null) Instance = this;
+        // 💡 GameManager가 통제하도록 여기서 LoadGameData()를 부르지 않고 대기합니다.
     }
 
+    // 💡 GameManager에서 호출할 수 있도록 명시적 초기화 함수를 부활시켰습니다.
     public void Initialize()
     {
         LoadGameData();
