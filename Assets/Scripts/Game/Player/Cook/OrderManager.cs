@@ -17,10 +17,13 @@ public class OrderManager : MonoBehaviour
     public OrderTicketObject ticketPrefab;
     public Transform ticketRack; // 주문표가 걸릴 부모 Transform
     public float ticketSpacing = 1.2f;
+    [SerializeField]
+    CustomerPatienceController _patienceController;
 
     // 현재 활성화된 주문 리스트
     private List<OrderData> activeOrders = new List<OrderData>(4);
     private List<OrderTicketObject> visualTickets = new List<OrderTicketObject>(4);
+
 
     private void Awake()
     {
@@ -28,21 +31,20 @@ public class OrderManager : MonoBehaviour
     }
 
     // 손님이 주문을 시도할 때 호출됨
-    public bool TryAddOrder(CustomerController customer, FoodData food)
+    public CustomerPatienceUI TryAddOrder(CustomerController customer, FoodData food)
     {
         if (activeOrders.Count >= maxOrders)
         {
-            return false; // 주문표 걸이가 꽉 차서 주문을 받을 수 없음
+            return null; // 주문표 걸이가 꽉 차서 주문을 받을 수 없음
         }
 
         OrderData newOrder = new OrderData { owner = customer, orderedFood = food };
         activeOrders.Add(newOrder);
 
         SpawnTicketVisual(newOrder);
-        AutoCookManager.Instance.ProcessAutoOrder(customer, food);
 
         Debug.Log($"[주문 접수] {food.foodName} 주문표가 추가되었습니다! (현재 {activeOrders.Count}/{maxOrders})");
-        return true;
+        return _patienceController.OnOrderReceived(customer, food);
     }
 
     private void SpawnTicketVisual(OrderData orderData)
@@ -60,6 +62,12 @@ public class OrderManager : MonoBehaviour
         activeOrders.Remove(orderData);
         visualTickets.Remove(ticketObject);
         Destroy(ticketObject.gameObject); // (풀링 사용 시 OnDespawn 처리)
+
+        // 💡 주문 삭제 시 인내심 UI 풀로 반환
+        if (orderData.owner != null)
+        {
+            orderData.owner.RemoveOrder();
+        }
 
         UpdateTicketPositions();
     }
@@ -84,6 +92,8 @@ public class OrderManager : MonoBehaviour
                 OrderData targetOrder = activeOrders[i];
                 OrderTicketObject targetTicket = visualTickets[i];
 
+                customer.RemoveOrder();
+
                 // 기존에 만들어둔 RemoveOrder 함수 재사용
                 RemoveOrder(targetOrder, targetTicket);
 
@@ -102,6 +112,8 @@ public class OrderManager : MonoBehaviour
             {
                 OrderData targetOrder = activeOrders[i];
                 OrderTicketObject targetTicket = visualTickets[i];
+
+                customer.RemoveOrder();
 
                 // 주문 제거 로직 실행
                 RemoveOrder(targetOrder, targetTicket);

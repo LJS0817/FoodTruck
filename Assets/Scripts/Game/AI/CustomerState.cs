@@ -76,10 +76,16 @@ public class CustomerWaitState : BaseState
 
         if (!hasOrdered)
         {
-            if (OrderManager.Instance.TryAddOrder(controller, controller.orderedFood))
+            if (controller.TrySetPatience(OrderManager.Instance.TryAddOrder(controller, controller.orderedFood)))
             {
                 hasOrdered = true;
             }
+        }
+
+        // 💡 주문 후 인내심 UI 업데이트
+        if (hasOrdered)
+        {
+            controller.UpdatePatience();
         }
 
         // 인내심 바닥 시 퇴장

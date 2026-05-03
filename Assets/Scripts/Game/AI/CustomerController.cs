@@ -4,6 +4,7 @@ public class CustomerController : PoolableObject, IStateMachine
 {
     [Header("Data & UI")]
     public CustomerData currentData;
+    CustomerPatienceUI _patience;
     // public ProgressBar patienceGauge; // UI 게이지용 (추후 연결)
 
     // 💡 단일 spriteRenderer를 삭제하고, 파츠별 렌더러 변수를 선언했습니다.
@@ -18,7 +19,7 @@ public class CustomerController : PoolableObject, IStateMachine
 
     // 런타임 변수
     [HideInInspector] public Vector3 targetPosition;
-    [HideInInspector] public float currentPatience;
+    public float currentPatience;
     [HideInInspector] public FoodData orderedFood;
     [HideInInspector] public Dish receivedDish;
 
@@ -29,9 +30,26 @@ public class CustomerController : PoolableObject, IStateMachine
         ChangeState(new CustomerEnterState(this));
     }
 
+    public bool TrySetPatience(CustomerPatienceUI ui)
+    {
+        _patience = ui;
+        return ui != null;
+    }
+
+    public void RemoveOrder()
+    {
+        _patience?.HideUI();
+    }
+
     private void Update()
     {
         currentState?.Tick();
+    }
+
+    public void UpdatePatience()
+    {
+        if (_patience == null) return;
+        _patience.UpdatePatience(currentPatience);
     }
 
     // --- IStateMachine 인터페이스 구현 ---
@@ -62,8 +80,8 @@ public class CustomerController : PoolableObject, IStateMachine
 
     public void SetupCustomer(CustomerData data, ref GenderParts visualParts)
     {
-        this.currentData = data;
-        this.currentPatience = currentData.maxPatience;
+        currentData = data;
+        currentPatience = currentData.maxPatience;
 
         // 전달받은 성별 맞춤형 파츠에서 랜덤으로 장착
         EquipRandomPart(headRenderer, visualParts.headParts);
@@ -88,5 +106,10 @@ public class CustomerController : PoolableObject, IStateMachine
     public void UpdateTargetPosition(Vector3 newPos)
     {
         targetPosition = newPos;
+    }
+
+    public void WorkOnOrder()
+    {
+        _patience?.SetProcessingState(true);
     }
 }

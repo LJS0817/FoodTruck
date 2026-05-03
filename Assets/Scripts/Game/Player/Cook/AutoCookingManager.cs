@@ -16,6 +16,7 @@ public class AutoCookManager : MonoBehaviour
         // 트럭 안에 있을 때는 자동 요리가 작동하지 않음 (수동으로 해야 함)
         if (ViewManager.Instance.isInsideTruck) return;
 
+        customer.WorkOnOrder();
         // 트럭 밖에 있다면 자동 요리 코루틴 시작
         StartCoroutine(AutoCookRoutine(customer, orderedFood));
     }
