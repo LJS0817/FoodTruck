@@ -18,7 +18,7 @@ public class RecipeManager : MonoBehaviour
         {
             ingredients.Add(allIngredient[i].ingredientID, allIngredient[i]);
         }
-
+        
         for (int i = 0; i < allFoodDatabase.Count; i++)
         {
             FoodData food = allFoodDatabase[i];

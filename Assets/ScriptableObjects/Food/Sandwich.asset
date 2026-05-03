@@ -14,5 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FoodData
   foodName: Sandwich
   basePrice: 10
+  autoCookTime: 1
+  iconSprite: {fileID: 0}
   requiredIngredients:
   - {fileID: 11400000, guid: cd53634d52f9da842bd38588b94c4945, type: 2}

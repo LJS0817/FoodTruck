@@ -76,7 +76,7 @@ public class CustomerWaitState : BaseState
 
         if (!hasOrdered)
         {
-            if (controller.TrySetPatience(OrderManager.Instance.TryAddOrder(controller, controller.orderedFood)))
+            if (OrderManager.Instance.TryAddOrder(controller, controller.orderedFood))
             {
                 hasOrdered = true;
             }

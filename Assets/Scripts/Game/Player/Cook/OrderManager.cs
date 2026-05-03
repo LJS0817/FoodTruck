@@ -31,20 +31,31 @@ public class OrderManager : MonoBehaviour
     }
 
     // 손님이 주문을 시도할 때 호출됨
-    public CustomerPatienceUI TryAddOrder(CustomerController customer, FoodData food)
+    public bool TryAddOrder(CustomerController customer, FoodData food)
     {
         if (activeOrders.Count >= maxOrders)
         {
-            return null; // 주문표 걸이가 꽉 차서 주문을 받을 수 없음
+            return false; // 주문표 걸이가 꽉 차서 주문을 받을 수 없음
         }
 
         OrderData newOrder = new OrderData { owner = customer, orderedFood = food };
         activeOrders.Add(newOrder);
 
         SpawnTicketVisual(newOrder);
-
+        bool result = _patienceController.OnOrderReceived(customer, food);
+        
+        AutoCookManager.Instance.ProcessAutoOrder();
         Debug.Log($"[주문 접수] {food.foodName} 주문표가 추가되었습니다! (현재 {activeOrders.Count}/{maxOrders})");
-        return _patienceController.OnOrderReceived(customer, food);
+        return result;
+    }
+
+    public OrderData GetFirstActiveOrder()
+    {
+        if (activeOrders.Count > 0)
+        {
+            return activeOrders[0];
+        }
+        return null;
     }
 
     private void SpawnTicketVisual(OrderData orderData)

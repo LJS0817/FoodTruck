@@ -5,39 +5,59 @@ public class AutoCookManager : MonoBehaviour
 {
     public static AutoCookManager Instance { get; private set; }
 
+    private bool isCooking = false; // 현재 요리 중인지 체크하는 플래그
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
     }
 
-    // OrderManager나 CustomerWaitState에서 주문이 들어왔을 때 이 함수를 호출합니다.
-    public void ProcessAutoOrder(CustomerController customer, FoodData orderedFood)
+    // 주문이 들어오거나, 요리가 하나 끝났을 때 호출하여 
+    // 밀린 주문이 있는지 확인하고 조리를 시작하는 트리거 함수입니다.
+    public void ProcessAutoOrder()
     {
-        // 트럭 안에 있을 때는 자동 요리가 작동하지 않음 (수동으로 해야 함)
-        if (ViewManager.Instance.isInsideTruck) return;
+        // 트럭 안에 있거나, 이미 조리 중이라면 무시합니다.
+        if (ViewManager.Instance.isInsideTruck || isCooking) return;
 
-        customer.WorkOnOrder();
-        // 트럭 밖에 있다면 자동 요리 코루틴 시작
-        StartCoroutine(AutoCookRoutine(customer, orderedFood));
+        // OrderManager에서 가장 먼저 들어온 대기 주문을 가져옵니다.
+        OrderData nextOrder = OrderManager.Instance.GetFirstActiveOrder();
+
+        if (nextOrder != null)
+        {
+            StartCoroutine(AutoCookRoutine(nextOrder.owner, nextOrder.orderedFood));
+        }
     }
 
     private IEnumerator AutoCookRoutine(CustomerController customer, FoodData orderedFood)
     {
+        isCooking = true; // 요리가 시작되었으므로 상태를 잠금
+
+        // 💡 본격적인 요리가 시작될 때 WorkOnOrder 호출 (조건 충족)
+        customer.WorkOnOrder();
+
         float timer = 0f;
         float targetTime = orderedFood.autoCookTime;
 
-        // 💡 주의: 대기 중에 유저가 트럭 안으로 들어가거나(View 변경), 손님이 화나서 나가버리면 중단해야 함
         while (timer < targetTime)
         {
             // 유저가 도중에 트럭 안으로 들어가면 자동 요리 중지
             if (ViewManager.Instance.isInsideTruck)
             {
                 Debug.Log("<color=orange>유저가 트럭 안으로 들어와 자동 요리가 취소되었습니다.</color>");
+                isCooking = false;
                 yield break;
             }
 
-            // 손님이 중간에 화가 나서 나가버렸다면 중지 (CustomerController에 bool isWaiting 변수 필요)
-            if (customer.currentPatience <= 0) yield break;
+            // 손님이 중간에 화가 나서 나가버렸다면 중지
+            if (customer.currentPatience <= 0)
+            {
+                isCooking = false;
+
+                // 손님이 떠나면 OrderManager 쪽에서 해당 주문표가 제거되었을 것이므로, 
+                // 즉시 다음 주문이 있는지 확인하고 넘어갑니다.
+                ProcessAutoOrder();
+                yield break;
+            }
 
             timer += Time.deltaTime;
             yield return null;
@@ -45,12 +65,17 @@ public class AutoCookManager : MonoBehaviour
 
         // 시간이 다 차면 자동으로 요리(Dish)를 생성하여 서빙
         Dish autoDish = new Dish();
-        // 자동 요리는 미니게임을 거치지 않으므로 프리미엄(false), 일반 퀄리티(1.0f)로 고정
         autoDish.Initialize(orderedFood, false, 1.0f);
 
         Debug.Log($"<color=green>[자동 요리 완성] {orderedFood.foodName} 자동 서빙 완료!</color>");
         customer.ReceiveDish(autoDish);
 
+        // 주문 완료 처리 (이 시점에 OrderManager의 activeOrders에서 해당 주문이 빠져나감)
         OrderManager.Instance.CompleteOrderOf(customer);
+
+        isCooking = false; // 요리 끝!
+
+        // 💡 요리가 끝났으므로 대기 중인 다음 요리가 있는지 확인하고 즉시 시작 (조건 충족)
+        ProcessAutoOrder();
     }
 }
