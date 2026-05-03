@@ -4,7 +4,8 @@ public class CustomerController : PoolableObject, IStateMachine
 {
     [Header("Data & UI")]
     public CustomerData currentData;
-    CustomerPatienceUI _patience;
+    (OrderTicket, OrderTicket) _tickets;
+
     // public ProgressBar patienceGauge; // UI 게이지용 (추후 연결)
 
     // 💡 단일 spriteRenderer를 삭제하고, 파츠별 렌더러 변수를 선언했습니다.
@@ -30,15 +31,16 @@ public class CustomerController : PoolableObject, IStateMachine
         ChangeState(new CustomerEnterState(this));
     }
 
-    public bool TrySetPatience(CustomerPatienceUI ui)
+    public bool TrySetPatience((OrderTicket, OrderTicket) ui)
     {
-        _patience = ui;
-        return ui != null;
+        _tickets = ui;
+        return _tickets.Item1 != null && _tickets.Item2 != null;
     }
 
     public void RemoveOrder()
     {
-        _patience?.HideUI();
+        _tickets.Item1?.HideUI();
+        _tickets.Item2?.HideUI();
     }
 
     private void Update()
@@ -48,8 +50,8 @@ public class CustomerController : PoolableObject, IStateMachine
 
     public void UpdatePatience()
     {
-        if (_patience == null) return;
-        _patience.UpdatePatience(currentPatience);
+        _tickets.Item1?.UpdatePatience(currentPatience);
+        _tickets.Item2?.UpdatePatience(currentPatience);
     }
 
     // --- IStateMachine 인터페이스 구현 ---
@@ -76,6 +78,9 @@ public class CustomerController : PoolableObject, IStateMachine
             Debug.Log($"<color=red>[서빙 실패] 주문한 요리가 아닙니다!</color>");
             ChangeState(new CustomerLeaveState(this, false));
         }
+
+        _tickets.Item1 = null;
+        _tickets.Item2 = null;
     }
 
     public void SetupCustomer(CustomerData data, ref GenderParts visualParts)
@@ -110,6 +115,6 @@ public class CustomerController : PoolableObject, IStateMachine
 
     public void WorkOnOrder()
     {
-        _patience?.SetProcessingState(true);
+        _tickets.Item2?.SetProcessingState(true);
     }
 }

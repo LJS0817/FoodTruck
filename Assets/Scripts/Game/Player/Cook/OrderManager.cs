@@ -14,15 +14,16 @@ public class OrderManager : MonoBehaviour
 
     [Header("Order Settings")]
     public int maxOrders = 4; // 최대 받을 수 있는 주문표 개수
-    public OrderTicketObject ticketPrefab;
+    public OrderTicket ticketPrefab;
     public Transform ticketRack; // 주문표가 걸릴 부모 Transform
     public float ticketSpacing = 1.2f;
     [SerializeField]
-    CustomerPatienceController _patienceController;
+    OrderTicketController _ticketController;
 
     // 현재 활성화된 주문 리스트
     private List<OrderData> activeOrders = new List<OrderData>(4);
-    private List<OrderTicketObject> visualTickets = new List<OrderTicketObject>(4);
+    private List<OrderTicket> visualInsideTickets = new List<OrderTicket>(4);
+    private List<OrderTicket> visualOutsideTickets = new List<OrderTicket>(4);
 
 
     private void Awake()
@@ -41,9 +42,7 @@ public class OrderManager : MonoBehaviour
         OrderData newOrder = new OrderData { owner = customer, orderedFood = food };
         activeOrders.Add(newOrder);
 
-        SpawnTicketVisual(newOrder);
-        bool result = _patienceController.OnOrderReceived(customer, food);
-        
+        bool result = customer.TrySetPatience(SpawnTicketVisual(newOrder));
         AutoCookManager.Instance.ProcessAutoOrder();
         Debug.Log($"[주문 접수] {food.foodName} 주문표가 추가되었습니다! (현재 {activeOrders.Count}/{maxOrders})");
         return result;
@@ -58,21 +57,25 @@ public class OrderManager : MonoBehaviour
         return null;
     }
 
-    private void SpawnTicketVisual(OrderData orderData)
+    private (OrderTicket, OrderTicket) SpawnTicketVisual(OrderData orderData)
     {
         // (최적화를 위해 추후 Object Pool 연동 권장)
-        OrderTicketObject ticket = Instantiate(ticketPrefab, ticketRack);
-        ticket.SetupTicket(orderData);
-        visualTickets.Add(ticket);
-
-        UpdateTicketPositions();
+        (OrderTicket, OrderTicket) result = _ticketController.CreateOrderTicket(orderData);
+        visualInsideTickets.Add(result.Item1);
+        visualOutsideTickets.Add(result.Item2);
+        return result;
+        // UpdateTicketPositions();
     }
 
-    public void RemoveOrder(OrderData orderData, OrderTicketObject ticketObject)
+    public void RemoveOrder(OrderData orderData, (OrderTicket, OrderTicket) ticketObject)
     {
         activeOrders.Remove(orderData);
-        visualTickets.Remove(ticketObject);
-        Destroy(ticketObject.gameObject); // (풀링 사용 시 OnDespawn 처리)
+        
+        visualInsideTickets.Remove(ticketObject.Item1);
+        visualOutsideTickets.Remove(ticketObject.Item2);
+        
+        // 💡 파괴 대신 풀로 반환
+        _ticketController.ReturnTickets(ticketObject);
 
         // 💡 주문 삭제 시 인내심 UI 풀로 반환
         if (orderData.owner != null)
@@ -80,18 +83,18 @@ public class OrderManager : MonoBehaviour
             orderData.owner.RemoveOrder();
         }
 
-        UpdateTicketPositions();
+        // UpdateTicketPositions();
     }
 
     // 주문표가 빠지면 남은 주문표들을 옆으로 밀어주는 시각적 정렬 로직
-    private void UpdateTicketPositions()
-    {
-        for (int i = 0; i < visualTickets.Count; i++)
-        {
-            Vector3 newPos = new Vector3(i * ticketSpacing, 0, 0);
-            visualTickets[i].transform.localPosition = newPos;
-        }
-    }
+    // private void UpdateTicketPositions()
+    // {
+    //     for (int i = 0; i < visualTickets.Count; i++)
+    //     {
+    //         Vector3 newPos = new Vector3(i * ticketSpacing, 0, 0);
+    //         visualTickets[i].transform.localPosition = newPos;
+    //     }
+    // }
 
     public void CancelOrderOf(CustomerController customer)
     {
@@ -101,12 +104,11 @@ public class OrderManager : MonoBehaviour
             if (activeOrders[i].owner == customer)
             {
                 OrderData targetOrder = activeOrders[i];
-                OrderTicketObject targetTicket = visualTickets[i];
 
                 customer.RemoveOrder();
 
                 // 기존에 만들어둔 RemoveOrder 함수 재사용
-                RemoveOrder(targetOrder, targetTicket);
+                RemoveOrder(targetOrder, (visualInsideTickets[i], visualOutsideTickets[i]));
 
                 Debug.Log($"<color=orange>[주문 취소] {customer.currentData.customerName}이(가) 떠나서 주문표가 폐기되었습니다.</color>");
                 return;
@@ -122,12 +124,11 @@ public class OrderManager : MonoBehaviour
             if (activeOrders[i].owner == customer)
             {
                 OrderData targetOrder = activeOrders[i];
-                OrderTicketObject targetTicket = visualTickets[i];
 
                 customer.RemoveOrder();
 
                 // 주문 제거 로직 실행
-                RemoveOrder(targetOrder, targetTicket);
+                RemoveOrder(targetOrder, (visualInsideTickets[i], visualOutsideTickets[i]));
 
                 Debug.Log($"<color=cyan>[주문 완료] {customer.currentData.customerName}의 요리가 전달되어 주문표를 제거합니다.</color>");
                 return;
