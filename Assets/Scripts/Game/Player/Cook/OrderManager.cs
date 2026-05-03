@@ -39,6 +39,8 @@ public class OrderManager : MonoBehaviour
         activeOrders.Add(newOrder);
 
         SpawnTicketVisual(newOrder);
+        AutoCookManager.Instance.ProcessAutoOrder(customer, food);
+
         Debug.Log($"[주문 접수] {food.foodName} 주문표가 추가되었습니다! (현재 {activeOrders.Count}/{maxOrders})");
         return true;
     }
@@ -86,6 +88,25 @@ public class OrderManager : MonoBehaviour
                 RemoveOrder(targetOrder, targetTicket);
 
                 Debug.Log($"<color=orange>[주문 취소] {customer.currentData.customerName}이(가) 떠나서 주문표가 폐기되었습니다.</color>");
+                return;
+            }
+        }
+    }
+
+    // 자동 요리가 완료되었을 때 호출 (주문표 제거)
+    public void CompleteOrderOf(CustomerController customer)
+    {
+        for (int i = 0; i < activeOrders.Count; i++)
+        {
+            if (activeOrders[i].owner == customer)
+            {
+                OrderData targetOrder = activeOrders[i];
+                OrderTicketObject targetTicket = visualTickets[i];
+
+                // 주문 제거 로직 실행
+                RemoveOrder(targetOrder, targetTicket);
+
+                Debug.Log($"<color=cyan>[주문 완료] {customer.currentData.customerName}의 요리가 전달되어 주문표를 제거합니다.</color>");
                 return;
             }
         }

@@ -50,6 +50,6 @@ public class AutoCookManager : MonoBehaviour
         Debug.Log($"<color=green>[자동 요리 완성] {orderedFood.foodName} 자동 서빙 완료!</color>");
         customer.ReceiveDish(autoDish);
 
-        // 💡 OrderManager의 주문표(Rack)에서도 해당 주문을 지워주는 로직 필요
+        OrderManager.Instance.CompleteOrderOf(customer);
     }
 }

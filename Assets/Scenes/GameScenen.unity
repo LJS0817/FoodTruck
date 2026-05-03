@@ -1632,6 +1632,7 @@ GameObject:
   - component: {fileID: 974453137}
   - component: {fileID: 974453138}
   - component: {fileID: 974453139}
+  - component: {fileID: 974453140}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1724,6 +1725,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MiniGameManager
   rapidTapUI: {fileID: 0}
   timingUI: {fileID: 0}
+--- !u!114 &974453140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 974453133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40c95afca9b1f0049bec24e6cbeb7e4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AutoCookManager
 --- !u!1 &1012074894
 GameObject:
   m_ObjectHideFlags: 0
