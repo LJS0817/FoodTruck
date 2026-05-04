@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::IngredientData
   ingredientID: 0
   ingredientName: Bread
-  ingredientSprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  ingredientSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
   requiredMiniGame: 0
