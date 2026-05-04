@@ -7,6 +7,11 @@ public enum MiniGameType
     Stir    // 젓기 (타이밍)
 }
 
+public enum FoodPackageType {
+    Container,
+    Wrapper,
+}
+
 [CreateAssetMenu(fileName = "New Ingredient", menuName = "Tycoon/Ingredient")]
 public class IngredientData : ScriptableObject
 {
@@ -24,6 +29,7 @@ public class FoodData : ScriptableObject
     public string foodName;
     public int basePrice;
     public float autoCookTime = 5.0f;
+    public FoodPackageType foodPackageType;
 
     public Sprite iconSprite;
 

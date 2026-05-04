@@ -25,6 +25,7 @@ public class CookingManager : MonoBehaviour
     public CookingPot currentPot;
     public RecipeManager recipeManager;
     public RecipeNamePopupUI recipeNamingUI;
+    public PackageController packageController;
 
     Dish currentCompletedDish;
 
@@ -58,6 +59,13 @@ public class CookingManager : MonoBehaviour
 
             string qualityText = isPremium ? "✨프리미엄✨ " : "일반 ";
             Debug.Log($"<color=green>[요리 완성] {qualityText}{resultFood.foodName}이(가) 조리대에 대기 중입니다.</color>");
+            
+            // 💡 ResetPot 이전에 포장 로직 호출
+            if (packageController != null)
+            {
+                packageController.PackageDish(resultFood.foodPackageType);
+            }
+
             currentPot.ResetPot();
         }
         else

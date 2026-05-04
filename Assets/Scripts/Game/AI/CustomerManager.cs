@@ -49,6 +49,10 @@ public class CustomerManager : MonoBehaviour
 
     private void Update()
     {
+        // 💡 장사 시작(Open) 상태일 때만 손님 스폰 타이머 작동
+        if (BusinessManager.Instance != null && !BusinessManager.Instance.IsBusinessOpen)
+            return;
+
         // 간단한 스폰 타이머 로직
         spawnTimer += Time.deltaTime;
         if (spawnTimer >= spawnInterval)
@@ -101,6 +105,15 @@ public class CustomerManager : MonoBehaviour
         {
             activeCustomers.Remove(customer); // 명단에서 삭제
             UpdateQueuePositions(); // 💡 즉시 뒷사람들에게 앞으로 오라고 명령!
+        }
+    }
+
+    // 💡 모든 손님 강제 퇴장 (장사 종료 시)
+    public void ForceLeaveAllCustomers()
+    {
+        for (int i = activeCustomers.Count - 1; i >= 0; i--)
+        {
+            activeCustomers[i].ChangeState(new CustomerLeaveState(activeCustomers[i], false));
         }
     }
 

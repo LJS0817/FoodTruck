@@ -206,7 +206,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -81.20178, y: 81.20184}
+  m_AnchoredPosition: {x: -81.201904, y: 81.201904}
   m_SizeDelta: {x: 111.3704, y: 111.3704}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &256959824
@@ -1561,7 +1561,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74f583bff3cfeef4c9aa989cdad1bc2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MarketManager
-  marketCatalog: []
+  marketCatalog:
+  - {fileID: 11400000, guid: cd53634d52f9da842bd38588b94c4945, type: 2}
   priceFluctuationRate: 0.3
 --- !u!1 &805748661
 GameObject:
@@ -1961,9 +1962,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OrderManager
   maxOrders: 4
-  ticketPrefab: {fileID: 5099656854102186956, guid: 3b0ed34dffa1cf7448ef6c81cb188773, type: 3}
-  ticketRack: {fileID: 0}
-  ticketSpacing: 1.2
   _ticketController: {fileID: 1656762160}
 --- !u!114 &974453138
 MonoBehaviour:
@@ -2879,6 +2877,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameTimeManager
   timeDisplayText: {fileID: 896193951}
   dateDisplayText: {fileID: 684897973}
+  timeScaleMultiplier: 1
 --- !u!114 &1959830826
 MonoBehaviour:
   m_ObjectHideFlags: 0

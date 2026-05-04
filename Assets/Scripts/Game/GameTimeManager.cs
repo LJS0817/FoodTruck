@@ -3,10 +3,13 @@ using TMPro;
 
 public class GameTimeManager : MonoBehaviour
 {
+    public static GameTimeManager Instance { get; private set; }
+
     [SerializeField] private TMP_Text timeDisplayText;
     [SerializeField] private TMP_Text dateDisplayText;
 
     private const float TIME_MULTIPLIER = 96f;
+    public float timeScaleMultiplier = 1f; // 💡 장사 시작/종료 시 시간 배속을 조절하기 위한 변수
     private float totalSeconds = 0f;
     private int currentDay;
 
@@ -15,7 +18,7 @@ public class GameTimeManager : MonoBehaviour
 
     private void Awake()
     {
-        //if (Instance == null) Instance = this;
+        if (Instance == null) Instance = this;
     }
 
     public void Initialize()
@@ -32,7 +35,7 @@ public class GameTimeManager : MonoBehaviour
 
     void Update()
     {
-        totalSeconds += Time.deltaTime * TIME_MULTIPLIER;
+        totalSeconds += Time.deltaTime * TIME_MULTIPLIER * timeScaleMultiplier;
 
         // 하루(86,400초)가 지날 때마다 날짜 증가
         if (totalSeconds >= 86400f)

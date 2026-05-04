@@ -14,9 +14,6 @@ public class OrderManager : MonoBehaviour
 
     [Header("Order Settings")]
     public int maxOrders = 4; // 최대 받을 수 있는 주문표 개수
-    public OrderTicket ticketPrefab;
-    public Transform ticketRack; // 주문표가 걸릴 부모 Transform
-    public float ticketSpacing = 1.2f;
     [SerializeField]
     OrderTicketController _ticketController;
 
@@ -83,18 +80,7 @@ public class OrderManager : MonoBehaviour
             orderData.owner.RemoveOrder();
         }
 
-        // UpdateTicketPositions();
     }
-
-    // 주문표가 빠지면 남은 주문표들을 옆으로 밀어주는 시각적 정렬 로직
-    // private void UpdateTicketPositions()
-    // {
-    //     for (int i = 0; i < visualTickets.Count; i++)
-    //     {
-    //         Vector3 newPos = new Vector3(i * ticketSpacing, 0, 0);
-    //         visualTickets[i].transform.localPosition = newPos;
-    //     }
-    // }
 
     public void CancelOrderOf(CustomerController customer)
     {
@@ -134,5 +120,24 @@ public class OrderManager : MonoBehaviour
                 return;
             }
         }
+    }
+
+    // 💡 모든 주문 강제 취소 및 티켓 반환 (장사 종료 시)
+    public void ClearAllOrders()
+    {
+        for (int i = activeOrders.Count - 1; i >= 0; i--)
+        {
+            OrderData order = activeOrders[i];
+            if (order.owner != null)
+            {
+                order.owner.RemoveOrder();
+            }
+            _ticketController.ReturnTickets((visualInsideTickets[i], visualOutsideTickets[i]));
+        }
+        
+        activeOrders.Clear();
+        visualInsideTickets.Clear();
+        visualOutsideTickets.Clear();
+        Debug.Log("<color=orange>[주문 전체 폐기] 모든 주문이 폐기되었습니다.</color>");
     }
 }
