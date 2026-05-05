@@ -90,4 +90,10 @@ public class GameTimeManager : MonoBehaviour
         totalSeconds = (targetHour * 3600f) + (targetMinute * 60f);
         lastCalculatedMinute = -1; // 시간 강제 변경 시 UI 즉시 갱신 유도
     }
+
+    // 💡 외부(MarketManager 등)에서 현재 게임 내 시간(시)을 가져올 때 사용
+    public int GetCurrentHour()
+    {
+        return Mathf.FloorToInt(totalSeconds / 3600f) % 24;
+    }
 }

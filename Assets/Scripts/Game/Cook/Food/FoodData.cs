@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public enum MiniGameType
@@ -12,12 +13,32 @@ public enum FoodPackageType {
     Wrapper,
 }
 
+public enum EquipmentType
+{
+    None,           // 장비 불필요
+    Grill,          // 그릴
+    Refrigerator,   // 냉장고
+    Battery,        // 전기 배터리
+    Gas,            // 가스통
+    Generator,      // 발전기
+    Hood,           // 그릴 후드
+    Kiosk,          // 키오스크
+}
+
 [CreateAssetMenu(fileName = "New Ingredient", menuName = "Tycoon/Ingredient")]
 public class IngredientData : ScriptableObject
 {
     public int ingredientID;
     public string ingredientName;
     public Sprite ingredientSprite;
+    public float volume;
+
+    [Header("경제")]
+    public int basePrice;               // 재료의 기본 정가
+    public int maxShelfLifeDays = 7;    // 구매 시점부터 최대 유통기한(일 수)
+
+    [Header("장비 조건")]
+    public EquipmentType requiredEquipment = EquipmentType.None; // 이 재료를 구매/보관하려면 필요한 장비
 
     // 💡 이 재료를 냄비에 넣을 때 어떤 미니게임이 뜰지 결정합니다.
     public MiniGameType requiredMiniGame;

@@ -70,7 +70,7 @@ public class BusinessManager : MonoBehaviour
         if (toggleButtonText != null)
         {
             // 장사 중이면 '장사 종료' 버튼으로, 종료 상태면 '장사 시작' 버튼으로 표시
-            toggleButtonText.text = IsBusinessOpen ? "장사 종료" : "장사 시작";
+            toggleButtonText.text = IsBusinessOpen ? "Close" : "Open";
         }
     }
 }

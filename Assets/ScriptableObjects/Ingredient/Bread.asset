@@ -15,4 +15,8 @@ MonoBehaviour:
   ingredientID: 0
   ingredientName: Bread
   ingredientSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
+  volume: 10
+  basePrice: 10
+  maxShelfLifeDays: 7
+  requiredEquipment: 0
   requiredMiniGame: 0

@@ -1,83 +1,200 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+
+/// <summary>
+/// 시장에 진열될 아이템 하나의 정보 (가격, 남은 유통기한, 할인율 포함)
+/// </summary>
+[Serializable]
+public class MarketListing
+{
+    public IngredientData data;
+    public int displayPrice;        // 최종 표시 가격
+    public int remainingShelfDays;  // 남은 유통기한(일)
+    public float discountRate;      // 할인율 (0.0 ~ 1.0)
+}
 
 public class MarketManager : MonoBehaviour
 {
     public static MarketManager Instance { get; private set; }
 
     [Header("Market Settings")]
-    public List<IngredientData> marketCatalog; // 도매시장에서 취급하는 재료 목록
-    public float priceFluctuationRate = 0.3f;  // 가격 변동폭 (기본가의 ±30%)
+    public List<IngredientData> allIngredients;     // 게임 내 모든 재료 목록
+    public float dawnMarketDiscount = 0.3f;         // 새벽 시장 기본 할인율 (30%)
+    public int dawnMarketItemCount = 8;             // 새벽 시장에 나오는 품목 수
 
-    // 💡 Key: 재료 ID, Value: 오늘의 변동된 가격
-    // O(1) 탐색을 위해 딕셔너리 사용
-    private Dictionary<int, int> todayPrices = new Dictionary<int, int>(32);
+    [Header("Time Condition")]
+    public int dawnOpenHour = 6;    // 새벽 시장 오픈 시간
+    public int dawnCloseHour = 9;   // 새벽 시장 마감 시간
+
+    // 💡 GC 방지 및 O(1) 탐색을 위해 딕셔너리로 캐싱
+    private Dictionary<int, IngredientData> catalogDict = new Dictionary<int, IngredientData>(32);
+
+    // 일반 마켓 진열 리스트 (항시 이용 가능)
+    private List<MarketListing> generalListings = new List<MarketListing>(32);
+
+    // 새벽 시장 진열 리스트 (매일 갱신, 시간 제한)
+    private List<MarketListing> dawnListings = new List<MarketListing>(16);
+
+    // UI 갱신용 이벤트
+    public event Action OnListingsUpdated;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
+
+        // 카탈로그 딕셔너리 캐싱
+        for (int i = 0; i < allIngredients.Count; i++)
+        {
+            catalogDict[allIngredients[i].ingredientID] = allIngredients[i];
+        }
     }
 
     private void Start()
     {
-        // 테스트를 위해 시작 시 시세 1회 갱신 (실제로는 '하루 영업 시작' 시점에 호출)
-        GenerateDailyPrices();
+        GenerateAllListings();
     }
 
-    // 1. 매일 새벽(하루의 시작)에 호출되어 시세를 갱신합니다.
-    public void GenerateDailyPrices()
+    // ===== 매일 새벽(하루의 시작)에 호출되어 시장 진열을 갱신합니다 =====
+
+    public void GenerateAllListings()
     {
-        todayPrices.Clear();
+        GenerateGeneralListings();
+        GenerateDawnListings();
+        OnListingsUpdated?.Invoke();
+    }
 
-        for (int i = 0; i < marketCatalog.Count; i++)
+    // --- 일반 마켓: 모든 재료를 상시 정가로 판매, 유통기한이 짧은 아이템은 할인 ---
+    private void GenerateGeneralListings()
+    {
+        generalListings.Clear();
+
+        for (int i = 0; i < allIngredients.Count; i++)
         {
-            IngredientData data = marketCatalog[i];
+            IngredientData data = allIngredients[i];
 
-            // 기본가 설정이 없다고 가정하고 임의의 기본가를 100~500원으로 부여 (추후 Data에 추가 권장)
-            int basePrice = 200;
+            // 정상 가격 아이템 (유통기한 꽉 찬 상태)
+            MarketListing normalListing = new MarketListing
+            {
+                data = data,
+                displayPrice = data.basePrice,
+                remainingShelfDays = data.maxShelfLifeDays,
+                discountRate = 0f,
+            };
+            generalListings.Add(normalListing);
 
-            // ±30% 범위에서 랜덤 가격 생성 (Mathf.RoundToInt로 정수화)
-            float randomModifier = Random.Range(1f - priceFluctuationRate, 1f + priceFluctuationRate);
-            int finalPrice = Mathf.RoundToInt(basePrice * randomModifier);
+            // 💡 마감 할인 아이템: 50% 확률로 유통기한이 짧은 할인 상품을 추가 진열
+            if (UnityEngine.Random.value > 0.5f && data.maxShelfLifeDays > 1)
+            {
+                int shortShelf = UnityEngine.Random.Range(1, Mathf.Max(2, data.maxShelfLifeDays / 2));
+                float shelfRatio = (float)shortShelf / data.maxShelfLifeDays; // 0.0 ~ 0.5
+                float discount = Mathf.Clamp01(1f - shelfRatio) * 0.5f;       // 최대 50% 할인
 
-            todayPrices.Add(data.ingredientID, finalPrice);
+                MarketListing discountListing = new MarketListing
+                {
+                    data = data,
+                    displayPrice = Mathf.Max(1, Mathf.RoundToInt(data.basePrice * (1f - discount))),
+                    remainingShelfDays = shortShelf,
+                    discountRate = discount,
+                };
+                generalListings.Add(discountListing);
+            }
+        }
+    }
 
-            Debug.Log($"[새벽시장] {data.ingredientName}의 오늘 시세: {finalPrice}원 ({(randomModifier * 100):F1}%)");
+    // --- 새벽 시장: 무작위 품목, 30% 할인, 유통기한 최대치 ---
+    private void GenerateDawnListings()
+    {
+        dawnListings.Clear();
+
+        // Fisher-Yates 셔플 없이 간단히 무작위 선택 (중복 방지)
+        List<int> indices = new List<int>(allIngredients.Count);
+        for (int i = 0; i < allIngredients.Count; i++) indices.Add(i);
+
+        int count = Mathf.Min(dawnMarketItemCount, allIngredients.Count);
+        for (int i = 0; i < count; i++)
+        {
+            int randomIdx = UnityEngine.Random.Range(i, indices.Count);
+
+            // Swap
+            int temp = indices[i];
+            indices[i] = indices[randomIdx];
+            indices[randomIdx] = temp;
+
+            IngredientData data = allIngredients[indices[i]];
+            int discountedPrice = Mathf.Max(1, Mathf.RoundToInt(data.basePrice * (1f - dawnMarketDiscount)));
+
+            dawnListings.Add(new MarketListing
+            {
+                data = data,
+                displayPrice = discountedPrice,
+                remainingShelfDays = data.maxShelfLifeDays, // 새벽 시장은 항상 최상급
+                discountRate = dawnMarketDiscount,
+            });
+        }
+    }
+
+    // ===== 구매 로직 =====
+
+    /// <summary>
+    /// 일반 마켓 또는 새벽 시장에서 재료를 구매합니다.
+    /// </summary>
+    public bool BuyListing(MarketListing listing, int amount)
+    {
+        if (amount <= 0) return false;
+
+        // 장비 조건 체크
+        if (listing.data.requiredEquipment != EquipmentType.None)
+        {
+            if (StoreManager.Instance == null || !StoreManager.Instance.HasEquipment(listing.data.requiredEquipment))
+            {
+                Debug.LogWarning($"<color=red>[구매 실패] {listing.data.ingredientName}을(를) 구매하려면 {listing.data.requiredEquipment} 장비가 필요합니다!</color>");
+                return false;
+            }
         }
 
-        // TODO: UI 갱신을 위한 Action 이벤트 호출 (OnPricesGenerated 등)
-    }
+        int totalCost = listing.displayPrice * amount;
 
-    // 2. 재료 구매 로직
-    public void BuyIngredient(int ingredientID, int amount)
-    {
-        if (amount <= 0) return;
-
-        if (todayPrices.TryGetValue(ingredientID, out int currentPrice))
+        if (PlayerManager.Instance.SpendMoney(totalCost))
         {
-            int totalCost = currentPrice * amount;
+            // 구매 시점 기준으로 유통기한 계산
+            DateTime expiration = DateTime.Now.AddDays(listing.remainingShelfDays);
+            InventoryManager.Instance.AddIngredient(listing.data, amount, expiration);
 
-            // PlayerManager를 통해 돈이 충분한지 확인하고 지불
-            if (PlayerManager.Instance.SpendMoney(totalCost))
-            {
-                // 지불에 성공하면 인벤토리에 재료 추가
-                InventoryManager.Instance.AddIngredient(ingredientID, amount);
-                Debug.Log($"<color=cyan>[구매 성공] {amount}개의 재료를 {totalCost}원에 구매했습니다!</color>");
-            }
-            else
-            {
-                Debug.LogWarning($"<color=red>[구매 실패] 잔액이 부족합니다! (필요 금액: {totalCost}원)</color>");
-            }
+            Debug.Log($"<color=cyan>[구매 성공] {listing.data.ingredientName} {amount}개를 {totalCost}원에 구매! (유통기한: {expiration:yyyy-MM-dd})</color>");
+            return true;
         }
         else
         {
-            Debug.LogError($"[MarketManager] 오류: ID {ingredientID}인 재료는 오늘 시장에 없습니다.");
+            Debug.LogWarning($"<color=red>[구매 실패] 잔액이 부족합니다! (필요 금액: {totalCost}원)</color>");
+            return false;
         }
     }
 
-    // 외부(UI 등)에서 특정 재료의 오늘 시세를 확인할 때 사용
-    public int GetTodayPrice(int ingredientID)
+    // ===== 외부 접근용 =====
+
+    public List<MarketListing> GetGeneralListings() { return generalListings; }
+    public List<MarketListing> GetDawnListings() { return dawnListings; }
+
+    /// <summary>
+    /// 현재 새벽 시장이 열려있는 시간대인지 확인합니다.
+    /// </summary>
+    public bool IsDawnMarketOpen()
     {
-        return todayPrices.TryGetValue(ingredientID, out int price) ? price : 0;
+        if (GameTimeManager.Instance == null) return false;
+        int currentHour = GameTimeManager.Instance.GetCurrentHour();
+        return currentHour >= dawnOpenHour && currentHour < dawnCloseHour;
+    }
+
+    /// <summary>
+    /// 외부에서 특정 재료의 기본 정가를 확인할 때 사용합니다.
+    /// </summary>
+    public int GetBasePrice(int ingredientID)
+    {
+        if (catalogDict.TryGetValue(ingredientID, out IngredientData data))
+        {
+            return data.basePrice;
+        }
+        return 0;
     }
 }

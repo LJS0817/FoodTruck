@@ -24,7 +24,17 @@ public class AutoCookManager : MonoBehaviour
 
         if (nextOrder != null)
         {
-            StartCoroutine(AutoCookRoutine(nextOrder.owner, nextOrder.orderedFood));
+            // 💡 인벤토리에 요리에 필요한 재료가 충분한지 먼저 확인합니다.
+            if (InventoryManager.Instance.HasIngredients(nextOrder.orderedFood.requiredIngredients))
+            {
+                StartCoroutine(AutoCookRoutine(nextOrder.owner, nextOrder.orderedFood));
+            }
+            else
+            {
+                // 재료가 없으면 조리를 시작하지 못하므로, 다음 주문을 시도하거나 대기 상태를 유지합니다.
+                // (일단 무시하고 아무것도 안 하거나, 실패 피드백을 줄 수 있습니다.)
+                Debug.Log($"<color=orange>[자동 요리 대기] {nextOrder.orderedFood.foodName} 요리에 필요한 재료가 부족합니다.</color>");
+            }
         }
     }
 
@@ -63,7 +73,9 @@ public class AutoCookManager : MonoBehaviour
             yield return null;
         }
 
-        // 시간이 다 차면 자동으로 요리(Dish)를 생성하여 서빙
+        // 💡 시간이 다 차면 실제로 인벤토리에서 재료를 일괄 차감하고 요리 생성
+        InventoryManager.Instance.ConsumeIngredients(orderedFood.requiredIngredients);
+
         Dish autoDish = new Dish();
         autoDish.Initialize(orderedFood, false, 1.0f);
 
