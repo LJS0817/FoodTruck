@@ -32,6 +32,8 @@ public class IngredientData : ScriptableObject
     public string ingredientName;
     public Sprite ingredientSprite;
     public float volume;
+    public string description;
+
 
     [Header("경제")]
     public int basePrice;               // 재료의 기본 정가

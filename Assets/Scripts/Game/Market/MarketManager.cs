@@ -16,7 +16,6 @@ public class MarketListing
 
 public class MarketManager : MonoBehaviour
 {
-    public static MarketManager Instance { get; private set; }
 
     [Header("Market Settings")]
     public List<IngredientData> allIngredients;     // 게임 내 모든 재료 목록
@@ -41,8 +40,6 @@ public class MarketManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-
         // 카탈로그 딕셔너리 캐싱
         for (int i = 0; i < allIngredients.Count; i++)
         {
@@ -146,7 +143,7 @@ public class MarketManager : MonoBehaviour
         // 장비 조건 체크
         if (listing.data.requiredEquipment != EquipmentType.None)
         {
-            if (StoreManager.Instance == null || !StoreManager.Instance.HasEquipment(listing.data.requiredEquipment))
+            if (StoreManager.Instance.EquipmentStore == null || !StoreManager.Instance.EquipmentStore.HasEquipment(listing.data.requiredEquipment))
             {
                 Debug.LogWarning($"<color=red>[구매 실패] {listing.data.ingredientName}을(를) 구매하려면 {listing.data.requiredEquipment} 장비가 필요합니다!</color>");
                 return false;

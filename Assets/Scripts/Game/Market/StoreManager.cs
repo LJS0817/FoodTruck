@@ -1,120 +1,75 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 장비 상점 및 교환 시스템을 관리합니다.
-/// 장비 구매 시: (새 장비 가격 - 기존 장비 보상가) = 최종 결제 금액
+/// 상점 관련 시스템(시장, 장비, 레시피, UI)을 통합 관리하는 허브 클래스입니다.
 /// </summary>
 public class StoreManager : MonoBehaviour
 {
     public static StoreManager Instance { get; private set; }
 
-    [Header("Equipment Catalog")]
-    [SerializeField] private List<EquipmentData> allEquipments; // 게임 내 모든 장비 목록
+    [Header("Sub Managers")]
+    [SerializeField] private MarketManager marketManager;
+    [SerializeField] private EquipmentStoreManager equipmentStoreManager;
+    [SerializeField] private RecipeStoreManager recipeStoreManager;
 
-    // 💡 현재 트럭에 장착된 장비 (타입당 1개만 보유 가능)
-    private Dictionary<EquipmentType, EquipmentData> ownedEquipments = new Dictionary<EquipmentType, EquipmentData>(8);
+    [Header("UI Controller")]
+    [SerializeField] private StoreUIController storeUIController;
 
-    public event Action OnEquipmentChanged;
+    // Getter 프로퍼티
+    public MarketManager Market => marketManager;
+    public EquipmentStoreManager EquipmentStore => equipmentStoreManager;
+    public RecipeStoreManager RecipeStore => recipeStoreManager;
+    public StoreUIController UIController => storeUIController;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
     }
 
-    // ===== 장비 보유 확인 =====
-
-    /// <summary>
-    /// 특정 타입의 장비를 보유하고 있는지 확인합니다.
-    /// </summary>
-    public bool HasEquipment(EquipmentType type)
+    public void TryBuyItem(StoreItem item)
     {
-        return ownedEquipments.ContainsKey(type);
-    }
+        if (item == null || item.data == null) return;
 
-    /// <summary>
-    /// 특정 타입의 현재 보유 장비 데이터를 반환합니다. 없으면 null.
-    /// </summary>
-    public EquipmentData GetOwnedEquipment(EquipmentType type)
-    {
-        ownedEquipments.TryGetValue(type, out EquipmentData data);
-        return data;
-    }
-
-    // ===== 장비 구매/교환 =====
-
-    /// <summary>
-    /// 장비를 구매합니다. 기존에 같은 타입의 장비를 보유 중이면 보상 판매(교환)가 적용됩니다.
-    /// </summary>
-    public bool BuyEquipment(EquipmentData newEquipment)
-    {
-        int finalCost = newEquipment.price;
-
-        // 기존 장비가 있으면 교환 가치 차감
-        if (ownedEquipments.TryGetValue(newEquipment.type, out EquipmentData currentEquipment))
+        // 1. 장비 구매 시: 이미 같은 장비를 보유 중이면 중단
+        if (item.data is EquipmentData equipment)
         {
-            finalCost -= currentEquipment.tradeInValue;
-
-            // 이미 같은 장비를 소유 중이면 구매 불가
-            if (currentEquipment == newEquipment)
+            if (equipmentStoreManager.GetOwnedEquipment(equipment.type) == equipment)
             {
-                Debug.LogWarning($"[StoreManager] 이미 {newEquipment.equipmentName}을(를) 보유 중입니다.");
-                return false;
-            }
-
-            // 더 낮은 등급으로의 다운그레이드 방지 (선택적)
-            if (newEquipment.tier <= currentEquipment.tier)
-            {
-                Debug.LogWarning($"[StoreManager] {currentEquipment.equipmentName}보다 낮은 등급의 장비로는 교체할 수 없습니다.");
-                return false;
+                Debug.LogWarning($"[StoreManager] 이미 {equipment.equipmentName}을(를) 보유 중입니다.");
+                return;
             }
         }
 
-        // 최종 비용이 음수가 되지 않도록 보정
-        if (finalCost < 0) finalCost = 0;
-
-        // 결제
-        if (PlayerManager.Instance.SpendMoney(finalCost))
+        // 2. 가격 체크 및 구매 처리
+        if (PlayerManager.Instance.SpendMoney(item.finalCost))
         {
-            ownedEquipments[newEquipment.type] = newEquipment;
-
-            if (currentEquipment != null)
+            if (item.data is IngredientData ingredient)
             {
-                Debug.Log($"<color=cyan>[장비 교환] {currentEquipment.equipmentName} → {newEquipment.equipmentName} (보상 판매: {currentEquipment.tradeInValue}원, 추가 결제: {finalCost}원)</color>");
+                // 시장 재료 구매
+                DateTime expiration = DateTime.Now.AddDays(ingredient.maxShelfLifeDays);
+                InventoryManager.Instance.AddIngredient(ingredient, item.amount, expiration);
+                Debug.Log($"[StoreManager] {ingredient.ingredientName} x{item.amount} 구매 완료! ({item.finalCost}원)");
             }
-            else
+            else if (item.data is EquipmentData equipmentData)
             {
-                Debug.Log($"<color=cyan>[장비 구매] {newEquipment.equipmentName} 구매 완료! ({finalCost}원)</color>");
+                // 장비 구매
+                equipmentStoreManager.BuyEquipment(equipmentData);
+                Debug.Log($"[StoreManager] {equipmentData.equipmentName} 구매 완료! ({item.finalCost}원)");
+            }
+            else if (item.data is FoodData recipeData)
+            {
+                // 레시피 구매
+                recipeStoreManager.BuyRecipe(recipeData, item.finalCost);
+                Debug.Log($"[StoreManager] {recipeData.foodName} 레시피 구매 완료! ({item.finalCost}원)");
             }
 
-            OnEquipmentChanged?.Invoke();
-            return true;
+            // UI 갱신
+            storeUIController.RefreshUI();
         }
         else
         {
-            Debug.LogWarning($"<color=red>[장비 구매 실패] 잔액이 부족합니다! (필요 금액: {finalCost}원)</color>");
-            return false;
+            Debug.LogWarning($"[StoreManager] 잔액이 부족합니다! ({item.finalCost}원 필요)");
         }
     }
-
-    /// <summary>
-    /// 특정 장비 구매 시 필요한 최종 비용을 계산합니다 (UI 표시용).
-    /// </summary>
-    public int CalculateFinalCost(EquipmentData newEquipment)
-    {
-        int finalCost = newEquipment.price;
-
-        if (ownedEquipments.TryGetValue(newEquipment.type, out EquipmentData current))
-        {
-            finalCost -= current.tradeInValue;
-        }
-
-        return Mathf.Max(0, finalCost);
-    }
-
-    /// <summary>
-    /// 전체 장비 카탈로그를 반환합니다 (UI 표시용).
-    /// </summary>
-    public List<EquipmentData> GetAllEquipments() { return allEquipments; }
 }

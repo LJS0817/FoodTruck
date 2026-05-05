@@ -20,6 +20,7 @@ public class BusinessManager : MonoBehaviour
     {
         // 게임 시작 시 장사는 종료된 상태로 시작
         IsBusinessOpen = false;
+        GameTimeManager.Instance.timeScaleMultiplier = 0.5f;
         UpdateButtonUI();
     }
 
