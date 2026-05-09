@@ -9,8 +9,9 @@ public class StoreItem
     public ScriptableObject data;   // 원본 SO (IngredientData / EquipmentData / FoodData)
     public string itemName;         // 표시용 이름
     public Sprite icon;             // 표시용 아이콘
-    public int finalCost;           // 최종 결제 금액 (할인 적용 후)
-    public int amount;              // 구매 수량 (재료 전용, 기본 1)
+    public int finalCost;           // 단가 (할인 적용 후)
+    public int amount;              // 기본 구매 단위 (재료 전용, 보통 1)
+    public int maxPurchaseAmount;   // 최대 구매 가능 수량
 
     // ===== 팩토리 메서드: 각 데이터 타입에서 StoreItem 생성 =====
 
@@ -23,6 +24,7 @@ public class StoreItem
             icon = ingredient.ingredientSprite,
             finalCost = price,
             amount = amount,
+            maxPurchaseAmount = ingredient.maxPurchaseAmount
         };
     }
 
@@ -35,10 +37,11 @@ public class StoreItem
             icon = equipment.equipmentSprite,
             finalCost = price,
             amount = 1,
+            maxPurchaseAmount = equipment.maxPurchaseAmount
         };
     }
 
-    public static StoreItem FromRecipe(FoodData recipe, int price)
+    public static StoreItem FromRecipe(FoodData recipe, int price, int maxAmount = 1)
     {
         return new StoreItem
         {
@@ -47,6 +50,7 @@ public class StoreItem
             icon = recipe.iconSprite,
             finalCost = price,
             amount = 1,
+            maxPurchaseAmount = maxAmount
         };
     }
 }

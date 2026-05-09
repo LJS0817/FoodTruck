@@ -101,7 +101,7 @@ public class InventoryManager : MonoBehaviour
         {
             if(amount < totalAvailable) totalAvailable = amount;
             return totalAvailable; 
-        }
+		}
 
         Debug.LogWarning($"[인벤토리] 재료 ID {ingredientID}의 재고가 부족하여 채울 수 없습니다!");
         return 0;
@@ -208,5 +208,32 @@ public class InventoryManager : MonoBehaviour
     public void CloseUI()
     {
         _controller.CloseInventory();
+    }
+
+    /// <summary>
+    /// 특정 재료 ID의 총 보유 수량을 반환합니다.
+    /// </summary>
+    public int GetTotalAmount(int ingredientID)
+    {
+        int total = 0;
+        for (int i = 0; i < inventoryItems.Count; i++)
+        {
+            if (inventoryItems[i].data.ingredientID == ingredientID)
+            {
+                total += inventoryItems[i].amount;
+            }
+        }
+        return total;
+    }
+
+    /// <summary>
+    /// 특정 재료 ID를 지정된 수량만큼 인벤토리에서 제거(폐기)합니다.
+    /// </summary>
+    public void DiscardIngredients(int ingredientID, int amount)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            if (!UseIngredient(ingredientID)) break;
+        }
     }
 }

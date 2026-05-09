@@ -29,6 +29,11 @@ public class PlayerManager : MonoBehaviour
         OnMoneyChanged?.Invoke(currentMoney);
     }
 
+    void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Alpha1)) AddMoney(10);       
+    }
+
     // 수익 획득
     public void AddMoney(int amount)
     {
@@ -48,6 +53,11 @@ public class PlayerManager : MonoBehaviour
         UpdateDataAndUI();
         Debug.Log($"<color=orange>[지출] {amount}원 사용. 현재 잔액: {currentMoney}원</color>");
         return true; // 지출 성공
+    }
+
+    public bool CheckMoney(int amount)
+    {
+        return currentMoney >= amount;
     }
 
     private void UpdateDataAndUI()

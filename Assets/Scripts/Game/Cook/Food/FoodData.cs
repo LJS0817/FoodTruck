@@ -38,6 +38,7 @@ public class IngredientData : ScriptableObject
     [Header("경제")]
     public int basePrice;               // 재료의 기본 정가
     public int maxShelfLifeDays = 7;    // 구매 시점부터 최대 유통기한(일 수)
+    public int maxPurchaseAmount = 99;  // 1회 최대 구매 가능 수량
 
     [Header("장비 조건")]
     public EquipmentType requiredEquipment = EquipmentType.None; // 이 재료를 구매/보관하려면 필요한 장비
@@ -58,4 +59,7 @@ public class FoodData : ScriptableObject
 
     // 이 요리를 만들기 위한 '정확한 순서'의 재료 배열
     public IngredientData[] requiredIngredients;
+    
+    // 이 요리를 만들기 위해 필요한 장비들
+    public EquipmentType[] requiredEquipments;
 }

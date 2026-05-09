@@ -7,6 +7,7 @@ public class RecipeStoreItem
 {
     public FoodData recipeData;
     public int price;
+    public int maxPurchaseAmount = 1;
 }
 
 public class RecipeStoreManager : MonoBehaviour

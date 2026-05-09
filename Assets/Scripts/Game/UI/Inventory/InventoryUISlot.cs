@@ -27,6 +27,7 @@ public class InventoryUISlot : MonoBehaviour
     }
 
     public void OnClicked() {
+        StoreManager.Instance.UIController.ShowItemInfo(StoreItem.FromIngredient(Item.data, Item.data.basePrice), false);
         _onSlotClicked?.Invoke(this);
     }
 
