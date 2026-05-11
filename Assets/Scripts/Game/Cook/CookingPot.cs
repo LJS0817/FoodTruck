@@ -131,7 +131,21 @@ public class CookingPot : MonoBehaviour
     public bool IsPremiumDish()
     {
         if (contents.Count == 0) return false;
-        // 들어간 모든 재료가 프리미엄이어야 프리미엄 요리로 인정 (기획에 따라 조건 변경 가능)
-        return premiumCount == contents.Count;
+        
+        // 들어간 모든 재료가 프리미엄이면 확정 프리미엄
+        if (premiumCount == contents.Count) return true;
+
+        // 💡 업그레이드로 인한 프리미엄 강제 판정 확률 보너스
+        if (PlayerUpgradeManager.Instance != null)
+        {
+            float bonusChance = PlayerUpgradeManager.Instance.GetCurrentValue("PremiumChance");
+            if (bonusChance > 0f && Random.value < bonusChance)
+            {
+                Debug.Log($"<color=yellow>[손재주 발동] 업그레이드 효과로 프리미엄 판정! ({bonusChance*100}% 확률)</color>");
+                return true;
+            }
+        }
+
+        return false;
     }
 }

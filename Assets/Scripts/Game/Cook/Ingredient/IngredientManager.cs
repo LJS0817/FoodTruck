@@ -38,7 +38,7 @@ public class IngredientManager : MonoBehaviour
                 }
             );
         }
-        _inventoryMng.AddIngredient(_boxSetters[0].boxData, 100, DateTime.Now.AddDays(_boxSetters[0].boxData.maxShelfLifeDays));
+        _inventoryMng.AddIngredient(_boxSetters[0].boxData, 100, _boxSetters[0].boxData.maxShelfLifeDays);
     }
 
     private void OpenInventoryForSetup()
@@ -54,19 +54,53 @@ public class IngredientManager : MonoBehaviour
         _inventoryMng.OpenUIWithApplyBtn(targetData);
     }
 
-    public void SetupBox(int idx)
+    public void SetupBox(int idx, float quality = 1.0f)
     {
-        _boxes[_currentBoxIndex].SetupIngredient(_boxSetters[idx]);
+        _boxes[_currentBoxIndex].SetupIngredient(_boxSetters[idx], quality);
     }
 
     public void SetupBox(IngredientData data)
     {
-        // _boxSetters에서 해당 data를 가진 세터를 찾아 SetupBox 호출
+        // 💡 미니게임 체크 로직 추가
+        if (data.requiredMiniGame != MiniGameType.None && MiniGameManager.Instance != null)
+        {
+            Debug.Log($"[IngredientManager] {data.ingredientName} 가공을 위해 {data.requiredMiniGame} 미니게임을 시작합니다.");
+            
+            // 일회성 이벤트 등록
+            Action<MiniGameResult> onFinished = null;
+            onFinished = (result) => {
+                MiniGameManager.Instance.OnMiniGameFinished -= onFinished;
+                
+                // 가공 성공 시에만 세팅 (또는 점수에 따른 차등 처리)
+                if (result.isSuccess)
+                {
+                    // 점수 계산 (예: 1.0~1.2 프리미엄 보너스)
+                    float finalQuality = 1.0f + (result.qualityScore * 0.2f);
+                    CompleteSetup(data, finalQuality);
+                }
+                else
+                {
+                    Debug.Log("[IngredientManager] 가공 실패! 일반 품질로 세팅됩니다.");
+                    CompleteSetup(data, 1.0f);
+                }
+            };
+
+            MiniGameManager.Instance.OnMiniGameFinished += onFinished;
+            MiniGameManager.Instance.StartMiniGame(data.requiredMiniGame.ToString());
+        }
+        else
+        {
+            CompleteSetup(data, 1.0f);
+        }
+    }
+
+    private void CompleteSetup(IngredientData data, float quality)
+    {
         for (int i = 0; i < _boxSetters.Count; i++)
         {
             if (_boxSetters[i].boxData.ingredientID == data.ingredientID)
             {
-                SetupBox(i);
+                SetupBox(i, quality);
                 return;
             }
         }

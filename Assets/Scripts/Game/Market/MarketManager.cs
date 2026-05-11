@@ -66,15 +66,19 @@ public class MarketManager : MonoBehaviour
     {
         generalListings.Clear();
 
+        // 💡 이벤트 물가 배율
+        float eventMult = RandomEventManager.Instance != null ? RandomEventManager.Instance.GetMarketPriceMultiplier() : 1f;
+
         for (int i = 0; i < allIngredients.Count; i++)
         {
             IngredientData data = allIngredients[i];
+            int basePrice = Mathf.Max(1, Mathf.RoundToInt(data.basePrice * eventMult));
 
             // 정상 가격 아이템 (유통기한 꽉 찬 상태)
             MarketListing normalListing = new MarketListing
             {
                 data = data,
-                displayPrice = data.basePrice,
+                displayPrice = basePrice,
                 remainingShelfDays = data.maxShelfLifeDays,
                 discountRate = 0f,
             };
@@ -90,7 +94,7 @@ public class MarketManager : MonoBehaviour
                 MarketListing discountListing = new MarketListing
                 {
                     data = data,
-                    displayPrice = Mathf.Max(1, Mathf.RoundToInt(data.basePrice * (1f - discount))),
+                    displayPrice = Mathf.Max(1, Mathf.RoundToInt(basePrice * (1f - discount))),
                     remainingShelfDays = shortShelf,
                     discountRate = discount,
                 };
@@ -108,6 +112,9 @@ public class MarketManager : MonoBehaviour
         List<int> indices = new List<int>(allIngredients.Count);
         for (int i = 0; i < allIngredients.Count; i++) indices.Add(i);
 
+        // 💡 이벤트 물가 배율
+        float eventMult = RandomEventManager.Instance != null ? RandomEventManager.Instance.GetMarketPriceMultiplier() : 1f;
+
         int count = Mathf.Min(dawnMarketItemCount, allIngredients.Count);
         for (int i = 0; i < count; i++)
         {
@@ -119,7 +126,8 @@ public class MarketManager : MonoBehaviour
             indices[randomIdx] = temp;
 
             IngredientData data = allIngredients[indices[i]];
-            int discountedPrice = Mathf.Max(1, Mathf.RoundToInt(data.basePrice * (1f - dawnMarketDiscount)));
+            int basePrice = Mathf.Max(1, Mathf.RoundToInt(data.basePrice * eventMult));
+            int discountedPrice = Mathf.Max(1, Mathf.RoundToInt(basePrice * (1f - dawnMarketDiscount)));
 
             dawnListings.Add(new MarketListing
             {
@@ -154,11 +162,13 @@ public class MarketManager : MonoBehaviour
 
         if (PlayerManager.Instance.SpendMoney(totalCost))
         {
-            // 구매 시점 기준으로 유통기한 계산
-            DateTime expiration = DateTime.Now.AddDays(listing.remainingShelfDays);
-            InventoryManager.Instance.AddIngredient(listing.data, amount, expiration);
+            // 구매 시점의 남은 유통기한을 그대로 전달
+            InventoryManager.Instance.AddIngredient(listing.data, amount, listing.remainingShelfDays);
 
-            Debug.Log($"<color=cyan>[구매 성공] {listing.data.ingredientName} {amount}개를 {totalCost}원에 구매! (유통기한: {expiration:yyyy-MM-dd})</color>");
+            // 💡 지출 추적: 정산 매니저에게 오늘 재료비 보고
+            SettlementManager.Instance?.AddExpense(totalCost);
+
+            Debug.Log($"<color=cyan>[구매 성공] {listing.data.ingredientName} {amount}개를 {totalCost}원에 구매! (유통기한: {listing.remainingShelfDays}일)</color>");
             return true;
         }
         else

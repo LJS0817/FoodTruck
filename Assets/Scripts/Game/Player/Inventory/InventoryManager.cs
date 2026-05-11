@@ -7,7 +7,7 @@ public class InventoryItem
 {
     public IngredientData data;
     public int amount;
-    public DateTime expirationDate;
+    public int remainingDays;
 }
 
 public class InventoryManager : MonoBehaviour
@@ -27,14 +27,14 @@ public class InventoryManager : MonoBehaviour
     }
 
     // 시장에서 재료를 사 오거나 보상을 얻었을 때 호출
-    public void AddIngredient(IngredientData data, int amount, DateTime expiration)
+    public void AddIngredient(IngredientData data, int amount, int remainingDays)
     {
         bool found = false;
         for (int i = 0; i < inventoryItems.Count; i++)
         {
-            // ID와 유통기한이 모두 같은 슬롯이 있으면 개수만 합칩니다.
+            // ID와 남은 유통기한이 모두 같은 슬롯이 있으면 개수만 합칩니다.
             if (inventoryItems[i].data.ingredientID == data.ingredientID && 
-                inventoryItems[i].expirationDate.Date == expiration.Date)
+                inventoryItems[i].remainingDays == remainingDays)
             {
                 inventoryItems[i].amount += amount;
                 found = true;
@@ -44,10 +44,10 @@ public class InventoryManager : MonoBehaviour
 
         if (!found)
         {
-            inventoryItems.Add(new InventoryItem { data = data, amount = amount, expirationDate = expiration });
+            inventoryItems.Add(new InventoryItem { data = data, amount = amount, remainingDays = remainingDays });
         }
 
-        Debug.Log($"[인벤토리] {data.ingredientName} {amount}개 추가됨. (유통기한: {expiration:yyyy-MM-dd})");
+        Debug.Log($"[인벤토리] {data.ingredientName} {amount}개 추가됨. (남은 유통기한: {remainingDays}일)");
         UpdateUI();
     }
 
@@ -55,16 +55,16 @@ public class InventoryManager : MonoBehaviour
     public bool UseIngredient(int ingredientID)
     {
         int targetIndex = -1;
-        DateTime closestExpiration = DateTime.MaxValue;
+        int closestExpiration = int.MaxValue;
 
-        // 가장 유통기한이 임박한(가장 과거인) 재고 탐색
+        // 가장 유통기한이 임박한(남은 일수가 적은) 재고 탐색
         for (int i = 0; i < inventoryItems.Count; i++)
         {
             if (inventoryItems[i].data.ingredientID == ingredientID && inventoryItems[i].amount > 0)
             {
-                if (inventoryItems[i].expirationDate < closestExpiration)
+                if (inventoryItems[i].remainingDays < closestExpiration)
                 {
-                    closestExpiration = inventoryItems[i].expirationDate;
+                    closestExpiration = inventoryItems[i].remainingDays;
                     targetIndex = i;
                 }
             }
@@ -154,7 +154,7 @@ public class InventoryManager : MonoBehaviour
         {
             if (inventoryItems[i] == item)
             {
-                Debug.Log($"<color=orange>[폐기] {item.data.ingredientName} {item.amount}개 폐기됨. (유통기한: {item.expirationDate:yyyy-MM-dd})</color>");
+                Debug.Log($"<color=orange>[폐기] {item.data.ingredientName} {item.amount}개 폐기됨. (남은 유통기한: {item.remainingDays}일)</color>");
                 inventoryItems.RemoveAt(i);
                 UpdateUI();
                 return;
@@ -162,13 +162,14 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-    // 💡 유통기한 만료된 재료 자동 폐기 (하루가 바뀔 때 호출)
-    public void DiscardExpiredItems()
+    // 💡 유통기한 차감 및 만료된 재료 자동 폐기 (하루가 바뀔 때 호출)
+    public void ProcessDailyExpiry()
     {
-        DateTime now = DateTime.Now;
         for (int i = inventoryItems.Count - 1; i >= 0; i--)
         {
-            if (inventoryItems[i].expirationDate < now)
+            inventoryItems[i].remainingDays--;
+
+            if (inventoryItems[i].remainingDays <= 0)
             {
                 Debug.Log($"<color=red>[유통기한 만료] {inventoryItems[i].data.ingredientName} {inventoryItems[i].amount}개 자동 폐기!</color>");
                 inventoryItems.RemoveAt(i);

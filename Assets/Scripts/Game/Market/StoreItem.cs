@@ -53,4 +53,69 @@ public class StoreItem
             maxPurchaseAmount = maxAmount
         };
     }
+
+    public static StoreItem FromDecoration(WaitingZoneItemData wzItem, int price)
+    {
+        return new StoreItem
+        {
+            data = wzItem,
+            itemName = wzItem.itemName,
+            icon = wzItem.icon,
+            finalCost = price,
+            amount = 1,
+            maxPurchaseAmount = 1
+        };
+    }
+
+    public static StoreItem FromWorker(WorkerData worker)
+    {
+        return new StoreItem
+        {
+            data = worker,
+            itemName = worker.workerName,
+            icon = worker.workerIcon,
+            finalCost = worker.hiringCost,
+            amount = 1,
+            maxPurchaseAmount = 1
+        };
+    }
+
+    public static StoreItem FromUpgrade(PlayerUpgradeData upgrade, int cost)
+    {
+        return new StoreItem
+        {
+            data = upgrade,
+            itemName = upgrade.upgradeName,
+            icon = null, // 아이콘이 없다면 임시로 null (StoreSlotUI에서 처리 필요)
+            finalCost = cost,
+            amount = 1,
+            maxPurchaseAmount = 1
+        };
+    }
+
+    public static StoreItem FromMarketing(MarketingData marketing)
+    {
+        return new StoreItem
+        {
+            data = marketing,
+            itemName = marketing.campaignName,
+            icon = null,
+            finalCost = marketing.cost,
+            amount = 1,
+            maxPurchaseAmount = 1
+        };
+    }
+
+    public static StoreItem FromDistrict(DistrictData district)
+    {
+        return new StoreItem
+        {
+            data = district,
+            itemName = district.districtName,
+            icon = district.backgroundSprite,
+            finalCost = district.unlockCost,
+            amount = 1,
+            maxPurchaseAmount = 1
+        };
+    }
 }

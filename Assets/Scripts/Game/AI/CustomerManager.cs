@@ -54,7 +54,24 @@ public class CustomerManager : MonoBehaviour
             return;
 
         // 간단한 스폰 타이머 로직
-        spawnTimer += Time.deltaTime;
+        float multiplier = WeatherTrendManager.Instance != null ? WeatherTrendManager.Instance.GetSpawnRateMultiplier() : 1f;
+
+        // 💡 평판, 마케팅, 알바생에 따른 스폰 배율 추가 적용
+        if (ReputationManager.Instance != null)
+            multiplier *= ReputationManager.Instance.GetSpawnRateMultiplier();
+        
+        if (MarketingManager.Instance != null)
+            multiplier *= MarketingManager.Instance.GetSpawnBoostMultiplier();
+
+        if (WorkerManager.Instance != null)
+            multiplier += WorkerManager.Instance.GetAbilityTotalValue(WorkerAbility.SpawnRateBoost); // 합산 방식으로 추가 배율
+
+        // 💡 돌발 이벤트 보정
+        if (RandomEventManager.Instance != null)
+            multiplier *= RandomEventManager.Instance.GetSpawnMultiplier();
+
+        spawnTimer += Time.deltaTime * multiplier;
+        
         if (spawnTimer >= spawnInterval)
         {
             spawnTimer = 0f;
@@ -65,11 +82,44 @@ public class CustomerManager : MonoBehaviour
     // 1. 손님 스폰 및 풀링 관리
     private void SpawnCustomer()
     {
-        if (availableCustomerTypes.Length == 0 || customerPool.Count == 0 || appearanceDB == null) return;
+        // 💡 현재 구역(District)의 손님 풀 가져오기 (없으면 기본값 사용)
+        CustomerData[] currentPool = availableCustomerTypes;
+        if (DistrictManager.Instance != null && DistrictManager.Instance.CurrentDistrict != null)
+        {
+            currentPool = DistrictManager.Instance.CurrentDistrict.districtCustomerTypes;
+        }
 
-        // 1. 무작위 손님 데이터 선택
-        int randomIndex = Random.Range(0, availableCustomerTypes.Length);
-        CustomerData selectedData = availableCustomerTypes[randomIndex];
+        if (currentPool == null || currentPool.Length == 0 || customerPool.Count == 0 || appearanceDB == null) return;
+
+        // 💡 VIP 등장 확률 체크 (평판 + 마케팅 보너스 + 돌발 이벤트)
+        CustomerData selectedData = null;
+        float vipChance = ReputationManager.Instance != null ? ReputationManager.Instance.GetVIPChance() : 0f;
+        
+        if (MarketingManager.Instance != null)
+            vipChance += MarketingManager.Instance.GetVIPBoostBonus();
+
+        if (RandomEventManager.Instance != null)
+            vipChance += RandomEventManager.Instance.GetVIPChanceBonus();
+
+        if (vipChance > 0f && Random.value < vipChance)
+        {
+            // VIP 후보 탐색 (LINQ 미사용)
+            for (int i = 0; i < currentPool.Length; i++)
+            {
+                if (currentPool[i].isVIP)
+                {
+                    selectedData = currentPool[i];
+                    break;
+                }
+            }
+        }
+
+        // VIP를 못 찾았거나 VIP 확률에 해당 안 되면 일반 무작위
+        if (selectedData == null)
+        {
+            int randomIndex = Random.Range(0, currentPool.Length);
+            selectedData = currentPool[randomIndex];
+        }
 
         // 2. 풀에서 빈 껍데기 꺼내기
         CustomerController customer = customerPool.Dequeue();

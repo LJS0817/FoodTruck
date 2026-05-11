@@ -111,7 +111,56 @@ public class RecipeManager : MonoBehaviour
             return rst;
         }
 
+        // 기본 및 커스텀 레시피 모두 해당 없음
         return null;
+    }
+    public List<FoodData> GetRecipesByIngredients(List<int> availableIDs)
+    {
+        List<FoodData> results = new List<FoodData>();
+        HashSet<int> availableSet = new HashSet<int>(availableIDs);
+
+        // 1. 기본 레시피 체크
+        foreach (var food in allFoodDatabase)
+        {
+            bool canMake = true;
+            foreach (var req in food.requiredIngredients)
+            {
+                if (!availableSet.Contains(req.ingredientID))
+                {
+                    canMake = false;
+                    break;
+                }
+            }
+            if (canMake) results.Add(food);
+        }
+
+        // 2. 커스텀 레시피 체크
+        foreach (var custom in customRecipeBook.Values)
+        {
+            bool canMake = true;
+            foreach (var id in custom.ingredientIDs)
+            {
+                if (!availableSet.Contains(id))
+                {
+                    canMake = false;
+                    break;
+                }
+            }
+            if (canMake)
+            {
+                FoodData rst = new FoodData();
+                rst.foodName = custom.customFoodName;
+                rst.basePrice = custom.basePrice;
+                rst.requiredIngredients = new IngredientData[custom.ingredientIDs.Count];
+                for (int i = 0; i < custom.ingredientIDs.Count; i++)
+                {
+                    rst.requiredIngredients[i] = GetIngredientById(custom.ingredientIDs[i]);
+                }
+                results.Add(rst);
+            }
+        }
+
+        return results;
     }
 
     // 💡 추가: 요리가 완성되었을 때 도감 데이터를 업데이트하는 함수

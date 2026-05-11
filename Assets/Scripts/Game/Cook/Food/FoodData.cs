@@ -25,6 +25,21 @@ public enum EquipmentType
     Kiosk,          // 키오스크
 }
 
+public enum FlavorTag
+{
+    None,
+    Spicy,
+    Sweet,
+    Salty,
+    Sour,
+    Bitter,
+    Warm,
+    Cold,
+    Greasy,
+    Healthy,
+}
+
+
 [CreateAssetMenu(fileName = "New Ingredient", menuName = "Tycoon/Ingredient")]
 public class IngredientData : ScriptableObject
 {
@@ -45,6 +60,9 @@ public class IngredientData : ScriptableObject
 
     // 💡 이 재료를 냄비에 넣을 때 어떤 미니게임이 뜰지 결정합니다.
     public MiniGameType requiredMiniGame;
+
+    [Header("맛 태그")]
+    public System.Collections.Generic.List<FlavorTag> flavorTags;
 }
 
 [CreateAssetMenu(fileName = "New Food", menuName = "Tycoon/Food")]
@@ -62,4 +80,7 @@ public class FoodData : ScriptableObject
     
     // 이 요리를 만들기 위해 필요한 장비들
     public EquipmentType[] requiredEquipments;
+
+    [Header("맛 태그")]
+    public System.Collections.Generic.List<FlavorTag> flavorTags;
 }

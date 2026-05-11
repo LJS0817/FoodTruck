@@ -37,18 +37,10 @@ public class GameTimeManager : MonoBehaviour
     {
         totalSeconds += Time.deltaTime * TIME_MULTIPLIER * timeScaleMultiplier;
 
-        // 하루(86,400초)가 지날 때마다 날짜 증가
+        // 하루(86,400초)가 지나면 24시(00시)로 순환하지만 날짜는 명시적으로 AdvanceDay()에서 증가시킵니다.
         if (totalSeconds >= 86400f)
         {
             totalSeconds -= 86400f;
-            currentDay++;
-
-            // 💡 DataManager 연동: 날짜가 바뀌면 즉시 저장!
-            DataManager.Instance.CurrentData.currentDay = currentDay;
-            DataManager.Instance.SaveGameData();
-
-            // 날짜 텍스트 갱신 (하루에 한 번만 실행되므로 안전함)
-            dateDisplayText.text = "Day " + currentDay;
         }
 
         // 💡 GC 방어 로직: '분(Minute)'이 바뀌었을 때만 문자열을 새로 찍어냅니다.
@@ -96,4 +88,14 @@ public class GameTimeManager : MonoBehaviour
     {
         return Mathf.FloorToInt(totalSeconds / 3600f) % 24;
     }
+
+    public void AdvanceDay()
+    {
+        currentDay++;
+        DataManager.Instance.CurrentData.currentDay = currentDay;
+        DataManager.Instance.SaveGameData();
+        ForceUpdateUI();
+    }
+
+    public int GetCurrentDay() => currentDay;
 }

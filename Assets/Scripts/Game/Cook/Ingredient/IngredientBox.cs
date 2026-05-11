@@ -15,6 +15,7 @@ public class IngredientBox : MonoBehaviour, IInteractable
     public Transform spawnPoint;          // 재료가 등장할 위치
     public float capacity = 100f;
     public int currentAmount = 0;
+    public float qualityScore = 1.0f; // 💡 가공 품질 (1.0 = 일반, 1.2 = 프리미엄 등)
     IngredientBoxSetter _setter;
 
     Action RefillEvent;
@@ -28,18 +29,29 @@ public class IngredientBox : MonoBehaviour, IInteractable
 
     public IInteractable OnTouchBegin(Vector2 touchPosition)
     {
-        // 1. 세팅되지 않은 빈 상자일 경우
+        // 💡 페이즈에 따른 조작 분기
+        DayPhase phase = DayCycleManager.Instance.CurrentPhase;
+
+        // 1. 준비 단계(Preparation)에서는 재료 세팅/변경 UI를 띄웁니다.
+        if (phase == DayPhase.Preparation)
+        {
+            SetupEvent?.Invoke();
+            return this;
+        }
+
+        // 2. 그 외 단계(DawnMarket, Business 등)에서는 기존 로직 수행
+        
+        // 세팅되지 않은 빈 상자일 경우
         if (_setter == null)
         {
-            Debug.Log("<color=yellow>빈 상자입니다. 인벤토리를 열어 재료를 세팅하세요.</color>");
-            SetupEvent?.Invoke();
+            Debug.Log("<color=yellow>빈 상자입니다. 준비 단계(09시~12시)에서 재료를 세팅하세요.</color>");
         }
-        // 2. 인벤토리에 재고가 있는지 확인
+        // 인벤토리에 재고가 있는지 확인
         else if (currentAmount > 0)
         {
             return SpawnIngredient(touchPosition);
         }
-        // 3. 재고가 없을 경우 리필 요구
+        // 재고가 없을 경우 리필 요구
         else
         {
             Debug.Log($"<color=red>재료 부족: {_setter.boxData.ingredientName} 상자가 비었습니다!</color>");
@@ -58,9 +70,16 @@ public class IngredientBox : MonoBehaviour, IInteractable
         // 터치 종료 로직
     }
 
-    public void SetupIngredient(IngredientBoxSetter data) {
+    public void SetupIngredient(IngredientBoxSetter data, float quality = 1.0f) {
         _setter = data;
+        this.qualityScore = quality;
         Refill();
+        
+        // 재료가 바뀌었으므로 판매 가능 레시피 갱신
+        if (MenuManager.Instance != null)
+        {
+            MenuManager.Instance.UpdateAvailableRecipes();
+        }
     }
 
     public IngredientData GetCurrentData()

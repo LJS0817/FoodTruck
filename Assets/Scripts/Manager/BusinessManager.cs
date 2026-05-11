@@ -22,6 +22,26 @@ public class BusinessManager : MonoBehaviour
         IsBusinessOpen = false;
         GameTimeManager.Instance.timeScaleMultiplier = 0.5f;
         UpdateButtonUI();
+
+        // 💡 피로도 소진 시 자동 장사 종료 이벤트 구독
+        if (PlayerStaminaManager.Instance != null)
+            PlayerStaminaManager.Instance.OnStaminaDepleted += OnStaminaDepleted;
+    }
+
+    private void OnDestroy()
+    {
+        if (PlayerStaminaManager.Instance != null)
+            PlayerStaminaManager.Instance.OnStaminaDepleted -= OnStaminaDepleted;
+    }
+
+    /// <summary>피로도 0 도달 시 자동 호출</summary>
+    private void OnStaminaDepleted()
+    {
+        if (IsBusinessOpen)
+        {
+            Debug.Log("<color=red>[BusinessManager] 피로도 소진! 자동으로 장사를 종료합니다.</color>");
+            ToggleBusiness();
+        }
     }
 
     /// <summary>
@@ -39,6 +59,9 @@ public class BusinessManager : MonoBehaviour
             // 시간 정상화 (1배속)
             if (GameTimeManager.Instance != null)
                 GameTimeManager.Instance.timeScaleMultiplier = 1f;
+
+            // 💡 피로도 감소 시작
+            PlayerStaminaManager.Instance?.StartDraining();
         }
         else
         {
@@ -63,6 +86,9 @@ public class BusinessManager : MonoBehaviour
             // 5. 시간 0.5배속으로 느리게 흐르도록 설정
             if (GameTimeManager.Instance != null)
                 GameTimeManager.Instance.timeScaleMultiplier = 0.5f;
+
+            // 💡 피로도 감소 중지
+            PlayerStaminaManager.Instance?.StopDraining();
         }
     }
 

@@ -7,11 +7,23 @@ public class StoreUIController : MonoBehaviour
     [SerializeField] CanvasGroup _equipmentGroup;
     [SerializeField] CanvasGroup _marketGroup;
     [SerializeField] CanvasGroup _recipeGroup;
+    [SerializeField] CanvasGroup _decorationGroup; // 💡 4번째 탭: 꾸미기
+    
+    // 💡 신규 탭들 (Inspector 연결 필요)
+    [SerializeField] CanvasGroup _workerGroup;
+    [SerializeField] CanvasGroup _districtGroup;
+    [SerializeField] CanvasGroup _upgradeGroup;
+    [SerializeField] CanvasGroup _marketingGroup;
 
     [Header("Slot Content Parents (ScrollView Content)")]
     [SerializeField] private Transform _marketContent;
     [SerializeField] private Transform _equipmentContent;
     [SerializeField] private Transform _recipeContent;
+    [SerializeField] private Transform _decorationContent;
+    [SerializeField] private Transform _workerContent;
+    [SerializeField] private Transform _districtContent;
+    [SerializeField] private Transform _upgradeContent;
+    [SerializeField] private Transform _marketingContent;
 
     [Header("Info Panel")]
     [SerializeField] private ItemInfoUI _itemInfoUI;
@@ -24,8 +36,14 @@ public class StoreUIController : MonoBehaviour
 
     private void Awake()
     {
-        _categoryGroups = new CanvasGroup[] { _marketGroup, _equipmentGroup, _recipeGroup };
-        _contentParents = new Transform[] { _marketContent, _equipmentContent, _recipeContent };
+        _categoryGroups = new CanvasGroup[] { 
+            _marketGroup, _equipmentGroup, _recipeGroup, _decorationGroup,
+            _workerGroup, _districtGroup, _upgradeGroup, _marketingGroup
+        };
+        _contentParents = new Transform[] { 
+            _marketContent, _equipmentContent, _recipeContent, _decorationContent,
+            _workerContent, _districtContent, _upgradeContent, _marketingContent
+        };
         CloseUI();
     }
 
@@ -57,7 +75,7 @@ public class StoreUIController : MonoBehaviour
 
     /// <summary>
     /// 카테고리 탭 전환. 선택된 CanvasGroup만 보이도록 alpha를 제어합니다.
-    /// 0: 시장(식재료), 1: 장비, 2: 레시피
+    /// 0: 시장(식재료), 1: 장비, 2: 레시피, 3: 꾸미기(웨이팅존)
     /// </summary>
     public void ChangeCategory(int categoryIndex)
     {
@@ -101,7 +119,7 @@ public class StoreUIController : MonoBehaviour
 
     /// <summary>
     /// 카테고리 인덱스에 해당하는 Content Transform을 반환합니다.
-    /// 0: 시장, 1: 장비, 2: 레시피
+    /// 0: 시장, 1: 장비, 2: 레시피, 3: 꾸미기
     /// </summary>
     public Transform GetContentParent(int categoryIndex)
     {
