@@ -203,7 +203,7 @@ public class InventoryUIController : MonoBehaviour
         }
         else if (_currentSortBy == SortBy.Expiration)
         {
-            result = a.expirationDate.CompareTo(b.expirationDate);
+            result = a.remainingDays.CompareTo(b.remainingDays);
         }
 
         if (_currentOrderBy == OrderBy.Descending)

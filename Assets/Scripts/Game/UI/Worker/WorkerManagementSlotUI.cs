@@ -41,7 +41,7 @@ public class WorkerManagementSlotUI : MonoBehaviour
         if (_currentWorker != null)
         {
             // 💡 해고 로직 호출
-            WorkerManager.Instance.FireWorker(_currentWorker);
+            UpgradeManager.Instance.Worker.FireWorker(_currentWorker);
             
             // UI 갱신 (부모에게 새로고침 요청)
             _parentUI.RefreshHiredWorkers();

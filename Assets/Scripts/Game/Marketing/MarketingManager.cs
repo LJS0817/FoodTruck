@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MarketingManager : MonoBehaviour
 {
-    public static MarketingManager Instance { get; private set; }
+    [Header("Catalog")]
+    public List<MarketingData> allMarketingCampaigns;
 
     // 오늘 활성화된 마케팅
     private MarketingData _activeCampaign;
@@ -11,7 +13,6 @@ public class MarketingManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
     }
 
     private void Start()

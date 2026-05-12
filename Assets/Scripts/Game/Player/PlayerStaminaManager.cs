@@ -29,7 +29,7 @@ public class PlayerStaminaManager : MonoBehaviour
     {
         get 
         {
-            float bonus = PlayerUpgradeManager.Instance != null ? PlayerUpgradeManager.Instance.GetCurrentValue("MaxStamina") : 0f;
+            float bonus = UpgradeManager.Instance.Upgrade != null ? UpgradeManager.Instance.Upgrade.GetCurrentValue("MaxStamina") : 0f;
             return maxStamina + bonus;
         }
     }
@@ -68,12 +68,12 @@ public class PlayerStaminaManager : MonoBehaviour
             // 💡 피로도 소모 속도 계산 (기본값 - 업그레이드 보너스) * (1 - 알바생 절약 보너스)
             float currentDrainRate = drainRate;
             
-            if (PlayerUpgradeManager.Instance != null)
-                currentDrainRate -= PlayerUpgradeManager.Instance.GetCurrentValue("DrainRate");
+            if (UpgradeManager.Instance.Upgrade != null)
+                currentDrainRate -= UpgradeManager.Instance.Upgrade.GetCurrentValue("DrainRate");
             
-            if (WorkerManager.Instance != null)
+            if (UpgradeManager.Instance.Worker != null)
             {
-                float saverBonus = WorkerManager.Instance.GetAbilityTotalValue(WorkerAbility.StaminaSaver);
+                float saverBonus = UpgradeManager.Instance.Worker.GetAbilityTotalValue(WorkerAbility.StaminaSaver);
                 currentDrainRate *= Mathf.Max(0.1f, 1f - saverBonus); // 최소 10% 속도는 보장
             }
 
@@ -160,6 +160,23 @@ public class PlayerStaminaManager : MonoBehaviour
     public void StopDraining()
     {
         _isDraining = false;
+    }
+
+    /// <summary>
+    /// 피로도를 즉시 소모합니다. (예: 청소 등)
+    /// </summary>
+    public void DrainStamina(float amount)
+    {
+        _currentStamina -= amount;
+        _currentStamina = Mathf.Max(0f, _currentStamina);
+        OnStaminaChanged?.Invoke(_currentStamina, MaxStamina);
+
+        if (_currentStamina <= 0f)
+        {
+            _isDraining = false;
+            OnStaminaDepleted?.Invoke();
+            ForceCloseBusiness();
+        }
     }
 
     /// <summary>

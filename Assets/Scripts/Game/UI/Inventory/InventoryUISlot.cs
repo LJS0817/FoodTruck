@@ -21,7 +21,7 @@ public class InventoryUISlot : MonoBehaviour
         
         _icon.sprite = item.data.ingredientSprite;
         _ingredientName.SetText(item.data.ingredientName);
-        _expiration.SetText(item.expirationDate.ToString("yyyy-MM-dd"));
+        _expiration.SetText(item.remainingDays.ToString() + "일");
         _focus.gameObject.SetActive(false);
         if (_ingredientAmount != null) _ingredientAmount.SetText(item.amount.ToString());
     }

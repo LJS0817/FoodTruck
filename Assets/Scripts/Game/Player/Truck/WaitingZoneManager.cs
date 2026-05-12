@@ -7,7 +7,8 @@ using UnityEngine;
 /// </summary>
 public class WaitingZoneManager : MonoBehaviour
 {
-    public static WaitingZoneManager Instance { get; private set; }
+    [Header("Catalog")]
+    public List<WaitingZoneItemData> allWaitingZoneItems;
 
     [Header("Installed Items")]
     [SerializeField] private List<WaitingZoneItemData> installedItems = new List<WaitingZoneItemData>();
@@ -18,8 +19,6 @@ public class WaitingZoneManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
     }
 
     private void Start()

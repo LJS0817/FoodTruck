@@ -41,7 +41,7 @@ public class WorkerManagementUI : MonoBehaviour
     /// </summary>
     public void RefreshHiredWorkers()
     {
-        if (WorkerManager.Instance == null) return;
+        if (UpgradeManager.Instance.Worker == null) return;
 
         // 1. 기존 슬롯들 삭제 (오브젝트 풀링을 쓰면 더 좋지만 여기선 직관성을 위해 Destroy)
         for (int i = 0; i < _spawnedSlots.Count; i++)
@@ -51,7 +51,7 @@ public class WorkerManagementUI : MonoBehaviour
         _spawnedSlots.Clear();
 
         // 2. 현재 고용 중인 알바생 리스트 가져오기
-        var hiredWorkers = WorkerManager.Instance.HiredWorkers;
+        var hiredWorkers = UpgradeManager.Instance.Worker.HiredWorkers;
 
         // 3. 슬롯 생성 및 데이터 세팅
         for (int i = 0; i < hiredWorkers.Count; i++)

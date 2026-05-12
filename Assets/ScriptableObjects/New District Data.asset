@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c4e73deabd59c44d86963a0972d505a, type: 3}
+  m_Name: New District Data
+  m_EditorClassIdentifier: Assembly-CSharp::DistrictData
+  districtID: 0
+  districtName: Test
+  description: For test event
+  backgroundSprite: {fileID: 1069114489221588412, guid: 8aacb99003e33904e82b18835fb69f85, type: 3}
+  requiredReputation: 0
+  unlockCost: 1
+  dailyRent: 1
+  districtCustomerTypes:
+  - {fileID: 11400000, guid: 2073be3a074efe34eb1983eac0546e02, type: 2}

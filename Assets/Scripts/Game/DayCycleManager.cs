@@ -64,7 +64,7 @@ public class DayCycleManager : MonoBehaviour
         InventoryManager.Instance.ProcessDailyExpiry();
 
         // 2. 시장 품목 갱신
-        MarketManager.Instance.GenerateAllListings();
+        StoreManager.Instance.Market.GenerateAllListings();
 
         // 3. 날짜 증가 및 저장
         GameTimeManager.Instance.AdvanceDay();

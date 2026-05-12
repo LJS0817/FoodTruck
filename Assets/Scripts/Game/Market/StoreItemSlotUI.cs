@@ -14,9 +14,12 @@ public class StoreItemSlotUI : MonoBehaviour
 
     private StoreItem _item;
 
-    public void Setup(StoreItem item)
+    public System.Action<StoreItem> onClickAction;
+
+    public void Setup(StoreItem item, System.Action<StoreItem> onClick = null)
     {
         _item = item;
+        onClickAction = onClick;
 
         // 이름, 가격, 아이콘 표시 (StoreItem 팩토리에서 이미 통합됨)
         _nameText.text = item.itemName;
@@ -53,6 +56,7 @@ public class StoreItemSlotUI : MonoBehaviour
     private void OnClickSlot()
     {
         if (_item == null) return;
-        StoreManager.Instance.UIController.ShowItemInfo(_item);
+        if (onClickAction != null) onClickAction(_item);
+        else StoreManager.Instance.UIController.ShowItemInfo(_item);
     }
 }

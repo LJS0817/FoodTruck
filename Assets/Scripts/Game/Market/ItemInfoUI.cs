@@ -66,12 +66,15 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
     /// <summary>
     /// 아이템 정보를 받아 UI를 엽니다.
     /// </summary>
-    public void OpenInfo(StoreItem item, bool isStoreMode = true)
+    public System.Action<StoreItem, int> onBuyAction;
+
+    public void OpenInfo(StoreItem item, bool isStoreMode = true, System.Action<StoreItem, int> onBuy = null)
     {
         if (item == null || item.data == null) return;
 
         _currentItem = item;
         _isStoreMode = isStoreMode;
+        onBuyAction = onBuy;
         _selectedQuantity = 1;
 
         // 기본 정보 설정
@@ -159,7 +162,7 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
             {
                 if (eqType == EquipmentType.None) continue;
                 
-                EquipmentData eqData = StoreManager.Instance.EquipmentStore.GetAllEquipments().Find(x => x.type == eqType);
+                EquipmentData eqData = UpgradeManager.Instance.EquipmentStore.GetAllEquipments().Find(x => x.type == eqType);
                 if (eqData != null)
                 {
                     var req = Instantiate(_requirementPrefab, _requirementsContainer);
@@ -238,7 +241,7 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
         }
         else if (_currentItem.data is EquipmentData equipment)
         {
-            isOwned = StoreManager.Instance.EquipmentStore.HasEquipment(equipment.type);
+            isOwned = UpgradeManager.Instance.EquipmentStore.HasEquipment(equipment.type);
             _ownedAmountText.text = isOwned ? "보유 중" : "미보유";
         }
         else if (_currentItem.data is FoodData food)
@@ -311,7 +314,12 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
     void OnClickBuy()
     {
         if (_currentItem == null) return;
-        StoreManager.Instance.TryBuyItem(_currentItem, _selectedQuantity);
+        
+        if (onBuyAction != null) 
+            onBuyAction(_currentItem, _selectedQuantity);
+        else 
+            StoreManager.Instance.TryBuyItem(_currentItem, _selectedQuantity);
+            
         UpdateOwnedAmount();
     }
 

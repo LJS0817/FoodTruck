@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class DistrictManager : MonoBehaviour
 {
-    public static DistrictManager Instance { get; private set; }
-
     [Header("Catalog")]
     public List<DistrictData> allDistricts;
 
@@ -17,7 +15,6 @@ public class DistrictManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
     }
 
     private void Start()
@@ -97,7 +94,15 @@ public class DistrictManager : MonoBehaviour
             currentID = allDistricts[0].districtID;
         }
 
-        _currentDistrict = allDistricts.Find(d => d.districtID == currentID);
+        _currentDistrict = null;
+        for (int i = 0; i < allDistricts.Count; i++)
+        {
+            if (allDistricts[i].districtID == currentID)
+            {
+                _currentDistrict = allDistricts[i];
+                break;
+            }
+        }
         if (_currentDistrict == null && allDistricts.Count > 0)
             _currentDistrict = allDistricts[0];
 

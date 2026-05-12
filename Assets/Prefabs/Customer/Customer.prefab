@@ -101,6 +101,7 @@ GameObject:
   m_Component:
   - component: {fileID: 874113088175994105}
   - component: {fileID: 1774172354777893629}
+  - component: {fileID: 8322536095282112153}
   m_Layer: 0
   m_Name: Customer
   m_TagString: Untagged
@@ -142,8 +143,22 @@ MonoBehaviour:
   faceRenderer: {fileID: 5519488537826321221}
   bodyRenderer: {fileID: 2122521715961546771}
   legRenderer: {fileID: 8329593564238217936}
-  currentPatience: 0
+  vipIndicator: {fileID: 0}
+  targetPosition: {x: 0, y: 0, z: 0}
   orderedFood: {fileID: 0}
+--- !u!114 &8322536095282112153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2812964594877688913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50b5c801b675f874ca6e527e5ad673c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomerPatienceController
+  patienceUI: {fileID: 0}
 --- !u!1 &3923097186096372312
 GameObject:
   m_ObjectHideFlags: 0

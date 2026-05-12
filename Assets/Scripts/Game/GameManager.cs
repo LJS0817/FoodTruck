@@ -60,10 +60,10 @@ public class GameManager : MonoBehaviour
         if (ReputationManager.Instance == null) gameObject.AddComponent<ReputationManager>();
         
         // 💡 신규 시스템들 초기화
-        if (WorkerManager.Instance == null) gameObject.AddComponent<WorkerManager>();
-        if (DistrictManager.Instance == null) gameObject.AddComponent<DistrictManager>();
-        if (PlayerUpgradeManager.Instance == null) gameObject.AddComponent<PlayerUpgradeManager>();
-        if (MarketingManager.Instance == null) gameObject.AddComponent<MarketingManager>();
+        if (UpgradeManager.Instance.Worker == null) gameObject.AddComponent<WorkerManager>();
+        if (UpgradeManager.Instance.District == null) gameObject.AddComponent<DistrictManager>();
+        if (UpgradeManager.Instance.Upgrade == null) gameObject.AddComponent<PlayerUpgradeManager>();
+        if (StoreManager.Instance.Marketing == null) gameObject.AddComponent<MarketingManager>();
         if (BankManager.Instance == null) gameObject.AddComponent<BankManager>();
         if (VIPLoyaltyManager.Instance == null) gameObject.AddComponent<VIPLoyaltyManager>();
         if (RandomEventManager.Instance == null) gameObject.AddComponent<RandomEventManager>();
@@ -75,9 +75,9 @@ public class GameManager : MonoBehaviour
         {
             dataManager.RestoreInventory();
             
-            WorkerManager.Instance.LoadFromSaveData(dataManager.CurrentData.hiredWorkerIDs);
-            DistrictManager.Instance.LoadFromSaveData(dataManager.CurrentData.unlockedDistrictIDs, dataManager.CurrentData.currentDistrictID);
-            PlayerUpgradeManager.Instance.LoadFromSaveData(dataManager.CurrentData.upgrades);
+            UpgradeManager.Instance.Worker.LoadFromSaveData(dataManager.CurrentData.hiredWorkerIDs);
+            UpgradeManager.Instance.District.LoadFromSaveData(dataManager.CurrentData.unlockedDistrictIDs, dataManager.CurrentData.currentDistrictID);
+            UpgradeManager.Instance.Upgrade.LoadFromSaveData(dataManager.CurrentData.upgrades);
         }
     }
 }

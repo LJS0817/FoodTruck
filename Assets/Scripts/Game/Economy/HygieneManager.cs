@@ -44,7 +44,7 @@ public class HygieneManager : MonoBehaviour
         float dropAmount = HYGIENE_DROP_PER_CUSTOMER;
 
         // 알바생 중 '청소부' 특성이 있으면 청결도 감소량 하락 (예: 50% 방어)
-        if (WorkerManager.Instance != null)
+        if (UpgradeManager.Instance.Worker != null)
         {
             // WorkerAbility에 Cleaner 특성을 추가한다고 가정 (임시로 하드코딩 대체 가능하지만 확장성 고려)
             // 여기선 임시로 기본 구현

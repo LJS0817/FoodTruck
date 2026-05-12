@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class WorkerManager : MonoBehaviour
 {
-    public static WorkerManager Instance { get; private set; }
-
     [Header("Catalog")]
     public List<WorkerData> allWorkers;
 
@@ -15,7 +13,6 @@ public class WorkerManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
     }
 
     private void Start()
@@ -100,9 +97,18 @@ public class WorkerManager : MonoBehaviour
     public void LoadFromSaveData(List<int> hiredWorkerIDs)
     {
         _hiredWorkers.Clear();
-        foreach (int id in hiredWorkerIDs)
+        for (int i = 0; i < hiredWorkerIDs.Count; i++)
         {
-            WorkerData worker = allWorkers.Find(w => w.workerID == id);
+            int id = hiredWorkerIDs[i];
+            WorkerData worker = null;
+            for (int j = 0; j < allWorkers.Count; j++)
+            {
+                if (allWorkers[j].workerID == id)
+                {
+                    worker = allWorkers[j];
+                    break;
+                }
+            }
             if (worker != null) _hiredWorkers.Add(worker);
         }
     }

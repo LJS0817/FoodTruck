@@ -8,7 +8,7 @@ public class CustomerController : PoolableObject, IStateMachine
     (OrderTicket, OrderTicket) _tickets;
 
     // 인내심 컨트롤러: 이 손님 GameObject에 자동으로 부착됩니다.
-    [HideInInspector] public CustomerPatienceController PatienceController { get; private set; }
+    public CustomerPatienceController PatienceController { get; private set; }
 
     // 💡 단일 spriteRenderer를 삭제하고, 파츠별 렌더러 변수를 선언했습니다.
     [Header("Visual Renderers")]
@@ -30,14 +30,15 @@ public class CustomerController : PoolableObject, IStateMachine
     [HideInInspector] public FoodData orderedFood;
     [HideInInspector] public Dish receivedDish;
 
-    protected override void Awake()
-    {
-        base.Awake();
-        PatienceController = GetComponent<CustomerPatienceController>();
-    }
+    // protected override void Awake()
+    // {
+    //     base.Awake();
+    //     PatienceController = GetComponent<CustomerPatienceController>();
+    // }
 
     public override void OnSpawn()
     {
+        if(PatienceController == null) PatienceController = GetComponent<CustomerPatienceController>();
         base.OnSpawn();
         receivedDish = null; // 💡 풀링 사용 시 이전 데이터가 남지 않도록 초기화
         PatienceController?.ResetState();
@@ -56,10 +57,10 @@ public class CustomerController : PoolableObject, IStateMachine
         _tickets.Item2?.HideUI();
     }
 
-    private void Update()
-    {
-        currentState?.Tick();
-    }
+    // private void Update()
+    // {
+    //     currentState?.Tick();
+    // }
 
     public void UpdatePatience()
     {

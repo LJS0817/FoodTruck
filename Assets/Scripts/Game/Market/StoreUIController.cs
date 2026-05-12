@@ -4,45 +4,33 @@ using UnityEngine;
 public class StoreUIController : MonoBehaviour
 {
     [SerializeField] CanvasGroup storeUIPanel;
-    [SerializeField] CanvasGroup _equipmentGroup;
     [SerializeField] CanvasGroup _marketGroup;
     [SerializeField] CanvasGroup _recipeGroup;
-    [SerializeField] CanvasGroup _decorationGroup; // 💡 4번째 탭: 꾸미기
-    
-    // 💡 신규 탭들 (Inspector 연결 필요)
-    [SerializeField] CanvasGroup _workerGroup;
-    [SerializeField] CanvasGroup _districtGroup;
-    [SerializeField] CanvasGroup _upgradeGroup;
+    [SerializeField] CanvasGroup _decorationGroup;
     [SerializeField] CanvasGroup _marketingGroup;
 
     [Header("Slot Content Parents (ScrollView Content)")]
     [SerializeField] private Transform _marketContent;
-    [SerializeField] private Transform _equipmentContent;
     [SerializeField] private Transform _recipeContent;
     [SerializeField] private Transform _decorationContent;
-    [SerializeField] private Transform _workerContent;
-    [SerializeField] private Transform _districtContent;
-    [SerializeField] private Transform _upgradeContent;
     [SerializeField] private Transform _marketingContent;
 
     [Header("Info Panel")]
     [SerializeField] private ItemInfoUI _itemInfoUI;
 
-    // 💡 GC 방지: 배열로 캐싱하여 ChangeCategory에서 반복문 사용
     private CanvasGroup[] _categoryGroups;
     private Transform[] _contentParents;
 
     private int _currentCategoryIndex = -1;
+    private List<StoreItemSlotUI> _slotPool = new List<StoreItemSlotUI>();
 
     private void Awake()
     {
         _categoryGroups = new CanvasGroup[] { 
-            _marketGroup, _equipmentGroup, _recipeGroup, _decorationGroup,
-            _workerGroup, _districtGroup, _upgradeGroup, _marketingGroup
+            _marketGroup, _recipeGroup, _decorationGroup, _marketingGroup
         };
         _contentParents = new Transform[] { 
-            _marketContent, _equipmentContent, _recipeContent, _decorationContent,
-            _workerContent, _districtContent, _upgradeContent, _marketingContent
+            _marketContent, _recipeContent, _decorationContent, _marketingContent
         };
         CloseUI();
     }
@@ -66,17 +54,12 @@ public class StoreUIController : MonoBehaviour
         storeUIPanel.blocksRaycasts = false;
         Time.timeScale = 1f;
 
-        // 정보 패널도 함께 닫기
         if (_itemInfoUI != null)
         {
             _itemInfoUI.CloseUI();
         }
     }
 
-    /// <summary>
-    /// 카테고리 탭 전환. 선택된 CanvasGroup만 보이도록 alpha를 제어합니다.
-    /// 0: 시장(식재료), 1: 장비, 2: 레시피, 3: 꾸미기(웨이팅존)
-    /// </summary>
     public void ChangeCategory(int categoryIndex)
     {
         if (categoryIndex < 0 || categoryIndex >= _categoryGroups.Length) return;
@@ -94,48 +77,58 @@ public class StoreUIController : MonoBehaviour
             _categoryGroups[i].blocksRaycasts = isActive;
         }
 
-        // 카테고리 변경 시 정보 패널 닫기
         if (_itemInfoUI != null)
         {
             _itemInfoUI.CloseUI();
         }
     }
 
-    /// <summary>
-    /// ShopItemSlotUI에서 슬롯 클릭 시 호출됩니다.
-    /// 아이템 정보를 ItemInfoUI에 전달하여 표시합니다.
-    /// </summary>
     public void ShowItemInfo(StoreItem item, bool isStoreMode = true)
     {
         if (_itemInfoUI == null || item == null) return;
-        _itemInfoUI.OpenInfo(item, isStoreMode);
+        _itemInfoUI.OpenInfo(item, isStoreMode, StoreManager.Instance.TryBuyItem);
     }
 
     public void RefreshUI()
     {
-        // StoreManager.PopulateAllCategories()에서 카테고리별 슬롯을 갱신합니다.
         StoreManager.Instance.PopulateAllCategories();
     }
 
-    /// <summary>
-    /// 카테고리 인덱스에 해당하는 Content Transform을 반환합니다.
-    /// 0: 시장, 1: 장비, 2: 레시피, 3: 꾸미기
-    /// </summary>
     public Transform GetContentParent(int categoryIndex)
     {
         if (categoryIndex < 0 || categoryIndex >= _contentParents.Length) return null;
         return _contentParents[categoryIndex];
     }
 
-    /// <summary>
-    /// 지정된 부모 Transform 하위의 모든 슬롯 오브젝트를 제거합니다.
-    /// </summary>
+    public StoreItemSlotUI GetOrCreateSlot(StoreItemSlotUI prefab, Transform parent)
+    {
+        for (int i = 0; i < _slotPool.Count; i++)
+        {
+            if (!_slotPool[i].gameObject.activeSelf)
+            {
+                _slotPool[i].transform.SetParent(parent, false);
+                _slotPool[i].transform.SetAsLastSibling();
+                _slotPool[i].gameObject.SetActive(true);
+                return _slotPool[i];
+            }
+        }
+
+        StoreItemSlotUI newSlot = Instantiate(prefab, parent);
+        _slotPool.Add(newSlot);
+        return newSlot;
+    }
+
     public void ClearSlots(Transform parent)
     {
         if (parent == null) return;
-        for (int i = parent.childCount - 1; i >= 0; i--)
+        for (int i = 0; i < parent.childCount; i++)
         {
-            Object.Destroy(parent.GetChild(i).gameObject);
+            Transform child = parent.GetChild(i);
+            StoreItemSlotUI slot = child.GetComponent<StoreItemSlotUI>();
+            if (slot != null)
+            {
+                slot.gameObject.SetActive(false);
+            }
         }
     }
 }

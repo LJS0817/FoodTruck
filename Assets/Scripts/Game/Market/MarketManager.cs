@@ -151,7 +151,7 @@ public class MarketManager : MonoBehaviour
         // 장비 조건 체크
         if (listing.data.requiredEquipment != EquipmentType.None)
         {
-            if (StoreManager.Instance.EquipmentStore == null || !StoreManager.Instance.EquipmentStore.HasEquipment(listing.data.requiredEquipment))
+            if (UpgradeManager.Instance.EquipmentStore == null || !UpgradeManager.Instance.EquipmentStore.HasEquipment(listing.data.requiredEquipment))
             {
                 Debug.LogWarning($"<color=red>[구매 실패] {listing.data.ingredientName}을(를) 구매하려면 {listing.data.requiredEquipment} 장비가 필요합니다!</color>");
                 return false;

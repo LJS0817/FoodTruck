@@ -60,11 +60,11 @@ public class CustomerManager : MonoBehaviour
         if (ReputationManager.Instance != null)
             multiplier *= ReputationManager.Instance.GetSpawnRateMultiplier();
         
-        if (MarketingManager.Instance != null)
-            multiplier *= MarketingManager.Instance.GetSpawnBoostMultiplier();
+        if (StoreManager.Instance.Marketing != null)
+            multiplier *= StoreManager.Instance.Marketing.GetSpawnBoostMultiplier();
 
-        if (WorkerManager.Instance != null)
-            multiplier += WorkerManager.Instance.GetAbilityTotalValue(WorkerAbility.SpawnRateBoost); // 합산 방식으로 추가 배율
+        if (UpgradeManager.Instance.Worker != null)
+            multiplier += UpgradeManager.Instance.Worker.GetAbilityTotalValue(WorkerAbility.SpawnRateBoost); // 합산 방식으로 추가 배율
 
         // 💡 돌발 이벤트 보정
         if (RandomEventManager.Instance != null)
@@ -84,9 +84,9 @@ public class CustomerManager : MonoBehaviour
     {
         // 💡 현재 구역(District)의 손님 풀 가져오기 (없으면 기본값 사용)
         CustomerData[] currentPool = availableCustomerTypes;
-        if (DistrictManager.Instance != null && DistrictManager.Instance.CurrentDistrict != null)
+        if (UpgradeManager.Instance.District != null && UpgradeManager.Instance.District.CurrentDistrict != null)
         {
-            currentPool = DistrictManager.Instance.CurrentDistrict.districtCustomerTypes;
+            currentPool = UpgradeManager.Instance.District.CurrentDistrict.districtCustomerTypes;
         }
 
         if (currentPool == null || currentPool.Length == 0 || customerPool.Count == 0 || appearanceDB == null) return;
@@ -95,8 +95,8 @@ public class CustomerManager : MonoBehaviour
         CustomerData selectedData = null;
         float vipChance = ReputationManager.Instance != null ? ReputationManager.Instance.GetVIPChance() : 0f;
         
-        if (MarketingManager.Instance != null)
-            vipChance += MarketingManager.Instance.GetVIPBoostBonus();
+        if (StoreManager.Instance.Marketing != null)
+            vipChance += StoreManager.Instance.Marketing.GetVIPBoostBonus();
 
         if (RandomEventManager.Instance != null)
             vipChance += RandomEventManager.Instance.GetVIPChanceBonus();

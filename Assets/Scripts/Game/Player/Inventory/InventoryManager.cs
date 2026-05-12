@@ -237,4 +237,10 @@ public class InventoryManager : MonoBehaviour
             if (!UseIngredient(ingredientID)) break;
         }
     }
+
+    public void ClearAllIngredients()
+    {
+        inventoryItems.Clear();
+        UpdateUI();
+    }
 }

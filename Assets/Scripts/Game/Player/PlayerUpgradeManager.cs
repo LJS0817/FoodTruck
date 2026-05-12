@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class PlayerUpgradeManager : MonoBehaviour
 {
-    public static PlayerUpgradeManager Instance { get; private set; }
-
     [Header("Catalog")]
     public List<PlayerUpgradeData> allUpgrades;
 
@@ -13,7 +11,6 @@ public class PlayerUpgradeManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
     }
 
     // ===== 업그레이드 시스템 =====
@@ -26,7 +23,15 @@ public class PlayerUpgradeManager : MonoBehaviour
 
     public float GetCurrentValue(string upgradeID)
     {
-        PlayerUpgradeData data = allUpgrades.Find(u => u.upgradeID == upgradeID);
+        PlayerUpgradeData data = null;
+        for (int i = 0; i < allUpgrades.Count; i++)
+        {
+            if (allUpgrades[i].upgradeID == upgradeID)
+            {
+                data = allUpgrades[i];
+                break;
+            }
+        }
         if (data == null) return 0f;
 
         int level = GetCurrentLevel(upgradeID);
@@ -37,7 +42,15 @@ public class PlayerUpgradeManager : MonoBehaviour
 
     public bool IsMaxLevel(string upgradeID)
     {
-        PlayerUpgradeData data = allUpgrades.Find(u => u.upgradeID == upgradeID);
+        PlayerUpgradeData data = null;
+        for (int i = 0; i < allUpgrades.Count; i++)
+        {
+            if (allUpgrades[i].upgradeID == upgradeID)
+            {
+                data = allUpgrades[i];
+                break;
+            }
+        }
         if (data == null) return true;
         return GetCurrentLevel(upgradeID) >= data.levels.Length - 1;
     }
@@ -46,7 +59,15 @@ public class PlayerUpgradeManager : MonoBehaviour
     {
         if (IsMaxLevel(upgradeID)) return false;
 
-        PlayerUpgradeData data = allUpgrades.Find(u => u.upgradeID == upgradeID);
+        PlayerUpgradeData data = null;
+        for (int i = 0; i < allUpgrades.Count; i++)
+        {
+            if (allUpgrades[i].upgradeID == upgradeID)
+            {
+                data = allUpgrades[i];
+                break;
+            }
+        }
         if (data == null) return false;
 
         int nextLevel = GetCurrentLevel(upgradeID) + 1;

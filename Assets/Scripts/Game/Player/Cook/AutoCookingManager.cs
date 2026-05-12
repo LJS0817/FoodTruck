@@ -49,9 +49,9 @@ public class AutoCookManager : MonoBehaviour
         float targetTime = orderedFood.autoCookTime;
 
         // 💡 알바생 보조 셰프 등 자동 요리 속도 상승 버프 적용
-        if (WorkerManager.Instance != null)
+        if (UpgradeManager.Instance.Worker != null)
         {
-            float speedBoost = WorkerManager.Instance.GetAbilityTotalValue(WorkerAbility.AutoCookSpeedUp);
+            float speedBoost = UpgradeManager.Instance.Worker.GetAbilityTotalValue(WorkerAbility.AutoCookSpeedUp);
             targetTime *= Mathf.Max(0.1f, 1f - speedBoost); // ex: 20% 단축이면 0.8 곱함
         }
 

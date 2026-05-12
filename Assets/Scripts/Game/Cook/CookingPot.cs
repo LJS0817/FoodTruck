@@ -136,9 +136,9 @@ public class CookingPot : MonoBehaviour
         if (premiumCount == contents.Count) return true;
 
         // 💡 업그레이드로 인한 프리미엄 강제 판정 확률 보너스
-        if (PlayerUpgradeManager.Instance != null)
+        if (UpgradeManager.Instance.Upgrade != null)
         {
-            float bonusChance = PlayerUpgradeManager.Instance.GetCurrentValue("PremiumChance");
+            float bonusChance = UpgradeManager.Instance.Upgrade.GetCurrentValue("PremiumChance");
             if (bonusChance > 0f && Random.value < bonusChance)
             {
                 Debug.Log($"<color=yellow>[손재주 발동] 업그레이드 효과로 프리미엄 판정! ({bonusChance*100}% 확률)</color>");
