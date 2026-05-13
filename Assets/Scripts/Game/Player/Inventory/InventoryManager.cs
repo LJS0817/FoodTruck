@@ -88,23 +88,31 @@ public class InventoryManager : MonoBehaviour
     // 요리를 위해 재료통에 재료를 채울 때 호출 (최대 보유량 확인)
     public int FillIngredient(int ingredientID, int amount)
     {
-        int totalAvailable = 0;
-        for (int i = 0; i < inventoryItems.Count; i++)
+        int totalFilled = 0;
+        
+        // 💡 UseIngredient를 호출하여 실제로 인벤토리에서 차감 (유통기한 임박한 것부터 자동 차감됨)
+        for (int i = 0; i < amount; i++)
         {
-            if (inventoryItems[i].data.ingredientID == ingredientID)
+            if (UseIngredient(ingredientID))
             {
-                totalAvailable += inventoryItems[i].amount;
+                totalFilled++;
+            }
+            else
+            {
+                break;
             }
         }
 
-        if (totalAvailable > 0)
+        if (totalFilled == 0)
         {
-            if(amount < totalAvailable) totalAvailable = amount;
-            return totalAvailable; 
-		}
-
-        Debug.LogWarning($"[인벤토리] 재료 ID {ingredientID}의 재고가 부족하여 채울 수 없습니다!");
-        return 0;
+            Debug.LogWarning($"[인벤토리] 재료 ID {ingredientID}의 재고가 부족하여 채울 수 없습니다!");
+        }
+        else
+        {
+            Debug.Log($"[인벤토리] 재료 ID {ingredientID}를 {totalFilled}개 상자에 채웠습니다.");
+        }
+        
+        return totalFilled;
     }
 
     // 💡 특정 레시피에 필요한 재료들을 모두 보유하고 있는지 확인
@@ -148,14 +156,21 @@ public class InventoryManager : MonoBehaviour
     }
 
     // 💡 재료 폐기: 재화 반환 없이 인벤토리에서 영구 삭제
-    public void DiscardItem(InventoryItem item)
+    public void DiscardItem(InventoryItem item, int discardAmount = -1)
     {
         for (int i = 0; i < inventoryItems.Count; i++)
         {
             if (inventoryItems[i] == item)
             {
-                Debug.Log($"<color=orange>[폐기] {item.data.ingredientName} {item.amount}개 폐기됨. (남은 유통기한: {item.remainingDays}일)</color>");
-                inventoryItems.RemoveAt(i);
+                int actualDiscard = (discardAmount == -1) ? item.amount : Mathf.Min(discardAmount, item.amount);
+                
+                inventoryItems[i].amount -= actualDiscard;
+                Debug.Log($"<color=orange>[폐기] {item.data.ingredientName} {actualDiscard}개 폐기됨. (남은 유통기한: {item.remainingDays}일)</color>");
+
+                if (inventoryItems[i].amount <= 0)
+                {
+                    inventoryItems.RemoveAt(i);
+                }
                 UpdateUI();
                 return;
             }

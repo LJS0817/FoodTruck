@@ -99,7 +99,8 @@ public class RecipeManager : MonoBehaviour
         }
         if (customRecipeBook.TryGetValue(currentHash, out CustomRecipeData resultCustom))
         {
-            FoodData rst = new FoodData();
+            FoodData rst = ScriptableObject.CreateInstance<FoodData>();
+            rst.isCustomRecipe = true;
             rst.foodName = resultCustom.customFoodName;
             rst.basePrice = resultCustom.basePrice;
             rst.requiredIngredients = new IngredientData[resultCustom.ingredientIDs.Count];
@@ -148,7 +149,8 @@ public class RecipeManager : MonoBehaviour
             }
             if (canMake)
             {
-                FoodData rst = new FoodData();
+                FoodData rst = ScriptableObject.CreateInstance<FoodData>();
+                rst.isCustomRecipe = true;
                 rst.foodName = custom.customFoodName;
                 rst.basePrice = custom.basePrice;
                 rst.requiredIngredients = new IngredientData[custom.ingredientIDs.Count];

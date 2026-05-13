@@ -102,8 +102,8 @@ public class SettlementUI : MonoBehaviour
 
     public void OnClickNextDay()
     {
-        Debug.Log("[SettlementUI] 다음 날로 넘어갑니다.");
-        DayCycleManager.Instance.StartNextDay();
+        Debug.Log("[SettlementUI] 정산 완료, 준비 단계로 돌아갑니다.");
+        DayCycleManager.Instance.ChangePhase(DayPhase.Preparation);
         CloseSettlement();
     }
 }

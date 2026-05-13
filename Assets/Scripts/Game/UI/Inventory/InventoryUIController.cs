@@ -20,6 +20,7 @@ public class InventoryUIController : MonoBehaviour
     [SerializeField] InventoryUISlot slotPrefab;
     [SerializeField] Transform slotContainer;
     [SerializeField] GameObject _applyBtn;
+    [SerializeField] AmountSetter _amountSetter; // 💡 수량 조절기
     
     SortBy _currentSortBy;
     OrderBy _currentOrderBy;
@@ -128,14 +129,35 @@ public class InventoryUIController : MonoBehaviour
     {
         if (_selectedSlot != null)
         {
-            // 선택된 아이템의 데이터를 가지고 IngredientManager에 상자 세팅 요청
-            IngredientManager.Instance.SetupBox(_selectedSlot.Item.data);
-            // 세팅 완료 후 인벤토리 닫기
-            InventoryManager.Instance.CloseUI();
+            if (_amountSetter != null)
+            {
+                int maxAvailable = InventoryManager.Instance.GetTotalAmount(_selectedSlot.Item.data.ingredientID);
+                _amountSetter.Open(maxAvailable, 0, (amount) => {
+                    // 선택된 아이템의 데이터를 가지고 IngredientManager에 상자 세팅 요청
+                    IngredientManager.Instance.SetupBox(_selectedSlot.Item.data, amount);
+                    // 세팅 완료 후 인벤토리 닫기
+                    InventoryManager.Instance.CloseUI();
+                });
+            }
+            else
+            {
+                IngredientManager.Instance.SetupBox(_selectedSlot.Item.data);
+                InventoryManager.Instance.CloseUI();
+            }
         }
         else
         {
             Debug.LogWarning("[InventoryUIController] 선택된 아이템이 없습니다.");
+        }
+    }
+
+    public void OnClickEmptyBox()
+    {
+        // 💡 선택된 상자를 비우고 인벤토리 닫기
+        if (IngredientManager.Instance != null)
+        {
+            IngredientManager.Instance.EmptyCurrentBox();
+            InventoryManager.Instance.CloseUI();
         }
     }
 
@@ -144,8 +166,21 @@ public class InventoryUIController : MonoBehaviour
     {
         if (_selectedSlot != null)
         {
-            InventoryManager.Instance.DiscardItem(_selectedSlot.Item);
-            SetSelectedSlot(null); // 삭제 후 선택 해제 및 버튼 비활성화
+            if (_amountSetter == null) _amountSetter = FindObjectOfType<AmountSetter>(true);
+
+            if (_amountSetter != null)
+            {
+                int maxAvailable = _selectedSlot.Item.amount;
+                _amountSetter.Open(maxAvailable, 0, (amount) => {
+                    InventoryManager.Instance.DiscardItem(_selectedSlot.Item, amount);
+                    SetSelectedSlot(null); // 삭제 후 선택 해제 및 버튼 비활성화
+                });
+            }
+            else
+            {
+                InventoryManager.Instance.DiscardItem(_selectedSlot.Item);
+                SetSelectedSlot(null); // 삭제 후 선택 해제 및 버튼 비활성화
+            }
         }
         else
         {

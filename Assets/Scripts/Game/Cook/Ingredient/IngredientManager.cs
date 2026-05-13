@@ -59,7 +59,21 @@ public class IngredientManager : MonoBehaviour
         _boxes[_currentBoxIndex].SetupIngredient(_boxSetters[idx], quality);
     }
 
-    public void SetupBox(IngredientData data)
+    public void EmptyCurrentBox()
+    {
+        if (_currentBoxIndex >= 0 && _currentBoxIndex < _boxes.Count)
+        {
+            _boxes[_currentBoxIndex].ResetBox();
+            
+            // 재료가 빠졌으므로 레시피 갱신
+            if (MenuManager.Instance != null)
+            {
+                MenuManager.Instance.UpdateAvailableRecipes();
+            }
+        }
+    }
+
+    public void SetupBox(IngredientData data, int amount = -1)
     {
         // 💡 미니게임 체크 로직 추가
         if (data.requiredMiniGame != MiniGameType.None && MiniGameManager.Instance != null)
@@ -76,12 +90,12 @@ public class IngredientManager : MonoBehaviour
                 {
                     // 점수 계산 (예: 1.0~1.2 프리미엄 보너스)
                     float finalQuality = 1.0f + (result.qualityScore * 0.2f);
-                    CompleteSetup(data, finalQuality);
+                    CompleteSetup(data, finalQuality, amount);
                 }
                 else
                 {
                     Debug.Log("[IngredientManager] 가공 실패! 일반 품질로 세팅됩니다.");
-                    CompleteSetup(data, 1.0f);
+                    CompleteSetup(data, 1.0f, amount);
                 }
             };
 
@@ -90,17 +104,17 @@ public class IngredientManager : MonoBehaviour
         }
         else
         {
-            CompleteSetup(data, 1.0f);
+            CompleteSetup(data, 1.0f, amount);
         }
     }
 
-    private void CompleteSetup(IngredientData data, float quality)
+    private void CompleteSetup(IngredientData data, float quality, int amount)
     {
         for (int i = 0; i < _boxSetters.Count; i++)
         {
             if (_boxSetters[i].boxData.ingredientID == data.ingredientID)
             {
-                SetupBox(i, quality);
+                _boxes[_currentBoxIndex].SetupIngredient(_boxSetters[i], quality, amount);
                 return;
             }
         }

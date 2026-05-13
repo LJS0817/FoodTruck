@@ -24,7 +24,7 @@ public class MarketManager : MonoBehaviour
 
     [Header("Time Condition")]
     public int dawnOpenHour = 6;    // 새벽 시장 오픈 시간
-    public int dawnCloseHour = 9;   // 새벽 시장 마감 시간
+    public int dawnCloseHour = 8;   // 새벽 시장 마감 시간
 
     // 💡 GC 방지 및 O(1) 탐색을 위해 딕셔너리로 캐싱
     private Dictionary<int, IngredientData> catalogDict = new Dictionary<int, IngredientData>(32);

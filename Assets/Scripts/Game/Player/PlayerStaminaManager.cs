@@ -121,9 +121,8 @@ public class PlayerStaminaManager : MonoBehaviour
                 _isRecovering = false;
                 break;
 
-            case DayPhase.DawnMarket:
             case DayPhase.Preparation:
-                // 준비/새벽 시장에서 회복
+                // 준비 단계에서 회복
                 _isDraining = false;
                 _isRecovering = true;
                 break;

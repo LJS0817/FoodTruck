@@ -3,10 +3,9 @@ using UnityEngine;
 
 public enum DayPhase
 {
-    DawnMarket,     // 06:00 - 09:00
-    Preparation,    // 09:00 - 12:00
-    Business,       // 12:00 - 22:00
-    Settlement      // 22:00 - 06:00 (정산 및 다음날 대기)
+    Preparation,    // 준비 단계 (장사 전)
+    Business,       // 장사 중
+    Settlement      // 정산 단계 (장사 종료 후)
 }
 
 public class DayCycleManager : MonoBehaviour
@@ -25,28 +24,12 @@ public class DayCycleManager : MonoBehaviour
 
     private void Start()
     {
-        UpdatePhase();
+        // 처음 시작 시 준비 단계로 설정
+        ChangePhase(DayPhase.Preparation);
     }
 
-    private void Update()
+    public void ChangePhase(DayPhase newPhase)
     {
-        UpdatePhase();
-    }
-
-    private void UpdatePhase()
-    {
-        int hour = GameTimeManager.Instance.GetCurrentHour();
-        DayPhase newPhase;
-
-        if (hour >= 6 && hour < 9)
-            newPhase = DayPhase.DawnMarket;
-        else if (hour >= 9 && hour < 12)
-            newPhase = DayPhase.Preparation;
-        else if (hour >= 12 && hour < 22)
-            newPhase = DayPhase.Business;
-        else
-            newPhase = DayPhase.Settlement;
-
         if (newPhase != CurrentPhase)
         {
             CurrentPhase = newPhase;
@@ -68,9 +51,6 @@ public class DayCycleManager : MonoBehaviour
 
         // 3. 날짜 증가 및 저장
         GameTimeManager.Instance.AdvanceDay();
-
-        // 4. 시간 초기화 (아침 6시)
-        GameTimeManager.Instance.SetTime(6, 0);
 
         OnNewDayStarted?.Invoke();
         Debug.Log("<color=green>[DayCycle] 새로운 하루가 시작되었습니다!</color>");

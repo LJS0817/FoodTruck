@@ -37,10 +37,14 @@ public class GameTimeManager : MonoBehaviour
     {
         totalSeconds += Time.deltaTime * TIME_MULTIPLIER * timeScaleMultiplier;
 
-        // 하루(86,400초)가 지나면 24시(00시)로 순환하지만 날짜는 명시적으로 AdvanceDay()에서 증가시킵니다.
+        // 하루(86,400초)가 지나면 24시(00시)로 순환
         if (totalSeconds >= 86400f)
         {
             totalSeconds -= 86400f;
+            if (DayCycleManager.Instance != null)
+            {
+                DayCycleManager.Instance.StartNextDay();
+            }
         }
 
         // 💡 GC 방어 로직: '분(Minute)'이 바뀌었을 때만 문자열을 새로 찍어냅니다.
@@ -81,6 +85,23 @@ public class GameTimeManager : MonoBehaviour
     {
         totalSeconds = (targetHour * 3600f) + (targetMinute * 60f);
         lastCalculatedMinute = -1; // 시간 강제 변경 시 UI 즉시 갱신 유도
+    }
+
+    /// <summary>
+    /// 현재 시간으로부터 지정한 시간(시)만큼 스킵합니다.
+    /// </summary>
+    public void SkipTime(int hoursToSkip)
+    {
+        totalSeconds += hoursToSkip * 3600f;
+        
+        // 하루가 넘어갔는지 체크하여 AdvanceDay() 호출
+        if (totalSeconds >= 86400f)
+        {
+            totalSeconds -= 86400f;
+            DayCycleManager.Instance.StartNextDay();
+        }
+        
+        lastCalculatedMinute = -1;
     }
 
     // 💡 외부(MarketManager 등)에서 현재 게임 내 시간(시)을 가져올 때 사용

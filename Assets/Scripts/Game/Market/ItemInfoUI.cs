@@ -18,12 +18,7 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
     [SerializeField] TMP_Text _maxAmount;
     [SerializeField] private Button _buyButton; // Submit 버튼
     [SerializeField] private TMP_Text _buyButtonText; // Submit 버튼 텍스트
-
-    [Header("Quantity Selection")]
-    [SerializeField] private CanvasGroup _quantityCanvasGroup; // 수량 선택 영역
-    [SerializeField] private TMP_InputField _quantityInput;
-    [SerializeField] private Button _plusButton;
-    [SerializeField] private Button _minusButton;
+    [SerializeField] private AmountSetter _amountSetter; // 💡 수량 조절 팝업
 
     [Header("Recipe Details")]
     [SerializeField] private GameObject _recipeDetailsArea; // 레시피 전용 영역
@@ -40,14 +35,17 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
     {
         _canvasGroup = GetComponent<CanvasGroup>();
         
-        if (_quantityInput != null)
-            _quantityInput.onEndEdit.AddListener(OnQuantityInputEndEdit);
+        if (_amountSetter == null)
+            _amountSetter = FindObjectOfType<AmountSetter>(true);
         
-        if (_plusButton != null)
-            _plusButton.onClick.AddListener(() => ChangeQuantity(1));
+        // if (_quantityInput != null)
+        //     _quantityInput.onEndEdit.AddListener(OnQuantityInputEndEdit);
         
-        if (_minusButton != null)
-            _minusButton.onClick.AddListener(() => ChangeQuantity(-1));
+        // if (_plusButton != null)
+        //     _plusButton.onClick.AddListener(() => ChangeQuantity(1));
+        
+        // if (_minusButton != null)
+        //     _minusButton.onClick.AddListener(() => ChangeQuantity(-1));
 
         if (_buyButton != null)
             _buyButton.onClick.AddListener(OnClickSubmit);
@@ -83,14 +81,6 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
 
         // 설명 및 영역 활성화 처리
         SetupDescription(item.data);
-        
-        // 수량 선택 영역은 항상 표시
-        if (_quantityCanvasGroup != null)
-        {
-            _quantityCanvasGroup.alpha = 1f;
-            _quantityCanvasGroup.interactable = true;
-            _quantityCanvasGroup.blocksRaycasts = true;
-        }
 
         // 제출 버튼 텍스트 및 활성화 설정
         if (_buyButtonText != null)
@@ -120,7 +110,7 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
             if (_recipeDetailsArea != null) _recipeDetailsArea.SetActive(false);
         }
 
-        UpdateQuantityUI();
+        // UpdateQuantityUI();
         UpdateTotalPrice();
         UpdateOwnedAmount();
 
@@ -177,7 +167,7 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
         if (_currentItem == null) return;
         
         _selectedQuantity = Mathf.Clamp(_selectedQuantity + delta, 1, _maxSelectableQuantity);
-        UpdateQuantityUI();
+        // UpdateQuantityUI();
         UpdateTotalPrice();
     }
 
@@ -193,19 +183,19 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
         {
             _selectedQuantity = 1;
         }
-        UpdateQuantityUI();
+        // UpdateQuantityUI();
         UpdateTotalPrice();
     }
 
-    private void UpdateQuantityUI()
-    {
-        if (_quantityInput != null)
-            _quantityInput.text = _selectedQuantity.ToString();
+    // private void UpdateQuantityUI()
+    // {
+    //     if (_quantityInput != null)
+    //         _quantityInput.text = _selectedQuantity.ToString();
 
-        // 수량 범위에 따른 버튼 활성화/비활성화
-        if (_minusButton != null) _minusButton.interactable = (_selectedQuantity > 1);
-        if (_plusButton != null) _plusButton.interactable = (_selectedQuantity < _maxSelectableQuantity);
-    }
+    //     // 수량 범위에 따른 버튼 활성화/비활성화
+    //     if (_minusButton != null) _minusButton.interactable = (_selectedQuantity > 1);
+    //     if (_plusButton != null) _plusButton.interactable = (_selectedQuantity < _maxSelectableQuantity);
+    // }
 
     private void UpdateTotalPrice()
     {
@@ -236,7 +226,7 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
             {
                 _maxSelectableQuantity = amount;
                 _selectedQuantity = Mathf.Min(_selectedQuantity, _maxSelectableQuantity);
-                UpdateQuantityUI();
+                // UpdateQuantityUI();
             }
         }
         else if (_currentItem.data is EquipmentData equipment)
@@ -289,6 +279,22 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
     {
         if (_currentItem == null) return;
 
+        if (_amountSetter != null)
+        {
+            int basePrice = _isStoreMode ? _currentItem.finalCost : 0;
+            _amountSetter.Open(_maxSelectableQuantity, basePrice, (amount) => {
+                _selectedQuantity = amount;
+                ExecuteSubmitAction();
+            });
+        }
+        else
+        {
+            ExecuteSubmitAction();
+        }
+    }
+
+    private void ExecuteSubmitAction()
+    {
         if (_isStoreMode)
         {
             // 상점 모드: 구매
@@ -327,7 +333,7 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
     {
         if (_currentItem == null) return;
         _selectedQuantity = _maxSelectableQuantity;
-        UpdateQuantityUI();
+        // UpdateQuantityUI();
         UpdateTotalPrice();
     }
 

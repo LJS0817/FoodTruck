@@ -62,6 +62,10 @@ public class BusinessManager : MonoBehaviour
 
             // 💡 피로도 감소 시작
             PlayerStaminaManager.Instance?.StartDraining();
+            
+            // 페이즈 변경
+            if (DayCycleManager.Instance != null)
+                DayCycleManager.Instance.ChangePhase(DayPhase.Business);
         }
         else
         {
@@ -89,6 +93,10 @@ public class BusinessManager : MonoBehaviour
 
             // 💡 피로도 감소 중지
             PlayerStaminaManager.Instance?.StopDraining();
+
+            // 페이즈 변경
+            if (DayCycleManager.Instance != null)
+                DayCycleManager.Instance.ChangePhase(DayPhase.Settlement);
         }
     }
 

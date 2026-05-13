@@ -75,6 +75,8 @@ public class FoodData : ScriptableObject
 
     public Sprite iconSprite;
 
+    public bool isCustomRecipe; // 커스텀 레시피 여부
+
     // 이 요리를 만들기 위한 '정확한 순서'의 재료 배열
     public IngredientData[] requiredIngredients;
     
