@@ -11,6 +11,8 @@ public class AmountSetter : MonoBehaviour
     [SerializeField] private Slider _quantityInput;
     [SerializeField] TMP_Text priceText;
     [SerializeField] private TMP_Text amountText;
+    [SerializeField] private Button _plusButton;
+    [SerializeField] private Button _minusButton;
 
 
     Action<int> onAmountConfirmed;
@@ -51,6 +53,14 @@ public class AmountSetter : MonoBehaviour
     {
         currentAmount = Mathf.RoundToInt(value);
         UpdateAmountText();
+        UpdateQuantityUI(value);
+    }
+
+    private void UpdateQuantityUI(float value)
+    {
+        // 수량 범위에 따른 버튼 활성화/비활성화
+        if (_minusButton != null) _minusButton.interactable = (value > 0f);
+        if (_plusButton != null) _plusButton.interactable = (value < 1f);
     }
 
     private void UpdateAmountText()

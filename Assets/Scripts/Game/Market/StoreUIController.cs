@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StoreUIController : MonoBehaviour
+public class StoreUIController : MonoBehaviour, MarketUIInterface
 {
     [SerializeField] CanvasGroup storeUIPanel;
     [SerializeField] CanvasGroup _marketGroup;
@@ -37,6 +37,18 @@ public class StoreUIController : MonoBehaviour
 
     public void OpenUI()
     {
+        if(_currentCategoryIndex == -1)
+        {
+            for (int i = 0; i < _categoryGroups.Length; i++)
+            {
+                if (_categoryGroups[i] == null) continue;
+
+                _categoryGroups[i].alpha = 0f;
+                _categoryGroups[i].interactable = false;
+                _categoryGroups[i].blocksRaycasts = false;
+            }
+        }
+
         storeUIPanel.alpha = 1f;
         storeUIPanel.interactable = true;
         storeUIPanel.blocksRaycasts = true;
@@ -60,22 +72,21 @@ public class StoreUIController : MonoBehaviour
         }
     }
 
+    public void SetVisibleCategory(int categoryIndex, bool isActive)
+    {
+        if(categoryIndex < 0 || categoryIndex >= _categoryGroups.Length) return;
+        _categoryGroups[categoryIndex].alpha = isActive ? 1f : 0f;
+        _categoryGroups[categoryIndex].interactable = isActive;
+        _categoryGroups[categoryIndex].blocksRaycasts = isActive;
+    }
+
     public void ChangeCategory(int categoryIndex)
     {
-        if (categoryIndex < 0 || categoryIndex >= _categoryGroups.Length) return;
         if (_currentCategoryIndex == categoryIndex) return;
 
+        SetVisibleCategory(_currentCategoryIndex, false);
         _currentCategoryIndex = categoryIndex;
-
-        for (int i = 0; i < _categoryGroups.Length; i++)
-        {
-            if (_categoryGroups[i] == null) continue;
-
-            bool isActive = (i == categoryIndex);
-            _categoryGroups[i].alpha = isActive ? 1f : 0f;
-            _categoryGroups[i].interactable = isActive;
-            _categoryGroups[i].blocksRaycasts = isActive;
-        }
+        SetVisibleCategory(_currentCategoryIndex, true);
 
         if (_itemInfoUI != null)
         {

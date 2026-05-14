@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class SettlementUI : MonoBehaviour
 {
     [Header("UI Panels")]
-    [SerializeField] private GameObject settlementPanel;
+    [SerializeField] private CanvasGroup settlementPanel;
 
     [Header("Texts")]
     [SerializeField] private TMP_Text dayText;
@@ -22,7 +22,11 @@ public class SettlementUI : MonoBehaviour
 
     private void Start()
     {
-        if (settlementPanel != null) settlementPanel.SetActive(false);
+        if (settlementPanel != null) {
+            settlementPanel.alpha = 0f;
+            settlementPanel.interactable = false;
+            settlementPanel.blocksRaycasts = false;
+        }
 
         if (DayCycleManager.Instance != null)
         {
@@ -88,7 +92,9 @@ public class SettlementUI : MonoBehaviour
             }
         }
 
-        settlementPanel.SetActive(true);
+        settlementPanel.alpha = 1f;
+        settlementPanel.interactable = true;
+        settlementPanel.blocksRaycasts = true;
 
         // 정산 중 게임 시간 정지
         Time.timeScale = 0f;
@@ -96,7 +102,12 @@ public class SettlementUI : MonoBehaviour
 
     private void CloseSettlement()
     {
-        settlementPanel.SetActive(false);
+        if(settlementPanel != null)
+        {
+            settlementPanel.alpha = 0f;
+            settlementPanel.interactable = false;
+            settlementPanel.blocksRaycasts = false;
+        }
         Time.timeScale = 1f;
     }
 

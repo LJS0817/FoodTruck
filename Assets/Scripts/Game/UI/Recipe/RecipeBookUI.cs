@@ -4,22 +4,30 @@ using UnityEngine;
 public class RecipeBookUI : MonoBehaviour
 {
     [Header("UI References")]
-    public GameObject recipeBookPanel;      // 도감 전체 창 (Canvas)
+    public CanvasGroup recipeBookPanel;      // 도감 전체 창 (Canvas)
     public Transform contentParent;         // ScrollView의 Content 오브젝트
     public RecipeSlotUI slotPrefab;         // 각 레시피를 표시할 프리팹 (버튼 형태)
 
     private List<RecipeSlotUI> spawnedSlots = new List<RecipeSlotUI>();
 
+    void Start() {
+        CloseRecipeBook();
+    }
+
     // 버튼 이벤트로 호출하여 도감 열기
     public void OpenRecipeBook()
     {
-        recipeBookPanel.SetActive(true);
+        recipeBookPanel.alpha = 1f;
+        recipeBookPanel.interactable = true;
+        recipeBookPanel.blocksRaycasts = true;
         RefreshUI();
     }
 
     public void CloseRecipeBook()
     {
-        recipeBookPanel.SetActive(false);
+        recipeBookPanel.alpha = 0f;
+        recipeBookPanel.interactable = false;
+        recipeBookPanel.blocksRaycasts = false;
     }
 
     private void RefreshUI()

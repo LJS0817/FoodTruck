@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5bb25e7fddcdc34584d4cdc1e45e014, type: 3}
+  m_Name: SpicyNoodle
+  m_EditorClassIdentifier: 
+  foodName: SpicyNoodle
+  basePrice: 50
+  autoCookTime: 2.0
+  foodPackageType: 0
+  iconSprite: {fileID: 0}
+  isCustomRecipe: 0
+  requiredIngredients:
+  - {fileID: 11400000, guid: 4d5b35edf7de2c348b18dbcef8bb293e, type: 2}
+  - {fileID: 11400000, guid: 5e55e6b2ec3b2a642a10d0e8be71974d, type: 2}
+  - {fileID: 11400000, guid: 91521eb6bacef7b49890901bfaba0075, type: 2}
+  - {fileID: 11400000, guid: 942de24488d44a04398c2f563b078b26, type: 2}
+  requiredEquipments: []
+  flavorTags: []

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UpgradeUIController : MonoBehaviour
+public class UpgradeUIController : MonoBehaviour, MarketUIInterface
 {
     [SerializeField] CanvasGroup upgradeUIPanel;
     [SerializeField] CanvasGroup _equipmentGroup;
@@ -37,6 +37,19 @@ public class UpgradeUIController : MonoBehaviour
 
     public void OpenUI()
     {
+        if(_currentCategoryIndex == -1)
+        {
+            for (int i = 0; i < _categoryGroups.Length; i++)
+            {
+                if (_categoryGroups[i] == null) continue;
+
+                _categoryGroups[i].alpha = 0f;
+                _categoryGroups[i].interactable = false;
+                _categoryGroups[i].blocksRaycasts = false;
+            }
+        }
+        
+
         upgradeUIPanel.alpha = 1f;
         upgradeUIPanel.interactable = true;
         upgradeUIPanel.blocksRaycasts = true;
@@ -60,22 +73,31 @@ public class UpgradeUIController : MonoBehaviour
         }
     }
 
+    public void SetVisibleCategory(int categoryIndex, bool isActive)
+    {
+        if(categoryIndex < 0 || categoryIndex >= _categoryGroups.Length) return;
+        _categoryGroups[categoryIndex].alpha = isActive ? 1f : 0f;
+        _categoryGroups[categoryIndex].interactable = isActive;
+        _categoryGroups[categoryIndex].blocksRaycasts = isActive;
+    }
+
     public void ChangeCategory(int categoryIndex)
     {
         if (categoryIndex < 0 || categoryIndex >= _categoryGroups.Length) return;
         if (_currentCategoryIndex == categoryIndex) return;
 
+        SetVisibleCategory(_currentCategoryIndex, false);
         _currentCategoryIndex = categoryIndex;
+        SetVisibleCategory(_currentCategoryIndex, true);
+        // for (int i = 0; i < _categoryGroups.Length; i++)
+        // {
+        //     if (_categoryGroups[i] == null) continue;
 
-        for (int i = 0; i < _categoryGroups.Length; i++)
-        {
-            if (_categoryGroups[i] == null) continue;
-
-            bool isActive = (i == categoryIndex);
-            _categoryGroups[i].alpha = isActive ? 1f : 0f;
-            _categoryGroups[i].interactable = isActive;
-            _categoryGroups[i].blocksRaycasts = isActive;
-        }
+        //     bool isActive = (i == categoryIndex);
+        //     _categoryGroups[i].alpha = isActive ? 1f : 0f;
+        //     _categoryGroups[i].interactable = isActive;
+        //     _categoryGroups[i].blocksRaycasts = isActive;
+        // }
 
         if (_itemInfoUI != null)
         {

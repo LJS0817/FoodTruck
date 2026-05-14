@@ -71,7 +71,7 @@ public class CookingManager : MonoBehaviour
         else
         {
             Debug.Log("<color=yellow>[레시피 연구] 새로운 조합입니다! 메뉴 이름 짓기 UI를 호출합니다.</color>");
-            //recipeNamingUI.ShowPopup(ingredients);
+            recipeNamingUI.ShowPopup(ingredients);
             currentPot.ResetPot();
         }
     }

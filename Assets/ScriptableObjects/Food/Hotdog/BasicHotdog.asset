@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5bb25e7fddcdc34584d4cdc1e45e014, type: 3}
+  m_Name: BasicHotdog
+  m_EditorClassIdentifier: 
+  foodName: BasicHotdog
+  basePrice: 30
+  autoCookTime: 2.0
+  foodPackageType: 0
+  iconSprite: {fileID: 0}
+  isCustomRecipe: 0
+  requiredIngredients:
+  - {fileID: 11400000, guid: 041a24105e424d4abe2f83fe407f2a01, type: 2}
+  - {fileID: 11400000, guid: ca862099e45396b4bb368708b4eb8460, type: 2}
+  - {fileID: 11400000, guid: c99ed4ee641af944e945d969cf62c56f, type: 2}
+  - {fileID: 11400000, guid: 64c23d196e81f904da24f4b339856313, type: 2}
+  requiredEquipments: []
+  flavorTags: []

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5bb25e7fddcdc34584d4cdc1e45e014, type: 3}
+  m_Name: HamCheeseSandwich
+  m_EditorClassIdentifier: 
+  foodName: HamCheeseSandwich
+  basePrice: 40
+  autoCookTime: 2.0
+  foodPackageType: 0
+  iconSprite: {fileID: 0}
+  isCustomRecipe: 0
+  requiredIngredients:
+  - {fileID: 11400000, guid: cd53634d52f9da842bd38588b94c4945, type: 2}
+  - {fileID: 11400000, guid: 5e55e6b2ec3b2a642a10d0e8be71974d, type: 2}
+  - {fileID: 11400000, guid: a8a5f28f1fadda24c8537f56be559f3a, type: 2}
+  - {fileID: 11400000, guid: cec3ca160079bb349b6e8cb530c5f237, type: 2}
+  - {fileID: 11400000, guid: 64c23d196e81f904da24f4b339856313, type: 2}
+  - {fileID: 11400000, guid: cd53634d52f9da842bd38588b94c4945, type: 2}
+  requiredEquipments: []
+  flavorTags: []

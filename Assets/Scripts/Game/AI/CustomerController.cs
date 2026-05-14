@@ -57,10 +57,10 @@ public class CustomerController : PoolableObject, IStateMachine
         _tickets.Item2?.HideUI();
     }
 
-    // private void Update()
-    // {
-    //     currentState?.Tick();
-    // }
+    private void Update()
+    {
+        currentState?.Tick();
+    }
 
     public void UpdatePatience()
     {

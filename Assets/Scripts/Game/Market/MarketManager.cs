@@ -18,7 +18,8 @@ public class MarketManager : MonoBehaviour
 {
 
     [Header("Market Settings")]
-    public List<IngredientData> allIngredients;     // 게임 내 모든 재료 목록
+    public RecipeManager recipeManager;     // 게임 내 모든 재료 목록
+    private List<IngredientData> allIngredients = new List<IngredientData>(); // 에디터에서 자동 주입
     public float dawnMarketDiscount = 0.3f;         // 새벽 시장 기본 할인율 (30%)
     public int dawnMarketItemCount = 8;             // 새벽 시장에 나오는 품목 수
 
@@ -41,6 +42,7 @@ public class MarketManager : MonoBehaviour
     private void Awake()
     {
         // 카탈로그 딕셔너리 캐싱
+        allIngredients = recipeManager.allIngredient;
         for (int i = 0; i < allIngredients.Count; i++)
         {
             catalogDict[allIngredients[i].ingredientID] = allIngredients[i];
@@ -182,6 +184,7 @@ public class MarketManager : MonoBehaviour
 
     public List<MarketListing> GetGeneralListings() { return generalListings; }
     public List<MarketListing> GetDawnListings() { return dawnListings; }
+    public List<IngredientData> GetAllIngredients() { return allIngredients; }
 
     /// <summary>
     /// 현재 새벽 시장이 열려있는 시간대인지 확인합니다.

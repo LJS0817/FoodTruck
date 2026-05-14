@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 819335a61e0c2db4aa7024b2d23c4055, type: 3}
+  m_Name: StandardBattery
+  m_EditorClassIdentifier: 
+  type: 3
+  equipmentName: StandardBattery
+  equipmentSprite: {fileID: 0}
+  tier: 1
+  price: 500
+  tradeInValue: 250
+  maxPurchaseAmount: 1
+  description: A standard battery for basic power needs.

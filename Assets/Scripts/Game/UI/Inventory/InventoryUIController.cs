@@ -19,7 +19,6 @@ public class InventoryUIController : MonoBehaviour
     [SerializeField] CanvasGroup _inventoryUI;
     [SerializeField] InventoryUISlot slotPrefab;
     [SerializeField] Transform slotContainer;
-    [SerializeField] GameObject _applyBtn;
     [SerializeField] AmountSetter _amountSetter; // 💡 수량 조절기
     
     SortBy _currentSortBy;
@@ -33,20 +32,13 @@ public class InventoryUIController : MonoBehaviour
         CloseInventory();
     }
 
-    public void OpenInventory(bool trig, IngredientData targetData = null)
+    public void OpenInventory(IngredientData targetData = null)
     {
         if (_inventoryUI != null)
         {
             _inventoryUI.alpha = 1f;
             _inventoryUI.interactable = true;
             _inventoryUI.blocksRaycasts = true;
-        }
-        if(!trig)
-        {
-            if(_applyBtn.activeSelf) _applyBtn.SetActive(false);
-        } else
-        {
-             if(!_applyBtn.activeSelf) _applyBtn.SetActive(true);
         }
 
         // 💡 인벤토리 오픈 시 게임 시간 정지
@@ -113,37 +105,16 @@ public class InventoryUIController : MonoBehaviour
         if (_selectedSlot != null) _selectedSlot.SetFocus(false);
         _selectedSlot = slot;
         if (_selectedSlot != null) _selectedSlot.SetFocus(true);
-
-        // 💡 Apply 버튼 활성화/비활성화
-        if (_applyBtn != null)
-        {
-            UnityEngine.UI.Button btn = _applyBtn.GetComponent<UnityEngine.UI.Button>();
-            if (btn != null)
-            {
-                btn.interactable = (_selectedSlot != null);
-            }
-        }
     }
 
-    public void OnClickApply()
+    public void OnClickApply(int amount)
     {
         if (_selectedSlot != null)
         {
-            if (_amountSetter != null)
-            {
-                int maxAvailable = InventoryManager.Instance.GetTotalAmount(_selectedSlot.Item.data.ingredientID);
-                _amountSetter.Open(maxAvailable, 0, (amount) => {
-                    // 선택된 아이템의 데이터를 가지고 IngredientManager에 상자 세팅 요청
-                    IngredientManager.Instance.SetupBox(_selectedSlot.Item.data, amount);
-                    // 세팅 완료 후 인벤토리 닫기
-                    InventoryManager.Instance.CloseUI();
-                });
-            }
-            else
-            {
-                IngredientManager.Instance.SetupBox(_selectedSlot.Item.data);
-                InventoryManager.Instance.CloseUI();
-            }
+            // 선택된 아이템의 데이터를 가지고 IngredientManager에 상자 세팅 요청
+            IngredientManager.Instance.SetupBox(_selectedSlot.Item.data, amount);
+            // 세팅 완료 후 인벤토리 닫기
+            InventoryManager.Instance.CloseUI();
         }
         else
         {
@@ -166,8 +137,6 @@ public class InventoryUIController : MonoBehaviour
     {
         if (_selectedSlot != null)
         {
-            if (_amountSetter == null) _amountSetter = FindObjectOfType<AmountSetter>(true);
-
             if (_amountSetter != null)
             {
                 int maxAvailable = _selectedSlot.Item.amount;

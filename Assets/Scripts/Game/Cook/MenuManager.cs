@@ -52,6 +52,8 @@ public class MenuManager : MonoBehaviour
 
         availableRecipes = CookingManager.Instance.recipeManager.GetRecipesByIngredients(ingredientIDs);
         
+        _cachedTrend = FlavorTag.None;
+        
         OnMenuUpdated?.Invoke();
         
         Debug.Log($"[MenuManager] 현재 재료로 판매 가능한 레시피: {availableRecipes.Count}개");
@@ -66,6 +68,9 @@ public class MenuManager : MonoBehaviour
         return availableRecipes;
     }
 
+    private FlavorTag _cachedTrend = FlavorTag.None;
+    private bool _hasCachedTrend = false;
+
     /// <summary>
     /// 현재 판매 중인 메뉴 중에 특정 유행(FlavorTag)을 만족하는 메뉴가 하나라도 있는지 검사합니다.
     /// </summary>
@@ -73,13 +78,20 @@ public class MenuManager : MonoBehaviour
     {
         if (trend == FlavorTag.None) return true; // 유행이 없다면 항상 통과
         
-        foreach (var recipe in availableRecipes)
+        if (_cachedTrend == trend) return _hasCachedTrend;
+
+        _cachedTrend = trend;
+        _hasCachedTrend = false;
+
+        for (int i = 0; i < availableRecipes.Count; i++)
         {
+            var recipe = availableRecipes[i];
             if (recipe.flavorTags != null && recipe.flavorTags.Contains(trend))
             {
-                return true;
+                _hasCachedTrend = true;
+                break;
             }
         }
-        return false;
+        return _hasCachedTrend;
     }
 }

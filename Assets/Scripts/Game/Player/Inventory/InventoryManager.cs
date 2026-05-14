@@ -177,6 +177,11 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
+    public void OnClickApply(int amount)
+    {
+        _controller.OnClickApply(amount);
+    }
+
     // 💡 유통기한 차감 및 만료된 재료 자동 폐기 (하루가 바뀔 때 호출)
     public void ProcessDailyExpiry()
     {
@@ -214,11 +219,11 @@ public class InventoryManager : MonoBehaviour
 
     public void OpenUI()
     {
-        _controller.OpenInventory(false);
+        _controller.OpenInventory();
     }
     public void OpenUIWithApplyBtn(IngredientData targetData = null)
     {
-        _controller.OpenInventory(true, targetData);
+        _controller.OpenInventory(targetData);
     }
 
     public void CloseUI()

@@ -54,7 +54,7 @@ public class WeatherTrendUI : MonoBehaviour
         FlavorTag trend = WeatherTrendManager.Instance.currentTrend;
         if (trendText != null)
         {
-            trendText.text = $"오늘의 유행: {GetFlavorNameKR(trend)}";
+            trendText.text = $"{GetFlavorNameKR(trend)}";
         }
 
         // 3. 효과 설명 업데이트
@@ -85,8 +85,8 @@ public class WeatherTrendUI : MonoBehaviour
             case FlavorTag.Sweet: return "단맛";
             case FlavorTag.Salty: return "짠맛";
             case FlavorTag.Sour: return "신맛";
-            case FlavorTag.Warm: return "따뜻함";
-            case FlavorTag.Cold: return "시원함";
+            case FlavorTag.Warm: return "따뜻한";
+            case FlavorTag.Cold: return "차가운";
             case FlavorTag.Greasy: return "기름진맛";
             case FlavorTag.Healthy: return "건강한맛";
             default: return "일반";

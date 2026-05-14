@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5bb25e7fddcdc34584d4cdc1e45e014, type: 3}
+  m_Name: PorkRiceBowl
+  m_EditorClassIdentifier: 
+  foodName: PorkRiceBowl
+  basePrice: 55
+  autoCookTime: 2.0
+  foodPackageType: 0
+  iconSprite: {fileID: 0}
+  isCustomRecipe: 0
+  requiredIngredients:
+  - {fileID: 11400000, guid: a70a672d269e8b946958e6e0f98ebbf9, type: 2}
+  - {fileID: 11400000, guid: 5e55e6b2ec3b2a642a10d0e8be71974d, type: 2}
+  - {fileID: 11400000, guid: 56fc9d7590b4a8b488b42dce9c9e27dd, type: 2}
+  - {fileID: 11400000, guid: 5621ecae66911be458518ed70aab8135, type: 2}
+  requiredEquipments: []
+  flavorTags: []

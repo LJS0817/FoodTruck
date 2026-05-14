@@ -49,7 +49,7 @@ public class StoreManager : MonoBehaviour
         Transform parent = storeUIController.GetContentParent(0);
         storeUIController.ClearSlots(parent);
 
-        List<IngredientData> ingredients = marketManager.allIngredients;
+        List<IngredientData> ingredients = marketManager.GetAllIngredients();
         for (int i = 0; i < ingredients.Count; i++)
         {
             StoreItem item = StoreItem.FromIngredient(ingredients[i], ingredients[i].basePrice);
