@@ -124,6 +124,15 @@ public class AutoAssetInjector : Editor
             Debug.Log($"[Auto Inject] Injected {waitingZoneManager.allWaitingZoneItems.Count} Waiting Zone Items.");
         }
 
+        // 11. ProcessManager
+        var processManager = FindObjectOfType<ProcessManager>();
+        if (processManager != null)
+        {
+            processManager.allProcessRecipes = LoadAllAssets<ProcessRecipeData>("Assets/ScriptableObjects/ProcessRecipe");
+            EditorUtility.SetDirty(processManager);
+            Debug.Log($"[Auto Inject] Injected {processManager.allProcessRecipes.Count} Process Recipes.");
+        }
+
         // 저장 (씬에 변경사항이 생겼음을 Unity에 알림)
         if (!Application.isPlaying)
         {

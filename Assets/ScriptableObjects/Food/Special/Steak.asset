@@ -14,15 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: Steak
   basePrice: 80
-  autoCookTime: 2.0
+  autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
   requiredIngredients:
-  - {fileID: 11400000, guid: 1703176bc5bb5ed4e91c29897278a202, type: 2}
-  - {fileID: 11400000, guid: adfebc6f9568f4840aafff56ceb67c7b, type: 2}
-  - {fileID: 11400000, guid: 91521eb6bacef7b49890901bfaba0075, type: 2}
-  - {fileID: 11400000, guid: 5621ecae66911be458518ed70aab8135, type: 2}
+  - {fileID: 11400000, guid: f4782ef0b84d6d14383c45261d464f5c, type: 2}
+  - {fileID: 11400000, guid: 0a968e98cd5b9944e935ec8caabc12aa, type: 2}
+  - {fileID: 11400000, guid: 9a7d639f0104a60449747ffb9f4120cf, type: 2}
+  - {fileID: 11400000, guid: a3f84ec6433ff71409f9b191fe26aeee, type: 2}
   - {fileID: 11400000, guid: 942de24488d44a04398c2f563b078b26, type: 2}
-  requiredEquipments: []
-  flavorTags: []
+  requiredEquipments: 
+  flavorTags: 
+  ingredientConfigs:
+  - rawIngredient: {fileID: 11400000, guid: 1703176bc5bb5ed4e91c29897278a202, type: 2}
+    processType: 1
+  - rawIngredient: {fileID: 11400000, guid: adfebc6f9568f4840aafff56ceb67c7b, type: 2}
+    processType: 4
+  - rawIngredient: {fileID: 11400000, guid: 91521eb6bacef7b49890901bfaba0075, type: 2}
+    processType: 4
+  - rawIngredient: {fileID: 11400000, guid: 5621ecae66911be458518ed70aab8135, type: 2}
+    processType: 4
+  - rawIngredient: {fileID: 11400000, guid: 942de24488d44a04398c2f563b078b26, type: 2}
+    processType: 0

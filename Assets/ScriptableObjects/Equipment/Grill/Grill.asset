@@ -18,4 +18,11 @@ MonoBehaviour:
   tier: 1
   price: 100
   tradeInValue: 50
+  maxPurchaseAmount: 1
   description: Can make grill cheese
+  supportedProcessTypes:
+  - processType: 1
+    timeMultiplier: 1
+    staminaMultiplier: 0.1
+    qualityBonus: 0
+    miniGameEaseBonus: 0

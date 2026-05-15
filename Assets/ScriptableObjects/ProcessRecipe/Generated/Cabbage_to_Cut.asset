@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9906392c908cee44b9bf74aa55d7e133, type: 3}
+  m_Name: Cabbage_to_Cut
+  m_EditorClassIdentifier: Assembly-CSharp::ProcessRecipeData
+  inputIngredient: {fileID: 11400000, guid: 56fc9d7590b4a8b488b42dce9c9e27dd, type: 2}
+  processType: 4
+  outputIngredient: {fileID: 11400000, guid: 91902c4494c0af148af3f973679b7100, type: 2}
+  processTime: 3
+  requiredStamina: 5

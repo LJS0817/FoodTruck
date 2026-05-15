@@ -14,14 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: PorkRiceBowl
   basePrice: 55
-  autoCookTime: 2.0
+  autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
   requiredIngredients:
   - {fileID: 11400000, guid: a70a672d269e8b946958e6e0f98ebbf9, type: 2}
-  - {fileID: 11400000, guid: 5e55e6b2ec3b2a642a10d0e8be71974d, type: 2}
-  - {fileID: 11400000, guid: 56fc9d7590b4a8b488b42dce9c9e27dd, type: 2}
-  - {fileID: 11400000, guid: 5621ecae66911be458518ed70aab8135, type: 2}
-  requiredEquipments: []
-  flavorTags: []
+  - {fileID: 11400000, guid: 73c63ab69c4cba54fa3ff11b858e3d7a, type: 2}
+  - {fileID: 11400000, guid: 91902c4494c0af148af3f973679b7100, type: 2}
+  - {fileID: 11400000, guid: a3f84ec6433ff71409f9b191fe26aeee, type: 2}
+  requiredEquipments: 
+  flavorTags: 
+  ingredientConfigs:
+  - rawIngredient: {fileID: 11400000, guid: a70a672d269e8b946958e6e0f98ebbf9, type: 2}
+    processType: 0
+  - rawIngredient: {fileID: 11400000, guid: 5e55e6b2ec3b2a642a10d0e8be71974d, type: 2}
+    processType: 1
+  - rawIngredient: {fileID: 11400000, guid: 56fc9d7590b4a8b488b42dce9c9e27dd, type: 2}
+    processType: 4
+  - rawIngredient: {fileID: 11400000, guid: 5621ecae66911be458518ed70aab8135, type: 2}
+    processType: 4

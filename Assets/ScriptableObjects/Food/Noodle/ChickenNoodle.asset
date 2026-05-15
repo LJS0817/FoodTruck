@@ -14,14 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: ChickenNoodle
   basePrice: 50
-  autoCookTime: 2.0
+  autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
   requiredIngredients:
   - {fileID: 11400000, guid: 4d5b35edf7de2c348b18dbcef8bb293e, type: 2}
-  - {fileID: 11400000, guid: 791a7e6376f03494f8bb4494e3a41b40, type: 2}
-  - {fileID: 11400000, guid: 5621ecae66911be458518ed70aab8135, type: 2}
-  - {fileID: 11400000, guid: 56fc9d7590b4a8b488b42dce9c9e27dd, type: 2}
-  requiredEquipments: []
-  flavorTags: []
+  - {fileID: 11400000, guid: 10ac37b64bd68c746bfd82f879dfee55, type: 2}
+  - {fileID: 11400000, guid: a3f84ec6433ff71409f9b191fe26aeee, type: 2}
+  - {fileID: 11400000, guid: 91902c4494c0af148af3f973679b7100, type: 2}
+  requiredEquipments: 
+  flavorTags: 
+  ingredientConfigs:
+  - rawIngredient: {fileID: 11400000, guid: 4d5b35edf7de2c348b18dbcef8bb293e, type: 2}
+    processType: 0
+  - rawIngredient: {fileID: 11400000, guid: 791a7e6376f03494f8bb4494e3a41b40, type: 2}
+    processType: 1
+  - rawIngredient: {fileID: 11400000, guid: 5621ecae66911be458518ed70aab8135, type: 2}
+    processType: 4
+  - rawIngredient: {fileID: 11400000, guid: 56fc9d7590b4a8b488b42dce9c9e27dd, type: 2}
+    processType: 4

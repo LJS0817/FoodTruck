@@ -14,14 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: ColdNoodle
   basePrice: 45
-  autoCookTime: 2.0
+  autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
   requiredIngredients:
   - {fileID: 11400000, guid: 4d5b35edf7de2c348b18dbcef8bb293e, type: 2}
-  - {fileID: 11400000, guid: 942419a02e15ff64b8934eda7a4c9562, type: 2}
-  - {fileID: 11400000, guid: 3a7ac745d9a709e428d55a3e823cf972, type: 2}
-  - {fileID: 11400000, guid: 51e2d17faacf41b4eba06fa95c1dff34, type: 2}
-  requiredEquipments: []
-  flavorTags: []
+  - {fileID: 11400000, guid: cd35ddd07c4d7e94eb472b055cc10ea8, type: 2}
+  - {fileID: 11400000, guid: 3ed39607bc8c52e40969c73445f50cfc, type: 2}
+  - {fileID: 11400000, guid: 74e9da260f36f0c48bf0c9941ed08f3c, type: 2}
+  requiredEquipments: 
+  flavorTags: 
+  ingredientConfigs:
+  - rawIngredient: {fileID: 11400000, guid: 4d5b35edf7de2c348b18dbcef8bb293e, type: 2}
+    processType: 0
+  - rawIngredient: {fileID: 11400000, guid: 942419a02e15ff64b8934eda7a4c9562, type: 2}
+    processType: 4
+  - rawIngredient: {fileID: 11400000, guid: 3a7ac745d9a709e428d55a3e823cf972, type: 2}
+    processType: 1
+  - rawIngredient: {fileID: 11400000, guid: 51e2d17faacf41b4eba06fa95c1dff34, type: 2}
+    processType: 4

@@ -100,7 +100,7 @@ public class IngredientManager : MonoBehaviour
             };
 
             MiniGameManager.Instance.OnMiniGameFinished += onFinished;
-            MiniGameManager.Instance.StartMiniGame(data.requiredMiniGame.ToString());
+            MiniGameManager.Instance.StartMiniGame(data.requiredMiniGame, 0f);
         }
         else
         {

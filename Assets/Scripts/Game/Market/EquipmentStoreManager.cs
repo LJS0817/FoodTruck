@@ -8,13 +8,21 @@ using UnityEngine;
 /// </summary>
 public class EquipmentStoreManager : MonoBehaviour
 {
+    public static EquipmentStoreManager Instance { get; private set; }
+
     [Header("Equipment Catalog")]
-    [SerializeField] private List<EquipmentData> allEquipments; // 게임 내 모든 장비 목록
+    [SerializeField] public List<EquipmentData> allEquipments; // 게임 내 모든 장비 목록
 
     // 💡 현재 트럭에 장착된 장비 (타입당 1개만 보유 가능)
     private Dictionary<EquipmentType, EquipmentData> ownedEquipments = new Dictionary<EquipmentType, EquipmentData>(8);
 
     public event Action OnEquipmentChanged;
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
 
     // ===== 장비 보유 확인 =====
 

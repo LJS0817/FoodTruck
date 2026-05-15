@@ -1,7 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
+/// <summary>
+/// 요리를 위해 재료를 담는 냄비(조리 공간).
+/// 미니게임은 더 이상 여기서 실행되지 않습니다.
+/// 재료 가공(Process)은 ProcessManager에서 사전에 처리된 후, 결과물 IngredientData를 이 냄비에 넣습니다.
+/// 프리미엄 여부는 인벤토리에서 꺼낼 때 태그된 품질 정보에 따라 결정됩니다.
+/// </summary>
 public class CookingPot : MonoBehaviour
 {
     [Header("Settings")]
@@ -10,66 +15,25 @@ public class CookingPot : MonoBehaviour
 
     private List<IngredientData> contents = new List<IngredientData>(10);
     private List<GameObject> visualStack = new List<GameObject>(10);
-
-    // 💡 미니게임 및 프리미엄 판별을 위한 변수 추가
     private int premiumCount = 0;
-    private IngredientData pendingIngredient = null;
 
-    private void OnEnable()
+    // ─── 재료 투입 ────────────────────────────────────────
+
+    /// <summary>
+    /// 외부(인벤토리 드래그, IngredientBox 등)에서 재료를 냄비에 넣을 때 호출합니다.
+    /// 가공이 필요한 재료라면 ProcessManager.ExecuteProcess 를 먼저 거쳐야 합니다.
+    /// </summary>
+    /// <param name="data">이미 가공이 완료된 IngredientData</param>
+    /// <param name="isPremium">가공 미니게임 결과로 판정된 프리미엄 여부</param>
+    public void ReceiveIngredient(IngredientData data, bool isPremium = false)
     {
-        // 미니게임 매니저 이벤트 구독 (가비지 발생 없는 명시적 콜백)
-        if (MiniGameManager.Instance != null)
-        {
-            MiniGameManager.Instance.OnMiniGameFinished += HandleMiniGameResult;
-        }
+        AddIngredientToPot(data, isPremium);
     }
 
-    private void OnDisable()
-    {
-        if (MiniGameManager.Instance != null)
-        {
-            MiniGameManager.Instance.OnMiniGameFinished -= HandleMiniGameResult;
-        }
-    }
-
-    // 💡 1. 외부(유저 드래그)에서 재료를 넣을 때 최초로 호출되는 함수
-    public void ReceiveIngredient(IngredientData data)
-    {
-        if (pendingIngredient != null) return; // 이미 다른 미니게임 진행 중이면 무시
-
-        // IngredientData에 requiredMiniGame 열거형(Enum)이 있다고 가정합니다.
-        if (data.requiredMiniGame != MiniGameType.None)
-        {
-            // 대기열에 올리고 미니게임 팝업 호출
-            pendingIngredient = data;
-
-            // MiniGameManager.Instance.StartMiniGame() 호출 시 Enum을 string으로 캐스팅하거나 Enum 자체를 받게 설정
-            MiniGameManager.Instance.StartMiniGame(data.requiredMiniGame.ToString());
-        }
-        else
-        {
-            // 미니게임이 필요 없는 재료는 즉시 일반 품질로 투입
-            AddIngredientToPot(data, false);
-        }
-    }
-
-    // 💡 2. 미니게임이 끝나면 매니저가 이 함수를 호출하여 결과를 알려줍니다.
-    private void HandleMiniGameResult(MiniGameResult result)
-    {
-        if (pendingIngredient == null) return;
-
-        // 성공하고 점수가 높으면 프리미엄 판정!
-        bool isPremium = result.isSuccess && result.qualityScore >= 0.8f;
-
-        AddIngredientToPot(pendingIngredient, isPremium);
-        pendingIngredient = null; // 대기 해제
-    }
-
-    // 💡 3. 실제 냄비에 재료를 쌓는 로직 (기존 AddIngredient 역할)
     private void AddIngredientToPot(IngredientData data, bool isPremium)
     {
         contents.Add(data);
-        if (isPremium) premiumCount++; // 프리미엄 카운트 증가
+        if (isPremium) premiumCount++;
 
         UpdateVisualStack(data);
 
@@ -79,10 +43,12 @@ public class CookingPot : MonoBehaviour
         CheckCurrentRecipe();
     }
 
+    // ─── 리셋 ────────────────────────────────────────────
+
     public void ResetPot()
     {
         contents.Clear();
-        premiumCount = 0; // 💡 카운트도 잊지 않고 초기화
+        premiumCount = 0;
 
         for (int i = 0; i < visualStack.Count; i++)
         {
@@ -90,6 +56,8 @@ public class CookingPot : MonoBehaviour
         }
         visualStack.Clear();
     }
+
+    // ─── 비주얼 ─────────────────────────────────────────
 
     private void UpdateVisualStack(IngredientData data)
     {
@@ -106,6 +74,8 @@ public class CookingPot : MonoBehaviour
         visualStack.Add(visual);
     }
 
+    // ─── 레시피 판별 ─────────────────────────────────────
+
     public void CheckCurrentRecipe()
     {
         if (contents.Count == 0) return;
@@ -113,35 +83,31 @@ public class CookingPot : MonoBehaviour
         FoodData result = GameManager.Instance.recipeManager.CheckRecipe(contents);
 
         if (result != null)
-        {
             Debug.Log($"<color=green>[판별 완료] 현재 요리: {result.foodName}</color>");
-        }
         else
-        {
             Debug.Log("<color=red>[판별 실패] 일치하는 레시피가 없습니다.</color>");
-        }
     }
 
-    public IReadOnlyList<IngredientData> GetContents()
-    {
-        return contents;
-    }
+    // ─── 공개 쿼리 ──────────────────────────────────────
 
-    // 💡 최종 완성 시 요리가 프리미엄인지 판별하는 함수 추가
+    public IReadOnlyList<IngredientData> GetContents() => contents;
+
+    /// <summary>
+    /// 요리 완성 시 프리미엄 여부를 판별합니다.
+    /// 모든 재료가 프리미엄이거나, 업그레이드 확률 보너스가 발동되면 프리미엄입니다.
+    /// </summary>
     public bool IsPremiumDish()
     {
         if (contents.Count == 0) return false;
-        
-        // 들어간 모든 재료가 프리미엄이면 확정 프리미엄
+
         if (premiumCount == contents.Count) return true;
 
-        // 💡 업그레이드로 인한 프리미엄 강제 판정 확률 보너스
         if (UpgradeManager.Instance.Upgrade != null)
         {
             float bonusChance = UpgradeManager.Instance.Upgrade.GetCurrentValue("PremiumChance");
             if (bonusChance > 0f && Random.value < bonusChance)
             {
-                Debug.Log($"<color=yellow>[손재주 발동] 업그레이드 효과로 프리미엄 판정! ({bonusChance*100}% 확률)</color>");
+                Debug.Log($"<color=yellow>[손재주 발동] 업그레이드 효과로 프리미엄 판정! ({bonusChance * 100}% 확률)</color>");
                 return true;
             }
         }

@@ -14,15 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: BreakfastBurrito
   basePrice: 50
-  autoCookTime: 2.0
+  autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
   requiredIngredients:
   - {fileID: 11400000, guid: e3d142690339e2141b962abb1f546355, type: 2}
-  - {fileID: 11400000, guid: 3a7ac745d9a709e428d55a3e823cf972, type: 2}
-  - {fileID: 11400000, guid: 0986aa6848c3f714689af6b36dbb95b4, type: 2}
+  - {fileID: 11400000, guid: 3ed39607bc8c52e40969c73445f50cfc, type: 2}
+  - {fileID: 11400000, guid: 5426b77cb98076f4da4fa5848e3d51ab, type: 2}
   - {fileID: 11400000, guid: a8a5f28f1fadda24c8537f56be559f3a, type: 2}
-  - {fileID: 11400000, guid: adfebc6f9568f4840aafff56ceb67c7b, type: 2}
-  requiredEquipments: []
-  flavorTags: []
+  - {fileID: 11400000, guid: 0a968e98cd5b9944e935ec8caabc12aa, type: 2}
+  requiredEquipments: 
+  flavorTags: 
+  ingredientConfigs:
+  - rawIngredient: {fileID: 11400000, guid: e3d142690339e2141b962abb1f546355, type: 2}
+    processType: 0
+  - rawIngredient: {fileID: 11400000, guid: 3a7ac745d9a709e428d55a3e823cf972, type: 2}
+    processType: 1
+  - rawIngredient: {fileID: 11400000, guid: 0986aa6848c3f714689af6b36dbb95b4, type: 2}
+    processType: 1
+  - rawIngredient: {fileID: 11400000, guid: a8a5f28f1fadda24c8537f56be559f3a, type: 2}
+    processType: 0
+  - rawIngredient: {fileID: 11400000, guid: adfebc6f9568f4840aafff56ceb67c7b, type: 2}
+    processType: 4

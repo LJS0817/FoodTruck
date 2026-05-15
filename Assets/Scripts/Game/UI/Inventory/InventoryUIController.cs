@@ -157,6 +157,37 @@ public class InventoryUIController : MonoBehaviour
         }
     }
 
+    // 💡 가공 버튼 관련 액션
+    public void OnClickProcessBake() { TryProcess(ProcessType.Bake); }
+    public void OnClickProcessFry() { TryProcess(ProcessType.Fry); }
+    public void OnClickProcessBlend() { TryProcess(ProcessType.Blend); }
+    public void OnClickProcessCut() { TryProcess(ProcessType.Cut); }
+
+    private void TryProcess(ProcessType type)
+    {
+        if (_selectedSlot == null)
+        {
+            Debug.LogWarning("[InventoryUIController] 가공할 아이템이 선택되지 않았습니다.");
+            return;
+        }
+
+        if (ProcessManager.Instance == null)
+        {
+            Debug.LogWarning("[InventoryUIController] ProcessManager가 존재하지 않습니다.");
+            return;
+        }
+
+        ProcessManager.Instance.ExecuteProcess(_selectedSlot.Item.data, type, (success, resultData) => {
+            if (success)
+            {
+                // 가공 성공 시, UI 새로고침 또는 이펙트 처리
+                // ExecuteProcess 내부에서 InventoryManager를 통해 결과물이 추가되고,
+                // 차감도 이루어지며 InventoryManager.UpdateUI가 호출됨
+                SetSelectedSlot(null);
+            }
+        });
+    }
+
     public void UpdateUI(List<InventoryItem> items)
     {
         currentItems = items;

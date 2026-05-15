@@ -14,14 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: ChickenSalad
   basePrice: 45
-  autoCookTime: 2.0
+  autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
   requiredIngredients:
   - {fileID: 11400000, guid: cec3ca160079bb349b6e8cb530c5f237, type: 2}
-  - {fileID: 11400000, guid: 791a7e6376f03494f8bb4494e3a41b40, type: 2}
-  - {fileID: 11400000, guid: 51e2d17faacf41b4eba06fa95c1dff34, type: 2}
+  - {fileID: 11400000, guid: 10ac37b64bd68c746bfd82f879dfee55, type: 2}
+  - {fileID: 11400000, guid: 74e9da260f36f0c48bf0c9941ed08f3c, type: 2}
   - {fileID: 11400000, guid: 8a3b1144b6ded7d4e8103f45a561ccbd, type: 2}
-  requiredEquipments: []
-  flavorTags: []
+  requiredEquipments: 
+  flavorTags: 
+  ingredientConfigs:
+  - rawIngredient: {fileID: 11400000, guid: cec3ca160079bb349b6e8cb530c5f237, type: 2}
+    processType: 0
+  - rawIngredient: {fileID: 11400000, guid: 791a7e6376f03494f8bb4494e3a41b40, type: 2}
+    processType: 1
+  - rawIngredient: {fileID: 11400000, guid: 51e2d17faacf41b4eba06fa95c1dff34, type: 2}
+    processType: 4
+  - rawIngredient: {fileID: 11400000, guid: 8a3b1144b6ded7d4e8103f45a561ccbd, type: 2}
+    processType: 0

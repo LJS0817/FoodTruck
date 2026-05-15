@@ -4,8 +4,33 @@ using UnityEngine;
 [Serializable]
 public class IngredientBoxSetter
 {
-    public IngredientData boxData;
     public IngredientObject prefabToSpawn;
+
+    public IngredientData boxData
+    { 
+        get
+        {
+            if (prefabToSpawn != null)
+            {
+                return prefabToSpawn.currentData;
+            }
+            else
+            {
+                Debug.LogWarning("<color=yellow>[IngredientBoxSetter] prefabToSpawn이 할당되지 않았습니다.</color>");
+                return null;
+            }
+        }
+        set {
+            if (prefabToSpawn != null)
+            {
+                prefabToSpawn.SetupIngredient(value);
+            }
+            else
+            {
+                Debug.LogWarning("<color=yellow>[IngredientBoxSetter] prefabToSpawn이 할당되지 않았습니다. 데이터를 설정할 수 없습니다.</color>");
+            }
+        }
+    } // 상자에 세팅할 재료 데이터 (SO)
 }
 
 [RequireComponent(typeof(BoxCollider2D))]

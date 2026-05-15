@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 5
   ingredientName: Bacon
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
   volume: 5
   description: Bacon
   basePrice: 25
@@ -22,4 +22,4 @@ MonoBehaviour:
   maxPurchaseAmount: 99
   requiredEquipment: 0
   requiredMiniGame: 0
-  flavorTags: []
+  flavorTags: 

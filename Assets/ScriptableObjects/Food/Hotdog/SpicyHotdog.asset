@@ -14,14 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: SpicyHotdog
   basePrice: 35
-  autoCookTime: 2.0
+  autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
   requiredIngredients:
-  - {fileID: 11400000, guid: 041a24105e424d4abe2f83fe407f2a01, type: 2}
-  - {fileID: 11400000, guid: ca862099e45396b4bb368708b4eb8460, type: 2}
-  - {fileID: 11400000, guid: 91521eb6bacef7b49890901bfaba0075, type: 2}
+  - {fileID: 11400000, guid: 185cd3161fa75a346a0d20d2f8c6f565, type: 2}
+  - {fileID: 11400000, guid: 3b90680db0186f547af187d350e37147, type: 2}
+  - {fileID: 11400000, guid: 9a7d639f0104a60449747ffb9f4120cf, type: 2}
   - {fileID: 11400000, guid: 942de24488d44a04398c2f563b078b26, type: 2}
-  requiredEquipments: []
-  flavorTags: []
+  requiredEquipments: 
+  flavorTags: 
+  ingredientConfigs:
+  - rawIngredient: {fileID: 11400000, guid: 041a24105e424d4abe2f83fe407f2a01, type: 2}
+    processType: 4
+  - rawIngredient: {fileID: 11400000, guid: ca862099e45396b4bb368708b4eb8460, type: 2}
+    processType: 1
+  - rawIngredient: {fileID: 11400000, guid: 91521eb6bacef7b49890901bfaba0075, type: 2}
+    processType: 4
+  - rawIngredient: {fileID: 11400000, guid: 942de24488d44a04398c2f563b078b26, type: 2}
+    processType: 0

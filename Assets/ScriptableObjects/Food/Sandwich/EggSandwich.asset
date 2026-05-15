@@ -14,15 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: EggSandwich
   basePrice: 35
-  autoCookTime: 2.0
+  autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
   requiredIngredients:
-  - {fileID: 11400000, guid: cd53634d52f9da842bd38588b94c4945, type: 2}
-  - {fileID: 11400000, guid: 3a7ac745d9a709e428d55a3e823cf972, type: 2}
+  - {fileID: 11400000, guid: 90f9523bc5cd78a499c1af258b9fedd5, type: 2}
+  - {fileID: 11400000, guid: 3ed39607bc8c52e40969c73445f50cfc, type: 2}
   - {fileID: 11400000, guid: 8a3b1144b6ded7d4e8103f45a561ccbd, type: 2}
   - {fileID: 11400000, guid: a8a5f28f1fadda24c8537f56be559f3a, type: 2}
-  - {fileID: 11400000, guid: cd53634d52f9da842bd38588b94c4945, type: 2}
-  requiredEquipments: []
-  flavorTags: []
+  - {fileID: 11400000, guid: 90f9523bc5cd78a499c1af258b9fedd5, type: 2}
+  requiredEquipments: 
+  flavorTags: 
+  ingredientConfigs:
+  - rawIngredient: {fileID: 11400000, guid: cd53634d52f9da842bd38588b94c4945, type: 2}
+    processType: 4
+  - rawIngredient: {fileID: 11400000, guid: 3a7ac745d9a709e428d55a3e823cf972, type: 2}
+    processType: 1
+  - rawIngredient: {fileID: 11400000, guid: 8a3b1144b6ded7d4e8103f45a561ccbd, type: 2}
+    processType: 0
+  - rawIngredient: {fileID: 11400000, guid: a8a5f28f1fadda24c8537f56be559f3a, type: 2}
+    processType: 0
+  - rawIngredient: {fileID: 11400000, guid: cd53634d52f9da842bd38588b94c4945, type: 2}
+    processType: 4

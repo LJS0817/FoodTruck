@@ -15,9 +15,22 @@ MonoBehaviour:
   foodName: BreadTower
   basePrice: 10
   autoCookTime: 2
+  foodPackageType: 0
   iconSprite: {fileID: 0}
+  isCustomRecipe: 0
   requiredIngredients:
-  - {fileID: 11400000, guid: cd53634d52f9da842bd38588b94c4945, type: 2}
-  - {fileID: 11400000, guid: cd53634d52f9da842bd38588b94c4945, type: 2}
-  - {fileID: 11400000, guid: cd53634d52f9da842bd38588b94c4945, type: 2}
-  - {fileID: 11400000, guid: cd53634d52f9da842bd38588b94c4945, type: 2}
+  - {fileID: 11400000, guid: 90f9523bc5cd78a499c1af258b9fedd5, type: 2}
+  - {fileID: 11400000, guid: 90f9523bc5cd78a499c1af258b9fedd5, type: 2}
+  - {fileID: 11400000, guid: 90f9523bc5cd78a499c1af258b9fedd5, type: 2}
+  - {fileID: 11400000, guid: 90f9523bc5cd78a499c1af258b9fedd5, type: 2}
+  requiredEquipments: 
+  flavorTags: 
+  ingredientConfigs:
+  - rawIngredient: {fileID: 11400000, guid: cd53634d52f9da842bd38588b94c4945, type: 2}
+    processType: 4
+  - rawIngredient: {fileID: 11400000, guid: cd53634d52f9da842bd38588b94c4945, type: 2}
+    processType: 4
+  - rawIngredient: {fileID: 11400000, guid: cd53634d52f9da842bd38588b94c4945, type: 2}
+    processType: 4
+  - rawIngredient: {fileID: 11400000, guid: cd53634d52f9da842bd38588b94c4945, type: 2}
+    processType: 4

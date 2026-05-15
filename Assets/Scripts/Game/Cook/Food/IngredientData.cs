@@ -18,8 +18,9 @@ public class IngredientData : ScriptableObject
     [Header("장비 조건")]
     public EquipmentType requiredEquipment = EquipmentType.None; // 이 재료를 구매/보관하려면 필요한 장비
 
-    // 💡 이 재료를 냄비에 넣을 때 어떤 미니게임이 뜰지 결정합니다.
-    public MiniGameType requiredMiniGame;
+    [Header("미니게임")]
+    [Tooltip("이 재료를 상자에 세팅할 때 실행될 미니게임. None이면 바로 세팅됩니다.")]
+    public MiniGameType requiredMiniGame = MiniGameType.None;
 
     [Header("맛 태그")]
     public System.Collections.Generic.List<FlavorTag> flavorTags;

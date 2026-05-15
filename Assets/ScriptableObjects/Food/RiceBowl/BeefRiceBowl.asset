@@ -14,14 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: BeefRiceBowl
   basePrice: 60
-  autoCookTime: 2.0
+  autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
   requiredIngredients:
   - {fileID: 11400000, guid: a70a672d269e8b946958e6e0f98ebbf9, type: 2}
-  - {fileID: 11400000, guid: 1703176bc5bb5ed4e91c29897278a202, type: 2}
-  - {fileID: 11400000, guid: 91521eb6bacef7b49890901bfaba0075, type: 2}
-  - {fileID: 11400000, guid: 3a7ac745d9a709e428d55a3e823cf972, type: 2}
-  requiredEquipments: []
-  flavorTags: []
+  - {fileID: 11400000, guid: f4782ef0b84d6d14383c45261d464f5c, type: 2}
+  - {fileID: 11400000, guid: 9a7d639f0104a60449747ffb9f4120cf, type: 2}
+  - {fileID: 11400000, guid: 3ed39607bc8c52e40969c73445f50cfc, type: 2}
+  requiredEquipments: 
+  flavorTags: 
+  ingredientConfigs:
+  - rawIngredient: {fileID: 11400000, guid: a70a672d269e8b946958e6e0f98ebbf9, type: 2}
+    processType: 0
+  - rawIngredient: {fileID: 11400000, guid: 1703176bc5bb5ed4e91c29897278a202, type: 2}
+    processType: 1
+  - rawIngredient: {fileID: 11400000, guid: 91521eb6bacef7b49890901bfaba0075, type: 2}
+    processType: 4
+  - rawIngredient: {fileID: 11400000, guid: 3a7ac745d9a709e428d55a3e823cf972, type: 2}
+    processType: 1
