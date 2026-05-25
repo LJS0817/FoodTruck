@@ -54,7 +54,7 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
         upgradeUIPanel.interactable = true;
         upgradeUIPanel.blocksRaycasts = true;
 
-        Time.timeScale = 0f;
+        // Time.timeScale 제어는 MainUINavigationController에서 일괄 수행합니다.
 
         // 기본 카테고리(장비)로 시작
         ChangeCategory(0);
@@ -65,7 +65,7 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
         upgradeUIPanel.alpha = 0f;
         upgradeUIPanel.interactable = false;
         upgradeUIPanel.blocksRaycasts = false;
-        Time.timeScale = 1f;
+        // Time.timeScale 제어는 MainUINavigationController에서 일괄 수행합니다.
 
         if (_itemInfoUI != null)
         {

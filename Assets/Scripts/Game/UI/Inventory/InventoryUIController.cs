@@ -41,8 +41,7 @@ public class InventoryUIController : MonoBehaviour
             _inventoryUI.blocksRaycasts = true;
         }
 
-        // 💡 인벤토리 오픈 시 게임 시간 정지
-        Time.timeScale = 0f;
+        // Time.timeScale 제어는 MainUINavigationController에서 일괄 수행합니다.
 
         // 💡 타겟 데이터에 해당하는 슬롯 포커스 및 Apply 버튼 상태 초기화
         FocusOnItem(targetData);
@@ -64,8 +63,7 @@ public class InventoryUIController : MonoBehaviour
             _selectedSlot = null;
         }
 
-        // 💡 인벤토리 종료 시 게임 시간 재개
-        Time.timeScale = 1f;
+        // Time.timeScale 제어는 MainUINavigationController에서 일괄 수행합니다.
     }
 
     public void ChangeSortBy(int idx) { _currentSortBy = (SortBy)idx; UpdateUI(currentItems); }

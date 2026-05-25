@@ -53,7 +53,7 @@ public class StoreUIController : MonoBehaviour, MarketUIInterface
         storeUIPanel.interactable = true;
         storeUIPanel.blocksRaycasts = true;
 
-        Time.timeScale = 0f;
+        // Time.timeScale 제어는 MainUINavigationController에서 일괄 수행합니다.
 
         // 기본 카테고리(시장)로 시작
         ChangeCategory(0);
@@ -64,7 +64,7 @@ public class StoreUIController : MonoBehaviour, MarketUIInterface
         storeUIPanel.alpha = 0f;
         storeUIPanel.interactable = false;
         storeUIPanel.blocksRaycasts = false;
-        Time.timeScale = 1f;
+        // Time.timeScale 제어는 MainUINavigationController에서 일괄 수행합니다.
 
         if (_itemInfoUI != null)
         {
