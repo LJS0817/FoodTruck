@@ -105,3 +105,11 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+/FoodTruck_BurstDebugInformation_DoNotShip
+/test_BackUpThisFolder_ButDontShipItWithYourGame
+ProjectSettings/ProjectVersion.txt
+ProjectSettings/ProjectVersion.txt
+/ProjectSettings
+/ProjectSettings
+ProjectSettings/ProjectVersion.txt
+*.txt
