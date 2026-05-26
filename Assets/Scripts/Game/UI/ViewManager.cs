@@ -22,6 +22,7 @@ public class ViewManager : MonoBehaviour
     [SerializeField] private float transitionDuration = 0.5f;
 
     private bool isTransitioning = false;
+    public bool IsTransitioning => isTransitioning;
 
     private void Awake()
     {
@@ -39,6 +40,30 @@ public class ViewManager : MonoBehaviour
 
         if (isInsideTruck) GoOutside();
         else GoInside();
+    }
+
+    /// <summary>
+    /// 외부에서 콜백(midAction)을 받아 화면 전환(페이드인/아웃) 이펙트를 재사용할 수 있게 합니다.
+    /// </summary>
+    public void PerformFadeTransition(System.Action midAction)
+    {
+        if (isTransitioning) return;
+        StartCoroutine(FadeTransitionRoutine(midAction));
+    }
+
+    private IEnumerator FadeTransitionRoutine(System.Action midAction)
+    {
+        isTransitioning = true;
+        transition.gameObject.SetActive(true);
+
+        yield return StartCoroutine(PlayTransitionEffect(0f, 1f));
+
+        midAction?.Invoke();
+
+        yield return StartCoroutine(PlayTransitionEffect(1f, 0f));
+
+        isTransitioning = false;
+        transition.gameObject.SetActive(false);
     }
 
     public void GoInside()

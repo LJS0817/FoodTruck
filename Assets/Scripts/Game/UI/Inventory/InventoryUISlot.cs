@@ -6,9 +6,9 @@ using UnityEngine.UI;
 public class InventoryUISlot : MonoBehaviour
 {
     [SerializeField] Image _icon;
-    [SerializeField] TMP_Text _ingredientName;
     [SerializeField] TMP_Text _ingredientAmount;
-    [SerializeField] TMP_Text _expiration;
+    [SerializeField] GameObject _warningIcon; // 유통기한 임박 (예: 3일 이하)
+    [SerializeField] GameObject _dangerIcon;  // 유통기한 매우 임박 (예: 1일 이하)
     [SerializeField] Image _focus;
 
     private Action<InventoryUISlot> _onSlotClicked;
@@ -20,10 +20,21 @@ public class InventoryUISlot : MonoBehaviour
         this._onSlotClicked = onClicked;
         
         _icon.sprite = item.data.ingredientSprite;
-        _ingredientName.SetText(item.data.ingredientName);
-        _expiration.SetText(item.remainingDays.ToString() + "일");
         _focus.gameObject.SetActive(false);
         if (_ingredientAmount != null) _ingredientAmount.SetText(item.amount.ToString());
+
+        // 유통기한 시각화 (Danger, Warning 아이콘)
+        if (_dangerIcon != null) _dangerIcon.SetActive(false);
+        if (_warningIcon != null) _warningIcon.SetActive(false);
+
+        if (item.remainingDays <= 1)
+        {
+            if (_dangerIcon != null) _dangerIcon.SetActive(true);
+        }
+        else if (item.remainingDays <= 3)
+        {
+            if (_warningIcon != null) _warningIcon.SetActive(true);
+        }
     }
 
     public void OnClicked() {

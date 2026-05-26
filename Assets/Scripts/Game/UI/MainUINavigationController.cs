@@ -17,6 +17,14 @@ public class MainUINavigationController : MonoBehaviour
 
     private void Start()
     {
+        for(int i = 0; i < navButtons.Length; i++)
+        {
+            int index = i; // 클로저 문제 방지
+            if (navButtons[i] != null)
+            {
+                navButtons[i].onClick.AddListener(() => SelectTab(index));
+            }
+        }
         // 기본적으로 2번(트럭 뷰, 인게임 화면) 탭을 활성화 상태로 시작
         SelectTab(2); 
     }
@@ -30,6 +38,24 @@ public class MainUINavigationController : MonoBehaviour
     {
         if (_currentTabIndex == index) return;
 
+        // 전환 중일 때는 탭 클릭 무시
+        if (ViewManager.Instance != null && ViewManager.Instance.IsTransitioning) return;
+
+        if (ViewManager.Instance != null)
+        {
+            // ViewManager에 만들어둔 Fade 이펙트 재사용
+            ViewManager.Instance.PerformFadeTransition(() => {
+                SwitchTabInternal(index);
+            });
+        }
+        else
+        {
+            SwitchTabInternal(index);
+        }
+    }
+
+    private void SwitchTabInternal(int index)
+    {
         // 다른 탭으로 이동하기 전에 기존에 열려있던 모든 관리 UI 닫기
         CloseAllTabs();
 
