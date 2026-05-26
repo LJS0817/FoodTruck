@@ -7,10 +7,12 @@ public class MainUINavigationController : MonoBehaviour
     [SerializeField] private InventoryUIController inventoryUI;
     [SerializeField] private UpgradeUIController upgradeUI;
     [SerializeField] private StoreUIController storeUI;
-    [SerializeField] private WorkerManagementUI workerUI;
+    // [Removed] WorkerManagementUI is no longer used; hiring is handled via TruckManagementUIController
+    [SerializeField] private RecipeUIController recipeUI;
+    [SerializeField] private TruckManagementUIController truckManagementUI;
 
     [Header("Navigation Buttons (Optional)")]
-    [Tooltip("순서대로: 0(인벤토리), 1(업그레이드), 2(트럭 뷰), 3(상점), 4(직원 관리)")]
+    [Tooltip("순서대로: 0(인벤토리), 1(레시피), 2(홈), 3(트럭 관리), 4(마켓)")]
     [SerializeField] private Button[] navButtons;
 
     private int _currentTabIndex = -1;
@@ -56,7 +58,7 @@ public class MainUINavigationController : MonoBehaviour
 
     private void SwitchTabInternal(int index)
     {
-        // 다른 탭으로 이동하기 전에 기존에 열려있던 모든 관리 UI 닫기
+        // Close all existing tabs
         CloseAllTabs();
 
         _currentTabIndex = index;
@@ -68,27 +70,25 @@ public class MainUINavigationController : MonoBehaviour
                 if (inventoryUI != null) inventoryUI.OpenInventory();
                 break;
             case 1:
-                if (upgradeUI != null) upgradeUI.OpenUI();
+                if (recipeUI != null) recipeUI.OpenUI();
                 break;
             case 2:
-                // 트럭 뷰: 모든 탭이 닫혀 인게임 월드가 보이는 상태
+                // Home / Truck View
                 isTruckView = true;
                 break;
             case 3:
-                if (storeUI != null) storeUI.OpenUI();
+                if (truckManagementUI != null) truckManagementUI.OpenDefault();
                 break;
             case 4:
-                if (workerUI != null) workerUI.OpenPanel();
+                if (storeUI != null) storeUI.OpenUI();
                 break;
             default:
                 isTruckView = true;
                 break;
         }
 
-        // 트럭 뷰(인게임 화면)일 때만 시간을 흐르게 하고, 
-        // 관리 창(인벤토리, 상점 등)이 열려있을 때는 시간을 멈춥니다.
+        // Time scale handling
         Time.timeScale = isTruckView ? 1f : 0f;
-        
         UpdateButtonStates(index);
     }
 
@@ -100,7 +100,7 @@ public class MainUINavigationController : MonoBehaviour
         if (inventoryUI != null) inventoryUI.CloseInventory();
         if (upgradeUI != null) upgradeUI.CloseUI();
         if (storeUI != null) storeUI.CloseUI();
-        if (workerUI != null) workerUI.ClosePanel();
+        if (truckManagementUI != null) truckManagementUI.CloseUI();
     }
 
     /// <summary>
