@@ -11,7 +11,7 @@ using TMPro;
 ///  • Skill / passive level count.
 /// Each upgrade costs in‑game currency and raises the corresponding stat by one step.
 /// </summary>
-public class UpgradeUIController : MonoBehaviour
+public class PlayerUpgradeUIController : MonoBehaviour
 {
     // ---------------------------------------------------------------------
     // Upgrade data (could be moved to a separate model later)
@@ -50,9 +50,6 @@ public class UpgradeUIController : MonoBehaviour
     [SerializeField] private TMP_Text _txtSkillLevel;
     [SerializeField] private TMP_Text _txtSkillCost;
 
-    // ---------------------------------------------------------------------
-    // Unity lifecycle
-    // ---------------------------------------------------------------------
     private void Awake()
     {
         LoadSavedData();
@@ -60,9 +57,6 @@ public class UpgradeUIController : MonoBehaviour
         RefreshAllUI();
     }
 
-    // ---------------------------------------------------------------------
-    // Public API – called from MainUINavigationController or other scripts
-    // ---------------------------------------------------------------------
     public void OpenUI()
     {
         gameObject.SetActive(true);
@@ -214,7 +208,7 @@ public class UpgradeUIController : MonoBehaviour
 }
 
 /// <summary>
-/// Simple static currency manager used by the UpgradeUIController.
+/// Simple static currency manager used by the PlayerUpgradeUIController.
 /// Replace with the actual game‑wide currency system when it becomes available.
 /// </summary>
 public static class CurrencyManager
