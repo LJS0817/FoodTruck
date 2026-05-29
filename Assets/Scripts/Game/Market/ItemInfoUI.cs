@@ -1,18 +1,18 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
-using System.Collections.Generic;
+using System.Collections;
 
 /// <summary>
 /// 상점, 인벤토리, 레시피북 등에서 아이템이나 레시피의 상세 정보를 표시하는 범용 UI 클래스입니다.
 /// </summary>
-public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
+public class ItemInfoUI : MonoBehaviour
 {
     [SerializeField] private Image _iconImage;
     [SerializeField] private TMP_Text _nameText;
     [SerializeField] private TMP_Text _descText;
     [SerializeField] private TMP_Text _ownedAmountText; // 현재 보유량 표시
+    [SerializeField] private TMP_Text _expirationText;  // 유통기한 표시
     [SerializeField] private Button _submitButton;
     [SerializeField] private Button _discardButton;
     [SerializeField] private TMP_Text _submitButtonText; // Submit 버튼 텍스트
@@ -26,10 +26,12 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
     private StoreItem _currentItem;
     private bool _isStoreMode = true;
     private CanvasGroup _canvasGroup;
+    RectTransform _rectTransform;
 
     private void Awake()
     {
         _canvasGroup = GetComponent<CanvasGroup>();
+        _rectTransform = transform.GetChild(1).GetComponent<RectTransform>();
 
         if (_submitButton != null)
             _submitButton.onClick.AddListener(OnClickSubmit);
@@ -60,16 +62,10 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
 
         // 기본 정보 설정
         _nameText.text = item.itemName;
-        if (item.icon != null) _iconImage.sprite = item.icon;
+        _iconImage.sprite = item.icon;
 
         // 설명 및 영역 활성화 처리
         SetupDescription(item.data);
-
-        // 제출 버튼 텍스트 및 활성화 설정
-        if (_submitButtonText != null)
-        {
-            _submitButtonText.text = _isStoreMode ? "구매" : "적용";
-        }
 
         // 레시피 상세 정보 처리
         if (item.data is FoodData foodData)
@@ -82,6 +78,20 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
             if (_recipeDetailsArea != null) _recipeDetailsArea.SetActive(false);
         }
 
+        // 유통기한 표시 처리
+        if (_expirationText != null)
+        {
+            if (item.data is IngredientData ingredient)
+            {
+                _expirationText.gameObject.SetActive(true);
+                _expirationText.text = $"유통기한: {ingredient.maxShelfLifeDays}일";
+            }
+            else
+            {
+                _expirationText.gameObject.SetActive(false);
+            }
+        }
+
         if(_discardButton.gameObject.activeSelf && isStoreMode) _discardButton.gameObject.SetActive(false);
         else if(!_discardButton.gameObject.activeSelf && !isStoreMode) _discardButton.gameObject.SetActive(true);
 
@@ -90,6 +100,30 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
         _canvasGroup.alpha = 1f;
         _canvasGroup.interactable = true;
         _canvasGroup.blocksRaycasts = true;
+    
+        StartCoroutine(RebuildLayoutRoutine());
+    }
+
+    private IEnumerator RebuildLayoutRoutine()
+    {
+        // 1. 첫 프레임 대기 (UI 텍스트 및 자식 객체 할당 반영)
+        yield return null; 
+        
+        // 2. 모든 캔버스 강제 업데이트 (TMPro 메쉬 생성 및 기본 레이아웃 계산)
+        Canvas.ForceUpdateCanvases();
+        
+        // 3. 타겟 레이아웃 강제 갱신
+        if (_rectTransform != null)
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(_rectTransform);
+        }
+
+        // 4. 중첩된 LayoutGroup의 크기 계산 지연(버그)을 방지하기 위해 한 프레임 더 대기 후 최종 갱신
+        yield return null;
+        if (_rectTransform != null)
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(_rectTransform);
+        }
     }
 
     private void SetupDescription(ScriptableObject data)
@@ -157,30 +191,52 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
             _ownedAmountText.text = isOwned ? "해금됨" : "잠김";
         }
 
-        // 상점 모드일 때 이미 보유한 장비나 해금된 레시피는 구매 버튼 비활성화
-        if (_submitButton != null && _isStoreMode)
+        if (_isStoreMode)
         {
-            // 재료는 여러 번 구매 가능하므로 제외, 장비와 레시피만 체크
-            if(_discardButton.gameObject.activeSelf) _discardButton.gameObject.SetActive(false);
-            if (_currentItem.data is EquipmentData || _currentItem.data is FoodData)
+            if (_discardButton != null) _discardButton.gameObject.SetActive(false);
+
+            if (_submitButton != null)
             {
-                _submitButton.interactable = !isOwned;
-                if (isOwned && _submitButtonText != null) _submitButtonText.text = "이미 보유함";
-            }
-            else
-            {
-                _submitButton.interactable = true;
-                if (_submitButtonText != null) _submitButtonText.text = "구매";
+                if (_currentItem.data is EquipmentData || _currentItem.data is FoodData)
+                {
+                    _submitButton.gameObject.SetActive(true);
+                    _submitButton.interactable = !isOwned;
+                    if (_submitButtonText != null)
+                    {
+                        _submitButtonText.text = isOwned ? "이미 보유함" : "구매";
+                    }
+                }
+                else
+                {
+                    _submitButton.gameObject.SetActive(true);
+                    _submitButton.interactable = true;
+                    if (_submitButtonText != null) _submitButtonText.text = "구매";
+                }
             }
         }
-        else if (_discardButton != null && !_isStoreMode)
+        else
         {
-            if(!_discardButton.gameObject.activeSelf) _discardButton.gameObject.SetActive(true);
-            // 인벤토리 모드(폐기)일 때는 보유량이 0보다 클 때만 버튼 활성화
             if (_currentItem.data is IngredientData ing)
             {
                 int currentTotal = InventoryManager.Instance.GetTotalAmount(ing.ingredientID);
-                _discardButton.interactable = currentTotal > 0;
+                
+                if (_submitButton != null)
+                {
+                    _submitButton.gameObject.SetActive(currentTotal > 0);
+                    _submitButton.interactable = true;
+                    if (_submitButtonText != null) _submitButtonText.text = "적용";
+                }
+
+                if (_discardButton != null)
+                {
+                    _discardButton.gameObject.SetActive(currentTotal > 0);
+                    _discardButton.interactable = true;
+                }
+            }
+            else
+            {
+                if (_submitButton != null) _submitButton.gameObject.SetActive(false);
+                if (_discardButton != null) _discardButton.gameObject.SetActive(false);
             }
         }
     }
@@ -256,10 +312,5 @@ public class ItemInfoUI : MonoBehaviour, IPointerClickHandler
             onBuyAction(_currentItem, amount);
         else 
             StoreManager.Instance.TryBuyItem(_currentItem, amount);
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        // 배경 클릭 시 닫기
     }
 }

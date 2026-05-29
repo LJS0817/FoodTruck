@@ -1,13 +1,22 @@
 fileFormatVersion: 2
-guid: 63ec27ffce531ae4db4298c0eb0836b8
+guid: 97b7eadda9ba59342a5dcba1e3c8bcc9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6187921338879160427
-    second: upgrade_0
+      213: -3011536200331094784
+    second: DotLine_0
   - first:
-      213: -3505230433971597065
-    second: upgrade_1
+      213: 2706203739411937831
+    second: DotLine_1
+  - first:
+      213: 4568220423801333032
+    second: DotLine_2
+  - first:
+      213: 7239296961929817759
+    second: DotLine_3
+  - first:
+      213: 6285718378276331862
+    second: DotLine_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -116,23 +125,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: upgrade_0
+      name: DotLine_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 172
-        height: 173
+        y: 17
+        width: 5
+        height: 186
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 5dde8669016339c4cb912b35298fe12b
-      internalID: 6187921338879160427
+      spriteID: 005190718cfd436d0800000000000000
+      internalID: -3011536200331094784
       vertices: []
       indices: 
       edges: []
@@ -141,7 +150,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 853c26cac41a5d745a77234653afe975
+    spriteID: 0adda036cc46e954fb960865b2816ce4
     internalID: 0
     vertices: []
     indices: 
@@ -151,8 +160,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      upgrade_0: 6187921338879160427
-      upgrade_1: -3505230433971597065
+      DotLine_0: -3011536200331094784
+      DotLine_1: 2706203739411937831
+      DotLine_2: 4568220423801333032
+      DotLine_3: 7239296961929817759
+      DotLine_4: 6285718378276331862
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

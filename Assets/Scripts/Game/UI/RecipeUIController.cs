@@ -7,12 +7,19 @@ using UnityEngine;
 /// </summary>
 public class RecipeUIController : MonoBehaviour
 {
+    [SerializeField] CanvasGroup canvasGroup;
+
     /// <summary>
     /// Open the Recipe UI panel.
     /// </summary>
     public void OpenUI()
     {
-        gameObject.SetActive(true);
+        if (canvasGroup != null)
+        {
+            canvasGroup.alpha = 1f;
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
+        }
     }
 
     /// <summary>
@@ -20,6 +27,11 @@ public class RecipeUIController : MonoBehaviour
     /// </summary>
     public void CloseUI()
     {
-        gameObject.SetActive(false);
+        if (canvasGroup != null)
+        {
+            canvasGroup.alpha = 0f;
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+        }
     }
 }

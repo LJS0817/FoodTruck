@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 63ec27ffce531ae4db4298c0eb0836b8
+guid: b1d1183b47a3812499eca4b08ba020a4
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6187921338879160427
-    second: upgrade_0
-  - first:
-      213: -3505230433971597065
-    second: upgrade_1
+      213: 5670732621190257608
+    second: Money_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -56,7 +53,7 @@ TextureImporter:
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 0
+  spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -116,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: upgrade_0
+      name: Money_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 172
-        height: 173
+        width: 199
+        height: 215
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 5dde8669016339c4cb912b35298fe12b
-      internalID: 6187921338879160427
+      spriteID: 8cbd34e264d72be40800000000000000
+      internalID: 5670732621190257608
       vertices: []
       indices: 
       edges: []
@@ -141,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 853c26cac41a5d745a77234653afe975
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -151,8 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      upgrade_0: 6187921338879160427
-      upgrade_1: -3505230433971597065
+      Money_0: 5670732621190257608
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

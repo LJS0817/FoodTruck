@@ -4,15 +4,13 @@ using UnityEngine.UI;
 public class MainUINavigationController : MonoBehaviour
 {
     [Header("UI Controllers")]
-    [SerializeField] private InventoryUIController inventoryUI;
+    [SerializeField] private InventoryRecipeUIController inventoryRecipeUI;
     [SerializeField] private UpgradeUIController upgradeUI;
     [SerializeField] private StoreUIController storeUI;
-    // [Removed] WorkerManagementUI is no longer used; hiring is handled via TruckManagementUIController
-    [SerializeField] private RecipeUIController recipeUI;
-    [SerializeField] private TruckManagementUIController truckManagementUI;
+    [SerializeField] private WorkerManagementUI workerUI;
 
     [Header("Navigation Buttons (Optional)")]
-    [Tooltip("순서대로: 0(인벤토리), 1(레시피), 2(홈), 3(트럭 관리), 4(마켓)")]
+    [Tooltip("순서대로: 0(인벤토리+레시피), 1(업그레이드), 2(홈), 3(상점), 4(직원 관리)")]
     [SerializeField] private Button[] navButtons;
 
     private int _currentTabIndex = -1;
@@ -34,7 +32,7 @@ public class MainUINavigationController : MonoBehaviour
     /// <summary>
     /// 탭 선택 함수. UI 버튼의 OnClick 이벤트에 이 함수를 연결하고,
     /// 매개변수로 0~4의 인덱스를 전달하세요.
-    /// 0: 인벤토리 / 1: 업그레이드 / 2: 트럭 뷰 / 3: 상점 / 4: 직원 관리
+    /// 0: 인벤토리+레시피 / 1: 업그레이드 / 2: 트럭 뷰 / 3: 상점 / 4: 직원 관리
     /// </summary>
     public void SelectTab(int index)
     {
@@ -67,20 +65,20 @@ public class MainUINavigationController : MonoBehaviour
         switch (index)
         {
             case 0:
-                if (inventoryUI != null) inventoryUI.OpenInventory();
+                if (inventoryRecipeUI != null) inventoryRecipeUI.OpenUI();
                 break;
             case 1:
-                if (recipeUI != null) recipeUI.OpenUI();
+                if (upgradeUI != null) upgradeUI.OpenUI();
                 break;
             case 2:
                 // Home / Truck View
                 isTruckView = true;
                 break;
             case 3:
-                if (truckManagementUI != null) truckManagementUI.OpenDefault();
+                if (storeUI != null) storeUI.OpenUI();
                 break;
             case 4:
-                if (storeUI != null) storeUI.OpenUI();
+                if (workerUI != null) workerUI.OpenPanel();
                 break;
             default:
                 isTruckView = true;
@@ -97,10 +95,10 @@ public class MainUINavigationController : MonoBehaviour
     /// </summary>
     public void CloseAllTabs()
     {
-        if (inventoryUI != null) inventoryUI.CloseInventory();
+        if (inventoryRecipeUI != null) inventoryRecipeUI.CloseUI();
         if (upgradeUI != null) upgradeUI.CloseUI();
         if (storeUI != null) storeUI.CloseUI();
-        if (truckManagementUI != null) truckManagementUI.CloseUI();
+        if (workerUI != null) workerUI.ClosePanel();
     }
 
     /// <summary>
