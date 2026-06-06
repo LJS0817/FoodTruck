@@ -19,7 +19,6 @@ public class InventoryUIController : MonoBehaviour
     [SerializeField] CanvasGroup _inventoryUI;
     [SerializeField] InventoryUISlot slotPrefab;
     [SerializeField] Transform slotContainer;
-    [SerializeField] AmountSetter _amountSetter; // 💡 수량 조절기
     
     SortBy _currentSortBy;
     OrderBy _currentOrderBy;
@@ -131,29 +130,29 @@ public class InventoryUIController : MonoBehaviour
     }
 
     // 💡 폐기 버튼: 선택된 아이템을 재화 반환 없이 영구 삭제
-    public void OnClickDiscard()
-    {
-        if (_selectedSlot != null)
-        {
-            if (_amountSetter != null)
-            {
-                int maxAvailable = _selectedSlot.Item.amount;
-                _amountSetter.Open(maxAvailable, 0, (amount) => {
-                    InventoryManager.Instance.DiscardItem(_selectedSlot.Item, amount);
-                    SetSelectedSlot(null); // 삭제 후 선택 해제 및 버튼 비활성화
-                });
-            }
-            else
-            {
-                InventoryManager.Instance.DiscardItem(_selectedSlot.Item);
-                SetSelectedSlot(null); // 삭제 후 선택 해제 및 버튼 비활성화
-            }
-        }
-        else
-        {
-            Debug.LogWarning("[InventoryUIController] 폐기할 아이템이 선택되지 않았습니다.");
-        }
-    }
+    // public void OnClickDiscard()
+    // {
+    //     if (_selectedSlot != null)
+    //     {
+    //         if (_amountSetter != null)
+    //         {
+    //             int maxAvailable = _selectedSlot.Item.amount;
+    //             // _amountSetter.Open(maxAvailable, 0, (amount) => {
+    //             //     InventoryManager.Instance.DiscardItem(_selectedSlot.Item, amount);
+    //             //     SetSelectedSlot(null); // 삭제 후 선택 해제 및 버튼 비활성화
+    //             // });
+    //         }
+    //         else
+    //         {
+    //             InventoryManager.Instance.DiscardItem(_selectedSlot.Item);
+    //             SetSelectedSlot(null); // 삭제 후 선택 해제 및 버튼 비활성화
+    //         }
+    //     }
+    //     else
+    //     {
+    //         Debug.LogWarning("[InventoryUIController] 폐기할 아이템이 선택되지 않았습니다.");
+    //     }
+    // }
 
     // 💡 가공 버튼 관련 액션
     public void OnClickProcessBake() { TryProcess(ProcessType.Bake); }

@@ -7,16 +7,11 @@ public class AmountSetter : MonoBehaviour
 {
     [SerializeField] private int maxAmount = 99;
     
-    [SerializeField] CanvasGroup _group;
     [SerializeField] private Slider _quantityInput;
     [SerializeField] TMP_Text priceText;
     [SerializeField] private TMP_Text amountText;
     [SerializeField] private Button _plusButton;
     [SerializeField] private Button _minusButton;
-
-
-    Action<int> onAmountConfirmed;
-
     private int currentAmount = 1;
     private int _basePrice = 0;
 
@@ -28,7 +23,6 @@ public class AmountSetter : MonoBehaviour
         {
             _quantityInput.onValueChanged.AddListener(OnSliderValueChanged);
         }
-        Close();
     }
 
     public void IncreaseAmount()
@@ -53,18 +47,18 @@ public class AmountSetter : MonoBehaviour
     {
         currentAmount = Mathf.RoundToInt(value);
         UpdateAmountText();
-        UpdateQuantityUI(value);
     }
 
-    private void UpdateQuantityUI(float value)
+    private void UpdateQuantityUI()
     {
         // 수량 범위에 따른 버튼 활성화/비활성화
-        if (_minusButton != null) _minusButton.interactable = (value > 0f);
-        if (_plusButton != null) _plusButton.interactable = (value < 1f);
+        if (_minusButton != null) _minusButton.interactable = (currentAmount > 1);
+        if (_plusButton != null) _plusButton.interactable = (currentAmount < maxAmount);
     }
 
     private void UpdateAmountText()
     {
+        UpdateQuantityUI();
         if (amountText != null)
         {
             amountText.text = currentAmount.ToString();
@@ -94,37 +88,12 @@ public class AmountSetter : MonoBehaviour
         }
     }
 
-    public void Open(int max, int basePrice, Action<int> onConfirm)
+    public void SetAmountInfo(int basePrice, int max)
     {
-        onAmountConfirmed = onConfirm;
         _basePrice = basePrice;
+        
+        // 슬라이더 위치와 수량을 중앙(절반)으로 초기화
+        currentAmount = Mathf.Max(1, Mathf.RoundToInt(maxAmount / 2f));
         SetMaxAmount(max);
-        
-        currentAmount = 1;
-        UpdateAmountText();
-        
-        if (_group != null)
-        {
-            _group.alpha = 1f;
-            _group.interactable = true;
-            _group.blocksRaycasts = true;
-        }
-    }
-
-    public void Close()
-    {
-        onAmountConfirmed = null;
-        if (_group != null)
-        {
-            _group.alpha = 0f;
-            _group.interactable = false;
-            _group.blocksRaycasts = false;
-        }
-    }
-
-    public void OnSubmit()
-    {
-        onAmountConfirmed?.Invoke(currentAmount);
-        Close();
     }
 }
