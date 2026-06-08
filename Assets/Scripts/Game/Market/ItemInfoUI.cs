@@ -84,12 +84,12 @@ public class ItemInfoUI : MonoBehaviour
         {
             if (item.data is IngredientData ingredient)
             {
-                _expirationText.gameObject.SetActive(true);
+                _expirationText.transform.parent.gameObject.SetActive(true);
                 _expirationText.text = $"유통기한: {ingredient.maxShelfLifeDays}일";
             }
             else
             {
-                _expirationText.gameObject.SetActive(false);
+                _expirationText.transform.parent.gameObject.SetActive(false);
             }
         }
 
@@ -110,15 +110,22 @@ public class ItemInfoUI : MonoBehaviour
 
         if (_amountSetter != null)
         {
-            _amountSetter.gameObject.SetActive(true);
-            int maxAmount = _isStoreMode ? _currentItem.maxPurchaseAmount : 99;
-            
-            if (!isStoreMode && item.data is IngredientData ing)
+            if (item.data is IngredientData ing)
             {
-                maxAmount = InventoryManager.Instance.GetTotalAmount(ing.ingredientID);
-                if (maxAmount < 1) maxAmount = 1;
+                _amountSetter.gameObject.SetActive(true);
+                int maxAmount = _isStoreMode ? _currentItem.maxPurchaseAmount : 99;
+                
+                if (!isStoreMode)
+                {
+                    maxAmount = InventoryManager.Instance.GetTotalAmount(ing.ingredientID);
+                    if (maxAmount < 1) maxAmount = 1;
+                }
+                _amountSetter.SetAmountInfo(baseValue, maxAmount);
             }
-            _amountSetter.SetAmountInfo(baseValue, maxAmount);
+            else
+            {
+                _amountSetter.gameObject.SetActive(false);
+            }
         }
 
         _canvasGroup.alpha = 1f;
