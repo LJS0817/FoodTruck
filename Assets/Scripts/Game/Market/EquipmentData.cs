@@ -10,21 +10,28 @@ public struct ProcessTypeEntry
 {
     public ProcessType processType;
 
+    [Header("기본 수치 (Lv.1)")]
     [Tooltip("이 장비를 사용할 때 가공 시간에 적용되는 배율 (0.5 = 50% 단축)")]
     [Range(0.1f, 1.0f)]
-    public float timeMultiplier;          // 1.0 = 보너스 없음, 0.5 = 50% 단축
+    public float timeMultiplier;
 
     [Tooltip("이 장비를 사용할 때 체력 소모에 적용되는 배율 (0.5 = 50% 절감)")]
     [Range(0.1f, 1.0f)]
-    public float staminaMultiplier;       // 1.0 = 보너스 없음, 0.5 = 50% 절감
+    public float staminaMultiplier;
 
     [Tooltip("이 장비를 사용할 때 결과물 품질 보너스 (0.0 ~ 1.0, 높을수록 프리미엄 확률 증가)")]
     [Range(0f, 1f)]
-    public float qualityBonus;            // 0 = 보너스 없음, 1 = 무조건 프리미엄
+    public float qualityBonus;
 
     [Tooltip("미니게임 성공 판정 점수 기준을 낮춰주는 완화 보너스 (0 = 완화 없음, 0.3 = 30% 낮춰줌)")]
     [Range(0f, 0.5f)]
     public float miniGameEaseBonus;
+
+    [Header("레벨업 당 성장 수치")]
+    public float timeMultiplierGrowth;
+    public float staminaMultiplierGrowth;
+    public float qualityBonusGrowth;
+    public float miniGameEaseBonusGrowth;
 }
 
 [CreateAssetMenu(fileName = "New Equipment", menuName = "Tycoon/Equipment")]
@@ -77,5 +84,23 @@ public class EquipmentData : ScriptableObject
             qualityBonus = 0f,
             miniGameEaseBonus = 0f
         };
+    }
+
+    /// <summary>
+    /// 특정 ProcessType에 해당하는 효과 구조체를 레벨에 맞춰 강화된 수치로 반환합니다.
+    /// </summary>
+    public ProcessTypeEntry GetEntryWithLevel(ProcessType type, int level)
+    {
+        ProcessTypeEntry baseEntry = GetEntry(type);
+        if (level <= 1) return baseEntry;
+
+        int levelDiff = level - 1;
+        
+        baseEntry.timeMultiplier = Mathf.Clamp(baseEntry.timeMultiplier - (baseEntry.timeMultiplierGrowth * levelDiff), 0.1f, 1.0f);
+        baseEntry.staminaMultiplier = Mathf.Clamp(baseEntry.staminaMultiplier - (baseEntry.staminaMultiplierGrowth * levelDiff), 0.1f, 1.0f);
+        baseEntry.qualityBonus = Mathf.Clamp(baseEntry.qualityBonus + (baseEntry.qualityBonusGrowth * levelDiff), 0f, 1f);
+        baseEntry.miniGameEaseBonus = Mathf.Clamp(baseEntry.miniGameEaseBonus + (baseEntry.miniGameEaseBonusGrowth * levelDiff), 0f, 0.5f);
+
+        return baseEntry;
     }
 }

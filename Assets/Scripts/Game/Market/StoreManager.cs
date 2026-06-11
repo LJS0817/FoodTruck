@@ -42,6 +42,7 @@ public class StoreManager : MonoBehaviour
         PopulateRecipeSlots();
         PopulateDecorationSlots();
         PopulateMarketingSlots();
+        PopulateEquipmentStoreSlots();
     }
 
     private void PopulateMarketSlots()
@@ -103,6 +104,20 @@ public class StoreManager : MonoBehaviour
         }
     }
 
+    private void PopulateEquipmentStoreSlots()
+    {
+        Transform parent = storeUIController.GetContentParent(4);
+        if (parent == null || EquipmentStoreManager.Instance == null) return;
+        storeUIController.ClearSlots(parent);
+
+        List<EquipmentData> equipments = EquipmentStoreManager.Instance.GetAllEquipments();
+        for (int i = 0; i < equipments.Count; i++)
+        {
+            StoreItem item = StoreItem.FromEquipment(equipments[i], equipments[i].price);
+            CreateSlot(item, parent);
+        }
+    }
+
     private void CreateSlot(StoreItem item, Transform parent)
     {
         if (parent == null || _slotPrefab == null) return;
@@ -144,12 +159,52 @@ public class StoreManager : MonoBehaviour
                 if (marketingManager != null && marketingManager.StartCampaign(marketing))
                     Debug.Log($"[StoreManager] {marketing.campaignName} 마케팅 캠페인 시작!");
             }
+            else if (item.data is EquipmentData equipment)
+            {
+                if (EquipmentStoreManager.Instance.HasEquipment(equipment))
+                {
+                    Debug.LogWarning($"[StoreManager] 이미 {equipment.equipmentName}을 보유 중입니다.");
+                    return; // 이미 있으면 무시
+                }
+
+                EquipmentData currentEq = EquipmentStoreManager.Instance.GetEquippedEquipment(equipment.type);
+                if (currentEq != null)
+                {
+                    // 장착 중인 동일 타입 장비가 있으면 팝업을 띄웁니다.
+                    int normalCost = equipment.price;
+                    int tradeInCost = EquipmentStoreManager.Instance.CalculateTradeInCost(equipment);
+                    storeUIController.OpenTradeInPopup(equipment, normalCost, tradeInCost);
+                }
+                else
+                {
+                    // 없으면 바로 일반 구매
+                    ExecuteEquipmentPurchase(equipment, false);
+                }
+                return; // 구매 로직은 ExecuteEquipmentPurchase로 위임됨
+            }
 
             storeUIController.RefreshUI();
         }
         else
         {
             Debug.LogWarning($"[StoreManager] 잔액이 부족합니다! ({totalCost}원 필요)");
+        }
+    }
+
+    public void ExecuteEquipmentPurchase(EquipmentData equipment, bool isTradeIn)
+    {
+        int cost = isTradeIn ? EquipmentStoreManager.Instance.CalculateTradeInCost(equipment) : equipment.price;
+
+        if (EquipmentStoreManager.Instance.BuyEquipment(equipment, isTradeIn))
+        {
+            SettlementManager.Instance?.AddExpense(cost);
+            
+            // 구매 성공 시 Upgrade 창(인벤토리)에 실시간 슬롯 추가
+            int level = EquipmentStoreManager.Instance.GetEquipmentLevel(equipment);
+            StoreItem newItem = StoreItem.FromEquipmentLevel(equipment, level);
+            UpgradeManager.Instance.UIController.AddEquipmentSlot(newItem);
+
+            storeUIController.RefreshUI();
         }
     }
 }

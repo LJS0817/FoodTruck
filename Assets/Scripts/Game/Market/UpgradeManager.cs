@@ -12,6 +12,7 @@ public class UpgradeManager : MonoBehaviour
     [SerializeField] private PlayerUpgradeManager playerUpgradeManager;
 
     [SerializeField] StoreItemSlotUI _slotPrefab;
+    public StoreItemSlotUI SlotPrefab => _slotPrefab;
 
     [Header("UI Controller")]
     [SerializeField] private UpgradeUIController upgradeUIController;
@@ -46,12 +47,15 @@ public class UpgradeManager : MonoBehaviour
         if (parent == null || equipmentStoreManager == null) return;
         upgradeUIController.ClearSlots(parent);
 
-        List<EquipmentData> equipments = equipmentStoreManager.GetAllEquipments();
+        List<EquipmentData> equipments = equipmentStoreManager.GetOwnedEquipmentsList();
         for (int i = 0; i < equipments.Count; i++)
         {
-            int finalCost = equipmentStoreManager.CalculateFinalCost(equipments[i]);
-            StoreItem item = StoreItem.FromEquipment(equipments[i], finalCost);
-            CreateSlot(item, parent);
+            EquipmentData eq = equipments[i];
+            int level = equipmentStoreManager.GetEquipmentLevel(eq);
+            StoreItem item = StoreItem.FromEquipmentLevel(eq, level);
+            
+            StoreItemSlotUI slot = upgradeUIController.GetOrCreateSlot(_slotPrefab, parent);
+            slot.Setup(item, (itm) => upgradeUIController.ShowUpgradeInfo(itm));
         }
     }
 
@@ -118,7 +122,7 @@ public class UpgradeManager : MonoBehaviour
 
         if (item.data is EquipmentData equipment)
         {
-            if (equipmentStoreManager.GetOwnedEquipment(equipment.type) == equipment)
+            if (equipmentStoreManager.HasEquipment(equipment))
             {
                 Debug.LogWarning($"[UpgradeManager] 이미 {equipment.equipmentName}을(를) 보유 중입니다.");
                 return;
@@ -131,7 +135,7 @@ public class UpgradeManager : MonoBehaviour
         {
             if (item.data is EquipmentData equipmentData)
             {
-                equipmentStoreManager.BuyEquipment(equipmentData);
+                equipmentStoreManager.BuyEquipment(equipmentData, false);
                 SettlementManager.Instance?.AddExpense(totalCost);
                 Debug.Log($"[UpgradeManager] {equipmentData.equipmentName} 구매 완료! ({totalCost}원)");
             }

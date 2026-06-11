@@ -5,21 +5,13 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
 {
     [SerializeField] CanvasGroup upgradeUIPanel;
     [SerializeField] CanvasGroup _equipmentGroup;
-    [SerializeField] CanvasGroup _workerGroup;
-    [SerializeField] CanvasGroup _districtGroup;
     [SerializeField] CanvasGroup _upgradeGroup;
-
-    [Header("Slot Content Parents (ScrollView Content)")]
-    [SerializeField] private Transform _equipmentContent;
-    [SerializeField] private Transform _workerContent;
-    [SerializeField] private Transform _districtContent;
-    [SerializeField] private Transform _upgradeContent;
 
     [Header("Info Panel")]
     [SerializeField] private ItemInfoUI _itemInfoUI;
+    [SerializeField] private UpgradeInfoUI _upgradeInfoUI;
 
     private CanvasGroup[] _categoryGroups;
-    private Transform[] _contentParents;
 
     private int _currentCategoryIndex = -1;
     private List<StoreItemSlotUI> _slotPool = new List<StoreItemSlotUI>();
@@ -27,10 +19,7 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
     private void Awake()
     {
         _categoryGroups = new CanvasGroup[] { 
-            _equipmentGroup, _workerGroup, _districtGroup, _upgradeGroup
-        };
-        _contentParents = new Transform[] { 
-            _equipmentContent, _workerContent, _districtContent, _upgradeContent
+            _equipmentGroup, _upgradeGroup
         };
         CloseUI();
     }
@@ -71,14 +60,21 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
         {
             _itemInfoUI.CloseUI();
         }
+        if (_upgradeInfoUI != null)
+        {
+            _upgradeInfoUI.CloseUI();
+        }
     }
 
     public void SetVisibleCategory(int categoryIndex, bool isActive)
     {
         if(categoryIndex < 0 || categoryIndex >= _categoryGroups.Length) return;
-        _categoryGroups[categoryIndex].alpha = isActive ? 1f : 0f;
-        _categoryGroups[categoryIndex].interactable = isActive;
-        _categoryGroups[categoryIndex].blocksRaycasts = isActive;
+        if (_categoryGroups[categoryIndex] != null)
+        {
+            _categoryGroups[categoryIndex].alpha = isActive ? 1f : 0f;
+            _categoryGroups[categoryIndex].interactable = isActive;
+            _categoryGroups[categoryIndex].blocksRaycasts = isActive;
+        }
     }
 
     public void ChangeCategory(int categoryIndex)
@@ -111,6 +107,40 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
         _itemInfoUI.OpenInfo(item, isStoreMode, UpgradeManager.Instance.TryBuyUpgrade);
     }
 
+    public void ShowUpgradeInfo(StoreItem item)
+    {
+        if (_upgradeInfoUI == null || item == null) return;
+        _upgradeInfoUI.OpenInfo(item);
+    }
+
+    public void AddEquipmentSlot(StoreItem item)
+    {
+        Transform parent = GetContentParent(0);
+        if (parent == null) return;
+        StoreItemSlotUI slot = GetOrCreateSlot(UpgradeManager.Instance.SlotPrefab, parent);
+        slot.Setup(item, (i) => ShowUpgradeInfo(i));
+    }
+
+    public void UpdateEquipmentSlot(EquipmentData equipmentData)
+    {
+        Transform parent = GetContentParent(0);
+        if (parent == null || equipmentData == null) return;
+
+        int newLevel = EquipmentStoreManager.Instance.GetEquipmentLevel(equipmentData);
+        StoreItem updatedItem = StoreItem.FromEquipmentLevel(equipmentData, newLevel);
+
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            Transform child = parent.GetChild(i);
+            StoreItemSlotUI slot = child.GetComponent<StoreItemSlotUI>();
+            if (slot != null && slot.gameObject.activeSelf && slot.Item != null && slot.Item.data is EquipmentData eq && eq.type == equipmentData.type)
+            {
+                slot.Setup(updatedItem, (i) => ShowUpgradeInfo(i));
+                break;
+            }
+        }
+    }
+
     public void RefreshUI()
     {
         UpgradeManager.Instance.PopulateAllCategories();
@@ -118,8 +148,8 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
 
     public Transform GetContentParent(int categoryIndex)
     {
-        if (categoryIndex < 0 || categoryIndex >= _contentParents.Length) return null;
-        return _contentParents[categoryIndex];
+        if (categoryIndex < 0 || categoryIndex >= _categoryGroups.Length) return null;
+        return _categoryGroups[categoryIndex] != null ? _categoryGroups[categoryIndex].transform : null;
     }
 
     public StoreItemSlotUI GetOrCreateSlot(StoreItemSlotUI prefab, Transform parent)

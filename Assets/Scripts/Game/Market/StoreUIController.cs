@@ -8,15 +8,18 @@ public class StoreUIController : MonoBehaviour, MarketUIInterface
     [SerializeField] CanvasGroup _recipeGroup;
     [SerializeField] CanvasGroup _decorationGroup;
     [SerializeField] CanvasGroup _marketingGroup;
+    [SerializeField] CanvasGroup _equipmentGroup; // 에디터에서 할당 필요
 
     [Header("Slot Content Parents (ScrollView Content)")]
     [SerializeField] private Transform _marketContent;
     [SerializeField] private Transform _recipeContent;
     [SerializeField] private Transform _decorationContent;
     [SerializeField] private Transform _marketingContent;
+    [SerializeField] private Transform _equipmentContent; // 에디터에서 할당 필요
 
     [Header("Info Panel")]
     [SerializeField] private ItemInfoUI _itemInfoUI;
+    [SerializeField] private TradeInPopupUI _tradeInPopupUI;
 
     private CanvasGroup[] _categoryGroups;
     private Transform[] _contentParents;
@@ -24,13 +27,26 @@ public class StoreUIController : MonoBehaviour, MarketUIInterface
     private int _currentCategoryIndex = -1;
     private List<StoreItemSlotUI> _slotPool = new List<StoreItemSlotUI>();
 
+    public void OpenTradeInPopup(EquipmentData equipment, int normalCost, int tradeInCost)
+    {
+        if (_tradeInPopupUI != null)
+        {
+            _tradeInPopupUI.OpenPopup(equipment, normalCost, tradeInCost);
+        }
+        else
+        {
+            Debug.LogWarning("[StoreUIController] TradeInPopupUI가 연결되어 있지 않습니다. 기본적으로 일반 구매를 진행합니다.");
+            StoreManager.Instance.ExecuteEquipmentPurchase(equipment, false);
+        }
+    }
+
     private void Awake()
     {
         _categoryGroups = new CanvasGroup[] { 
-            _marketGroup, _recipeGroup, _decorationGroup, _marketingGroup
+            _marketGroup, _recipeGroup, _decorationGroup, _marketingGroup, _equipmentGroup
         };
         _contentParents = new Transform[] { 
-            _marketContent, _recipeContent, _decorationContent, _marketingContent
+            _marketContent, _recipeContent, _decorationContent, _marketingContent, _equipmentContent
         };
         CloseUI();
     }
@@ -64,11 +80,14 @@ public class StoreUIController : MonoBehaviour, MarketUIInterface
         storeUIPanel.alpha = 0f;
         storeUIPanel.interactable = false;
         storeUIPanel.blocksRaycasts = false;
-        // Time.timeScale 제어는 MainUINavigationController에서 일괄 수행합니다.
 
         if (_itemInfoUI != null)
         {
             _itemInfoUI.CloseUI();
+        }
+        if (_tradeInPopupUI != null)
+        {
+            _tradeInPopupUI.ClosePopup();
         }
     }
 

@@ -166,7 +166,7 @@ public class ProcessManager : MonoBehaviour
         EquipmentData bestEquipment = null;
         foreach (EquipmentType eqType in System.Enum.GetValues(typeof(EquipmentType)))
         {
-            EquipmentData eq = EquipmentStoreManager.Instance.GetOwnedEquipment(eqType);
+            EquipmentData eq = EquipmentStoreManager.Instance.GetEquippedEquipment(eqType);
             if (eq != null && eq.Supports(processType))
             {
                 if (bestEquipment == null || eq.tier > bestEquipment.tier)
@@ -176,8 +176,9 @@ public class ProcessManager : MonoBehaviour
 
         if (bestEquipment != null)
         {
-            Debug.Log($"[가공] 장비 '{bestEquipment.equipmentName}' (Tier {bestEquipment.tier}) 효과 적용");
-            return bestEquipment.GetEntry(processType);
+            int level = EquipmentStoreManager.Instance.GetEquipmentLevel(bestEquipment);
+            Debug.Log($"[가공] 장비 '{bestEquipment.equipmentName}' (Lv.{level}) 효과 적용");
+            return bestEquipment.GetEntryWithLevel(processType, level);
         }
 
         return DefaultEntry(processType);

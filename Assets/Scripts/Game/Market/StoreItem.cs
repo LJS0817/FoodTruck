@@ -41,6 +41,19 @@ public class StoreItem
         };
     }
 
+    public static StoreItem FromEquipmentLevel(EquipmentData equipment, int level)
+    {
+        return new StoreItem
+        {
+            data = equipment,
+            itemName = $"{equipment.equipmentName} Lv.{level}",
+            icon = equipment.equipmentSprite,
+            finalCost = 0,
+            amount = 1,
+            maxPurchaseAmount = equipment.maxPurchaseAmount
+        };
+    }
+
     public static StoreItem FromRecipe(FoodData recipe, int price, int maxAmount = 1)
     {
         return new StoreItem

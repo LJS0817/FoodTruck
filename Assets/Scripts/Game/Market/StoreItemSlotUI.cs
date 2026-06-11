@@ -13,6 +13,7 @@ public class StoreItemSlotUI : MonoBehaviour
     [SerializeField] private Image _categoryIcon;
 
     private StoreItem _item;
+    public StoreItem Item => _item;
 
     public System.Action<StoreItem> onClickAction;
 

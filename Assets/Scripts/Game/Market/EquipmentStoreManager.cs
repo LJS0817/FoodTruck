@@ -3,18 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 장비 상점 및 교환 시스템을 관리합니다.
-/// 장비 구매 시: (새 장비 가격 - 기존 장비 보상가) = 최종 결제 금액
+/// 장비 상점, 보유 관리, 장착 스왑, 보상 판매 시스템을 통합 관리합니다.
 /// </summary>
 public class EquipmentStoreManager : MonoBehaviour
 {
     public static EquipmentStoreManager Instance { get; private set; }
 
     [Header("Equipment Catalog")]
-    [SerializeField] public List<EquipmentData> allEquipments; // 게임 내 모든 장비 목록
+    [SerializeField] public List<EquipmentData> allEquipments;
 
-    // 💡 현재 트럭에 장착된 장비 (타입당 1개만 보유 가능)
-    private Dictionary<EquipmentType, EquipmentData> ownedEquipments = new Dictionary<EquipmentType, EquipmentData>(8);
+    // 💡 모든 보유 장비 목록 (동일 카테고리 여러 개 보관 가능)
+    private List<EquipmentData> ownedEquipmentList = new List<EquipmentData>(16);
+
+    // 💡 현재 트럭에 장착된 장비 (타입당 1개만 장착 가능)
+    private Dictionary<EquipmentType, EquipmentData> equippedEquipments = new Dictionary<EquipmentType, EquipmentData>(8);
+    
+    // 💡 개별 장비(EquipmentData)별 레벨 추적
+    private Dictionary<EquipmentData, int> equipmentLevels = new Dictionary<EquipmentData, int>(16);
 
     public event Action OnEquipmentChanged;
 
@@ -24,98 +29,138 @@ public class EquipmentStoreManager : MonoBehaviour
         else Destroy(gameObject);
     }
 
-    // ===== 장비 보유 확인 =====
+    // ===== 보유 및 장착 상태 확인 =====
 
-    /// <summary>
-    /// 특정 타입의 장비를 보유하고 있는지 확인합니다.
-    /// </summary>
-    public bool HasEquipment(EquipmentType type)
+    public bool HasEquipment(EquipmentData equipment)
     {
-        return ownedEquipments.ContainsKey(type);
+        return ownedEquipmentList.Contains(equipment);
     }
 
-    /// <summary>
-    /// 특정 타입의 현재 보유 장비 데이터를 반환합니다. 없으면 null.
-    /// </summary>
-    public EquipmentData GetOwnedEquipment(EquipmentType type)
+    public EquipmentData GetEquippedEquipment(EquipmentType type)
     {
-        ownedEquipments.TryGetValue(type, out EquipmentData data);
+        equippedEquipments.TryGetValue(type, out EquipmentData data);
         return data;
     }
 
-    // ===== 장비 구매/교환 =====
+    public List<EquipmentData> GetOwnedEquipmentsList()
+    {
+        return new List<EquipmentData>(ownedEquipmentList);
+    }
+
+    public int GetEquipmentLevel(EquipmentData equipment)
+    {
+        if (equipmentLevels.TryGetValue(equipment, out int level)) return level;
+        return 0;
+    }
+
+    public bool IsEquipped(EquipmentData equipment)
+    {
+        if (equipment == null) return false;
+        return GetEquippedEquipment(equipment.type) == equipment;
+    }
+
+    // ===== 장착(Equip) 스왑 =====
 
     /// <summary>
-    /// 장비를 구매합니다. 기존에 같은 타입의 장비를 보유 중이면 보상 판매(교환)가 적용됩니다.
+    /// 보유 중인 장비를 해당 카테고리 슬롯에 장착합니다.
     /// </summary>
-    public bool BuyEquipment(EquipmentData newEquipment)
+    public bool EquipEquipment(EquipmentData equipment)
     {
-        int finalCost = newEquipment.price;
+        if (!HasEquipment(equipment)) return false;
+        
+        equippedEquipments[equipment.type] = equipment;
+        Debug.Log($"<color=yellow>[EquipmentStoreManager] {equipment.equipmentName} 장착 완료!</color>");
+        
+        OnEquipmentChanged?.Invoke();
+        return true;
+    }
 
-        // 기존 장비가 있으면 교환 가치 차감
-        if (ownedEquipments.TryGetValue(newEquipment.type, out EquipmentData currentEquipment))
+    // ===== 장비 구매/보상판매 =====
+
+    /// <summary>
+    /// 장비를 구매합니다. (보상 판매 여부 선택 가능)
+    /// </summary>
+    public bool BuyEquipment(EquipmentData newEquipment, bool isTradeIn)
+    {
+        if (HasEquipment(newEquipment))
         {
-            finalCost -= currentEquipment.tradeInValue;
-
-            // 이미 같은 장비를 소유 중이면 구매 불가
-            if (currentEquipment == newEquipment)
-            {
-                Debug.LogWarning($"[EquipmentStoreManager] 이미 {newEquipment.equipmentName}을(를) 보유 중입니다.");
-                return false;
-            }
-
-            // 더 낮은 등급으로의 다운그레이드 방지 (선택적)
-            if (newEquipment.tier <= currentEquipment.tier)
-            {
-                Debug.LogWarning($"[EquipmentStoreManager] {currentEquipment.equipmentName}보다 낮은 등급의 장비로는 교체할 수 없습니다.");
-                return false;
-            }
+            Debug.LogWarning($"[EquipmentStoreManager] 이미 {newEquipment.equipmentName}을(를) 보유 중입니다.");
+            return false;
         }
 
-        // 최종 비용이 음수가 되지 않도록 보정
-        if (finalCost < 0) finalCost = 0;
+        int finalCost = newEquipment.price;
+        EquipmentData currentEquipped = GetEquippedEquipment(newEquipment.type);
 
-        // 결제
+        if (isTradeIn && currentEquipped != null)
+        {
+            finalCost -= currentEquipped.tradeInValue;
+            if (finalCost < 0) finalCost = 0;
+        }
+
         if (PlayerManager.Instance.SpendMoney(finalCost))
         {
-            ownedEquipments[newEquipment.type] = newEquipment;
-
-            if (currentEquipment != null)
+            // 보상 판매 시 기존 장착 장비 소멸
+            if (isTradeIn && currentEquipped != null)
             {
-                Debug.Log($"<color=cyan>[장비 교환] {currentEquipment.equipmentName} → {newEquipment.equipmentName} (보상 판매: {currentEquipment.tradeInValue}원, 추가 결제: {finalCost}원)</color>");
-            }
-            else
-            {
-                Debug.Log($"<color=cyan>[장비 구매] {newEquipment.equipmentName} 구매 완료! ({finalCost}원)</color>");
+                ownedEquipmentList.Remove(currentEquipped);
+                equipmentLevels.Remove(currentEquipped);
+                Debug.Log($"<color=orange>[장비 교체] {currentEquipped.equipmentName} 보상 판매 (가치: {currentEquipped.tradeInValue})</color>");
             }
 
-            OnEquipmentChanged?.Invoke();
-            return true;
+            ownedEquipmentList.Add(newEquipment);
+            equipmentLevels[newEquipment] = 1;
+
+            // 보상 판매이거나, 빈 슬롯이거나 상관없이 우선 장착 시도 (새로 샀으니 바로 장착해주는 것이 일반적)
+            EquipEquipment(newEquipment); 
+
+            Debug.Log($"<color=cyan>[장비 구매] {newEquipment.equipmentName} 획득! ({finalCost}원 지불)</color>");
+            return true; // EquipEquipment 내부에서 OnEquipmentChanged 호출됨
         }
         else
         {
-            Debug.LogWarning($"<color=red>[장비 구매 실패] 잔액이 부족합니다! (필요 금액: {finalCost}원)</color>");
+            Debug.LogWarning($"<color=red>[장비 구매 실패] 잔액 부족! (필요: {finalCost})</color>");
             return false;
         }
     }
 
     /// <summary>
-    /// 특정 장비 구매 시 필요한 최종 비용을 계산합니다 (UI 표시용).
+    /// UI 표시용: 보상 판매 적용 시 예상 비용 반환
     /// </summary>
-    public int CalculateFinalCost(EquipmentData newEquipment)
+    public int CalculateTradeInCost(EquipmentData newEquipment)
     {
         int finalCost = newEquipment.price;
-
-        if (ownedEquipments.TryGetValue(newEquipment.type, out EquipmentData current))
+        EquipmentData current = GetEquippedEquipment(newEquipment.type);
+        if (current != null)
         {
             finalCost -= current.tradeInValue;
         }
-
         return Mathf.Max(0, finalCost);
     }
 
-    /// <summary>
-    /// 전체 장비 카탈로그를 반환합니다 (UI 표시용).
-    /// </summary>
+    // ===== 레벨 업그레이드 =====
+
+    public int GetUpgradeCost(EquipmentData equipment)
+    {
+        int currentLevel = GetEquipmentLevel(equipment);
+        if (currentLevel == 0) return 0;
+        return equipment.price * currentLevel;
+    }
+
+    public bool LevelUpEquipment(EquipmentData equipment)
+    {
+        int currentLevel = GetEquipmentLevel(equipment);
+        if (currentLevel == 0) return false;
+
+        int cost = GetUpgradeCost(equipment);
+        if (PlayerManager.Instance.SpendMoney(cost))
+        {
+            equipmentLevels[equipment] = currentLevel + 1;
+            Debug.Log($"<color=green>[장비 레벨업] {equipment.equipmentName} Lv.{currentLevel} -> Lv.{currentLevel + 1}</color>");
+            OnEquipmentChanged?.Invoke();
+            return true;
+        }
+        return false;
+    }
+
     public List<EquipmentData> GetAllEquipments() { return allEquipments; }
 }
