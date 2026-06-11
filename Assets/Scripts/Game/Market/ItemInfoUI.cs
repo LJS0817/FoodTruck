@@ -213,7 +213,7 @@ public class ItemInfoUI : MonoBehaviour
         }
         else if (_currentItem.data is EquipmentData equipment)
         {
-            isOwned = UpgradeManager.Instance.EquipmentStore.HasEquipment(equipment.type);
+            isOwned = UpgradeManager.Instance.EquipmentStore.HasEquipment(equipment);
             _ownedAmountText.text = isOwned ? "보유 중" : "미보유";
         }
         else if (_currentItem.data is FoodData food)

@@ -36,6 +36,11 @@ public class EquipmentStoreManager : MonoBehaviour
         return ownedEquipmentList.Contains(equipment);
     }
 
+    public bool HasEquipment(EquipmentType type)
+    {
+        return ownedEquipmentList.Exists(x => x.type == type);
+    }
+
     public EquipmentData GetEquippedEquipment(EquipmentType type)
     {
         equippedEquipments.TryGetValue(type, out EquipmentData data);

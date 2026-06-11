@@ -55,7 +55,7 @@ public class UpgradeInfoUI : MonoBehaviour
 
         if (_upgradeButton != null)
         {
-            _upgradeButton.interactable = PlayerManager.Instance.Money >= upgradeCost;
+            _upgradeButton.interactable = PlayerManager.Instance.CurrentMoney >= upgradeCost;
             if (_upgradeButtonText != null) _upgradeButtonText.text = "레벨업";
         }
 
