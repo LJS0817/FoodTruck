@@ -7,6 +7,10 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
     [SerializeField] CanvasGroup _equipmentGroup;
     [SerializeField] CanvasGroup _upgradeGroup;
 
+    [Header("Category Buttons")]
+    [SerializeField] private UnityEngine.UI.Button _equipmentCategoryBtn;
+    [SerializeField] private UnityEngine.UI.Button _upgradeCategoryBtn;
+
     [Header("Info Panel")]
     [SerializeField] private ItemInfoUI _itemInfoUI;
     [SerializeField] private UpgradeInfoUI _upgradeInfoUI;
@@ -21,6 +25,10 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
         _categoryGroups = new CanvasGroup[] { 
             _equipmentGroup, _upgradeGroup
         };
+
+        if (_equipmentCategoryBtn != null) _equipmentCategoryBtn.onClick.AddListener(() => ChangeCategory(0));
+        if (_upgradeCategoryBtn != null) _upgradeCategoryBtn.onClick.AddListener(() => ChangeCategory(1));
+
         CloseUI();
     }
 

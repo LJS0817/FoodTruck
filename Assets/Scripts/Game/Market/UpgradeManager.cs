@@ -61,7 +61,7 @@ public class UpgradeManager : MonoBehaviour
 
     private void PopulateWorkerSlots()
     {
-        Transform parent = upgradeUIController.GetContentParent(1);
+        Transform parent = upgradeUIController.GetContentParent(2);
         if (parent == null || workerManager == null) return;
         upgradeUIController.ClearSlots(parent);
 
@@ -76,7 +76,7 @@ public class UpgradeManager : MonoBehaviour
 
     private void PopulateDistrictSlots()
     {
-        Transform parent = upgradeUIController.GetContentParent(2);
+        Transform parent = upgradeUIController.GetContentParent(3);
         if (parent == null || districtManager == null) return;
         upgradeUIController.ClearSlots(parent);
 
@@ -91,7 +91,7 @@ public class UpgradeManager : MonoBehaviour
 
     private void PopulateUpgradeSlots()
     {
-        Transform parent = upgradeUIController.GetContentParent(3);
+        Transform parent = upgradeUIController.GetContentParent(1);
         if (parent == null || playerUpgradeManager == null) return;
         upgradeUIController.ClearSlots(parent);
 
