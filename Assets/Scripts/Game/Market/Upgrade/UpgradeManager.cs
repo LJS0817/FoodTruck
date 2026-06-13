@@ -11,8 +11,8 @@ public class UpgradeManager : MonoBehaviour
     [SerializeField] private DistrictManager districtManager;
     [SerializeField] private PlayerUpgradeManager playerUpgradeManager;
 
-    [SerializeField] StoreItemSlotUI _slotPrefab;
-    public StoreItemSlotUI SlotPrefab => _slotPrefab;
+    [SerializeField] UpgradeItemSlotUI _slotPrefab;
+    public UpgradeItemSlotUI SlotPrefab => _slotPrefab;
 
     [Header("UI Controller")]
     [SerializeField] private UpgradeUIController upgradeUIController;
@@ -54,7 +54,7 @@ public class UpgradeManager : MonoBehaviour
             int level = equipmentStoreManager.GetEquipmentLevel(eq);
             StoreItem item = StoreItem.FromEquipmentLevel(eq, level);
             
-            StoreItemSlotUI slot = upgradeUIController.GetOrCreateSlot(_slotPrefab, parent);
+            UpgradeItemSlotUI slot = upgradeUIController.GetOrCreateSlot(_slotPrefab, parent);
             slot.Setup(item, (itm) => upgradeUIController.ShowUpgradeInfo(itm));
         }
     }
@@ -112,7 +112,7 @@ public class UpgradeManager : MonoBehaviour
     private void CreateSlot(StoreItem item, Transform parent)
     {
         if (parent == null || _slotPrefab == null) return;
-        StoreItemSlotUI slot = upgradeUIController.GetOrCreateSlot(_slotPrefab, parent);
+        UpgradeItemSlotUI slot = upgradeUIController.GetOrCreateSlot(_slotPrefab, parent);
         slot.Setup(item, (i) => upgradeUIController.ShowItemInfo(i, true));
     }
 
@@ -166,3 +166,4 @@ public class UpgradeManager : MonoBehaviour
         }
     }
 }
+

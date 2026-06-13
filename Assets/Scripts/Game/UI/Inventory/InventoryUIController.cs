@@ -16,6 +16,20 @@ public enum OrderBy
 
 public class InventoryUIController : MonoBehaviour
 {
+    [Header("Popup & Info UI Settings")]
+    [SerializeField] private RectTransform _inventoryPanel;
+    [SerializeField] private RectTransform _popupTransform;
+    [SerializeField] private ItemSimpleInfoUI _itemSimpleInfoUI;
+    [SerializeField] private ItemInfoUI _itemInfoUI;
+    
+    private Vector2 _originalSize;
+    private Vector2 _originalAnchoredPos;
+    private Vector2 _originalAnchorMin;
+    private Vector2 _originalAnchorMax;
+    private Vector2 _originalPivot;
+    private bool _originalSaved = false;
+    private bool _isPopupMode = false;
+
     [SerializeField] CanvasGroup _inventoryUI;
     [SerializeField] InventoryUISlot slotPrefab;
     [SerializeField] Transform slotContainer;
@@ -33,11 +47,48 @@ public class InventoryUIController : MonoBehaviour
 
     public void OpenInventory(IngredientData targetData = null)
     {
+        OpenInventory(false, targetData);
+    }
+
+    public void OpenInventory(bool isPopup, IngredientData targetData = null)
+    {
         if (_inventoryUI != null)
         {
             _inventoryUI.alpha = 1f;
             _inventoryUI.interactable = true;
             _inventoryUI.blocksRaycasts = true;
+        }
+
+        _isPopupMode = isPopup;
+
+        if (_inventoryPanel != null && _popupTransform != null)
+        {
+            if (!_originalSaved)
+            {
+                _originalSize = _inventoryPanel.sizeDelta;
+                _originalAnchoredPos = _inventoryPanel.anchoredPosition;
+                _originalAnchorMin = _inventoryPanel.anchorMin;
+                _originalAnchorMax = _inventoryPanel.anchorMax;
+                _originalPivot = _inventoryPanel.pivot;
+                _originalSaved = true;
+            }
+
+            if (isPopup)
+            {
+                _inventoryPanel.anchorMin = _popupTransform.anchorMin;
+                _inventoryPanel.anchorMax = _popupTransform.anchorMax;
+                _inventoryPanel.pivot = _popupTransform.pivot;
+                _inventoryPanel.sizeDelta = _popupTransform.sizeDelta;
+                _inventoryPanel.anchoredPosition = _popupTransform.anchoredPosition;
+            }
+            else
+            {
+                _inventoryPanel.anchorMin = _originalAnchorMin;
+                _inventoryPanel.anchorMax = _originalAnchorMax;
+                _inventoryPanel.pivot = _originalPivot;
+                _inventoryPanel.sizeDelta = _originalSize;
+                _inventoryPanel.anchoredPosition = _originalAnchoredPos;
+            }
         }
 
         // Time.timeScale 제어는 MainUINavigationController에서 일괄 수행합니다.
@@ -62,6 +113,9 @@ public class InventoryUIController : MonoBehaviour
             _selectedSlot = null;
         }
 
+        if (_itemSimpleInfoUI != null) _itemSimpleInfoUI.CloseUI();
+        if (_itemInfoUI != null) _itemInfoUI.CloseUI();
+
         // Time.timeScale 제어는 MainUINavigationController에서 일괄 수행합니다.
     }
 
@@ -73,6 +127,23 @@ public class InventoryUIController : MonoBehaviour
     public void OnSlotClicked(InventoryUISlot slot)
     {
         SetSelectedSlot(slot);
+        
+        if (_isPopupMode)
+        {
+            if (_itemSimpleInfoUI != null)
+            {
+                _itemSimpleInfoUI.OpenInfo(slot.Item);
+            }
+        }
+        else
+        {
+            if (_itemInfoUI != null)
+            {
+                // 인벤토리 모드로 띄우기 (isStoreMode = false)
+                StoreItem dummyStoreItem = StoreItem.FromIngredient(slot.Item.data, slot.Item.data.basePrice, slot.Item.amount);
+                _itemInfoUI.OpenInfo(dummyStoreItem, false);
+            }
+        }
     }
 
     private void FocusOnItem(IngredientData targetData)

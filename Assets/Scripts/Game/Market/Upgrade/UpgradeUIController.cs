@@ -1,15 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UpgradeUIController : MonoBehaviour, MarketUIInterface
 {
     [SerializeField] CanvasGroup upgradeUIPanel;
     [SerializeField] CanvasGroup _equipmentGroup;
     [SerializeField] CanvasGroup _upgradeGroup;
+    [SerializeField] ScrollRect _scrollView;
 
     [Header("Category Buttons")]
-    [SerializeField] private UnityEngine.UI.Button _equipmentCategoryBtn;
-    [SerializeField] private UnityEngine.UI.Button _upgradeCategoryBtn;
+    [SerializeField] private Button _equipmentCategoryBtn;
+    [SerializeField] private Button _upgradeCategoryBtn;
 
     [Header("Info Panel")]
     [SerializeField] private ItemInfoUI _itemInfoUI;
@@ -18,7 +20,7 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
     private CanvasGroup[] _categoryGroups;
 
     private int _currentCategoryIndex = -1;
-    private List<StoreItemSlotUI> _slotPool = new List<StoreItemSlotUI>();
+    private List<UpgradeItemSlotUI> _slotPool = new List<UpgradeItemSlotUI>();
 
     private void Awake()
     {
@@ -93,15 +95,8 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
         SetVisibleCategory(_currentCategoryIndex, false);
         _currentCategoryIndex = categoryIndex;
         SetVisibleCategory(_currentCategoryIndex, true);
-        // for (int i = 0; i < _categoryGroups.Length; i++)
-        // {
-        //     if (_categoryGroups[i] == null) continue;
 
-        //     bool isActive = (i == categoryIndex);
-        //     _categoryGroups[i].alpha = isActive ? 1f : 0f;
-        //     _categoryGroups[i].interactable = isActive;
-        //     _categoryGroups[i].blocksRaycasts = isActive;
-        // }
+        _scrollView.content = _categoryGroups[categoryIndex].transform as RectTransform;
 
         if (_itemInfoUI != null)
         {
@@ -125,7 +120,7 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
     {
         Transform parent = GetContentParent(0);
         if (parent == null) return;
-        StoreItemSlotUI slot = GetOrCreateSlot(UpgradeManager.Instance.SlotPrefab, parent);
+        UpgradeItemSlotUI slot = GetOrCreateSlot(UpgradeManager.Instance.SlotPrefab, parent);
         slot.Setup(item, (i) => ShowUpgradeInfo(i));
     }
 
@@ -140,7 +135,7 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
         for (int i = 0; i < parent.childCount; i++)
         {
             Transform child = parent.GetChild(i);
-            StoreItemSlotUI slot = child.GetComponent<StoreItemSlotUI>();
+            UpgradeItemSlotUI slot = child.GetComponent<UpgradeItemSlotUI>();
             if (slot != null && slot.gameObject.activeSelf && slot.Item != null && slot.Item.data is EquipmentData eq && eq.type == equipmentData.type)
             {
                 slot.Setup(updatedItem, (i) => ShowUpgradeInfo(i));
@@ -160,7 +155,7 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
         return _categoryGroups[categoryIndex] != null ? _categoryGroups[categoryIndex].transform : null;
     }
 
-    public StoreItemSlotUI GetOrCreateSlot(StoreItemSlotUI prefab, Transform parent)
+    public UpgradeItemSlotUI GetOrCreateSlot(UpgradeItemSlotUI prefab, Transform parent)
     {
         for (int i = 0; i < _slotPool.Count; i++)
         {
@@ -173,7 +168,7 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
             }
         }
 
-        StoreItemSlotUI newSlot = Instantiate(prefab, parent);
+        UpgradeItemSlotUI newSlot = Instantiate(prefab, parent);
         _slotPool.Add(newSlot);
         return newSlot;
     }
@@ -184,7 +179,7 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
         for (int i = 0; i < parent.childCount; i++)
         {
             Transform child = parent.GetChild(i);
-            StoreItemSlotUI slot = child.GetComponent<StoreItemSlotUI>();
+            UpgradeItemSlotUI slot = child.GetComponent<UpgradeItemSlotUI>();
             if (slot != null)
             {
                 slot.gameObject.SetActive(false);
@@ -192,3 +187,4 @@ public class UpgradeUIController : MonoBehaviour, MarketUIInterface
         }
     }
 }
+

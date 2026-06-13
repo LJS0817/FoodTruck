@@ -2,8 +2,9 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class InventoryUISlot : MonoBehaviour
+public class InventoryUISlot : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] Image _icon;
     [SerializeField] TMP_Text _ingredientAmount;
@@ -37,7 +38,7 @@ public class InventoryUISlot : MonoBehaviour
         }
     }
 
-    public void OnClicked() {
+    public void OnPointerClick(PointerEventData eventData) {
         StoreManager.Instance.UIController.ShowItemInfo(StoreItem.FromIngredient(Item.data, Item.data.basePrice), false);
         _onSlotClicked?.Invoke(this);
     }

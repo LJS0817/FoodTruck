@@ -219,11 +219,11 @@ public class InventoryManager : MonoBehaviour
 
     public void OpenUI()
     {
-        _controller.OpenInventory();
+        _controller.OpenInventory(false);
     }
     public void OpenUIWithApplyBtn(IngredientData targetData = null)
     {
-        _controller.OpenInventory(targetData);
+        _controller.OpenInventory(true, targetData);
     }
 
     public void CloseUI()

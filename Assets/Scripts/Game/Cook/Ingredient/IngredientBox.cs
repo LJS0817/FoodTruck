@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 [Serializable]
 public class IngredientBoxSetter
@@ -33,70 +35,120 @@ public class IngredientBoxSetter
     } // 상자에 세팅할 재료 데이터 (SO)
 }
 
-[RequireComponent(typeof(BoxCollider2D))]
-public class IngredientBox : MonoBehaviour, IInteractable
+public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     [Header("Box Settings")]
-    public Transform spawnPoint;          // 재료가 등장할 위치
     public float capacity = 100f;
     public int currentAmount = 0;
     public float qualityScore = 1.0f; // 💡 가공 품질 (1.0 = 일반, 1.2 = 프리미엄 등)
     IngredientBoxSetter _setter;
 
     Action RefillEvent;
-    Action SetupEvent; // 💡 세팅되지 않은 상자를 터치했을 때 호출할 이벤트
+    Action SetupEvent;
 
-    public void Init(Action onRefill, Action onSetup = null)
+    // 드래그 제어
+    private bool _isDraggingItem = false;
+    private IngredientObject _spawnedIngredient;
+    private ScrollRect _parentScrollRect;
+
+    public void Init(Action onRefill, Action onSetup = null, ScrollRect scrollRect = null)
     {
         RefillEvent = onRefill;
         SetupEvent = onSetup;
+        _parentScrollRect = scrollRect;
     }
 
-    public IInteractable OnTouchBegin(Vector2 touchPosition)
+    public void OnPointerClick(PointerEventData eventData)
     {
-        // 💡 페이즈에 따른 조작 분기
+        if (_isDraggingItem) return;
+
         DayPhase phase = DayCycleManager.Instance.CurrentPhase;
 
-        // 1. 준비 단계(Preparation)에서는 재료 세팅/변경 UI를 띄웁니다.
+        // 준비 단계(Preparation)에서는 재료 세팅/변경 UI를 띄웁니다.
         if (phase == DayPhase.Preparation)
         {
             SetupEvent?.Invoke();
-            return this;
+            return;
         }
 
-        // 2. 그 외 단계(Business 등)에서는 기존 로직 수행
-        
-        // 세팅되지 않은 빈 상자일 경우
+        // 세팅되지 않은 상자일 경우 처리
         if (_setter == null)
         {
             Debug.Log("<color=yellow>빈 상자입니다. 준비 단계(09시~12시)에서 재료를 세팅하세요.</color>");
+            return;
         }
-        // 인벤토리에 재고가 있는지 확인
-        else if (currentAmount > 0)
-        {
-            return SpawnIngredient(touchPosition);
-        }
-        // 재고가 없을 경우 리필 요구
-        else
+
+        // 재고가 없을 경우 리필 이벤트
+        if (currentAmount <= 0)
         {
             Debug.Log($"<color=red>재료 부족: {_setter.boxData.ingredientName} 상자가 비었습니다!</color>");
             RefillEvent?.Invoke();
         }
-        return this;
     }
 
-    public void OnTouchDrag(Vector2 touchPosition)
+    public void OnBeginDrag(PointerEventData eventData)
     {
-        // 상자 자체는 드래그되지 않으므로 비워둡니다.
+        // Y축 드래그가 X축보다 크고, 준비 단계가 아니며, 상자가 세팅되었고, 재고가 있을 때 아이템 스폰
+        DayPhase phase = DayCycleManager.Instance.CurrentPhase;
+        if (phase != DayPhase.Preparation && _setter != null && currentAmount > 0 && Mathf.Abs(eventData.delta.y) > Mathf.Abs(eventData.delta.x))
+        {
+            _isDraggingItem = true;
+            currentAmount--;
+            
+            // 화면 좌표를 월드 좌표로 변환
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(eventData.position);
+            worldPos.z = 0f;
+
+            // 2D 재료 생성
+            _spawnedIngredient = Instantiate(_setter.prefabToSpawn, worldPos, Quaternion.identity);
+            _spawnedIngredient.SetupIngredient(_setter.boxData);
+            _spawnedIngredient.OnTouchBegin(worldPos);
+
+            // 스크롤 이벤트 차단 (옵션)
+            if (_parentScrollRect != null)
+                _parentScrollRect.OnEndDrag(eventData);
+        }
+        else
+        {
+            _isDraggingItem = false;
+            if (_parentScrollRect != null)
+                _parentScrollRect.OnBeginDrag(eventData);
+        }
     }
 
-    public void OnTouchEnd()
+    public void OnDrag(PointerEventData eventData)
     {
-        // 터치 종료 로직
+        if (_isDraggingItem && _spawnedIngredient != null)
+        {
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(eventData.position);
+            worldPos.z = 0f;
+            _spawnedIngredient.OnTouchDrag(worldPos);
+        }
+        else if (!_isDraggingItem)
+        {
+            if (_parentScrollRect != null)
+                _parentScrollRect.OnDrag(eventData);
+        }
     }
 
-    public void SetupIngredient(IngredientBoxSetter data, float quality = 1.0f, int amount = -1) {
-        // 💡 기존에 있던 재료가 있다면 인벤토리로 반환
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (_isDraggingItem && _spawnedIngredient != null)
+        {
+            _spawnedIngredient.OnTouchEnd();
+            _spawnedIngredient = null;
+        }
+        else if (!_isDraggingItem)
+        {
+            if (_parentScrollRect != null)
+                _parentScrollRect.OnEndDrag(eventData);
+        }
+        
+        _isDraggingItem = false;
+    }
+
+    public void SetupIngredient(IngredientBoxSetter data, float quality = 1.0f, int amount = -1) 
+    {
         ReturnToInventory();
 
         _setter = data;
@@ -108,7 +160,6 @@ public class IngredientBox : MonoBehaviour, IInteractable
             Refill();
         }
         
-        // 재료가 바뀌었으므로 판매 가능 레시피 갱신
         if (MenuManager.Instance != null)
         {
             MenuManager.Instance.UpdateAvailableRecipes();
@@ -120,41 +171,24 @@ public class IngredientBox : MonoBehaviour, IInteractable
         return _setter != null ? _setter.boxData : null;
     }
 
-    private IInteractable SpawnIngredient(Vector2 touchPosition)
-    {
-        currentAmount--;
-        // 💡 인벤토리에서 차감하는 로직은 이미 상자를 채울 때(FillIngredient) 수행되므로 여기서 호출하지 않습니다.
-        
-        // 2. 재료 생성 
-        // (현재는 Instantiate지만, 최적화를 위해 이 부분도 반드시 Object Pool에서 꺼내오도록 수정해야 합니다)
-        IngredientObject newIngredient = Instantiate(_setter.prefabToSpawn, touchPosition, Quaternion.identity);
-
-        // 3. 생성된 재료에 데이터 덮어씌우기
-        newIngredient.SetupIngredient(_setter.boxData);
-        return newIngredient.OnTouchBegin(touchPosition);
-
-        // 등장 시 약간의 애니메이션 효과 (Scale 튕김 등) 추가 가능
-    }
-
     public void ResetBox()
     {
         ReturnToInventory();
         _setter = null;
     }
 
-    // 💡 상자에 남은 재료를 다시 인벤토리로 반환합니다.
     public void ReturnToInventory()
     {
         if (currentAmount > 0 && _setter != null && _setter.boxData != null)
         {
-            // 상자에서 다시 꺼낸 재료는 어뷰징 방지를 위해 유통기한을 1일로 설정하여 반환합니다.
             InventoryManager.Instance.AddIngredient(_setter.boxData, currentAmount, 1);
             Debug.Log($"[IngredientBox] {_setter.boxData.ingredientName} {currentAmount}개를 인벤토리로 반환했습니다.");
             currentAmount = 0;
         }
     }
 
-    public void Refill() {
+    public void Refill() 
+    {
         currentAmount += InventoryManager.Instance.FillIngredient(_setter.boxData.ingredientID, (int)Math.Floor(capacity / _setter.boxData.volume) - currentAmount);
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class IngredientManager : MonoBehaviour
 {
@@ -9,8 +10,14 @@ public class IngredientManager : MonoBehaviour
     [SerializeField] InventoryManager _inventoryMng;
     [SerializeField] List<IngredientBoxSetter> _boxSetters;
     [SerializeField] Transform _boxParent;
-    List<IngredientBox> _boxes;
+    
+    [Header("Dynamic Box Settings")]
+    [Tooltip("UI 버전 IngredientBox 프리팹을 연결하세요.")]
+    [SerializeField] IngredientBox _boxPrefab;
+    [Tooltip("초기 상자 개수. 추후 업그레이드 시스템과 연동 시 이 값을 변경하거나 UpdateBoxCount를 호출하세요.")]
+    public int maxBoxCount = 4;
 
+    List<IngredientBox> _boxes;
     int _currentBoxIndex;
 
     private void Awake()
@@ -22,12 +29,37 @@ public class IngredientManager : MonoBehaviour
     {
         _currentBoxIndex = -1;
         _boxes = new List<IngredientBox>();
-        for(int i = 0; i < _boxParent.childCount; i++)
+
+        // 에디터 등에 남아있을 수 있는 더미 데이터 삭제
+        for (int i = _boxParent.childCount - 1; i >= 0; i--)
         {
-            int index = i; // 람다 캡처용 변수
-            _boxes.Add(_boxParent.GetChild(index).GetComponent<IngredientBox>());
+            Destroy(_boxParent.GetChild(i).gameObject);
+        }
+
+        UpdateBoxCount(maxBoxCount);
+        
+        if (_boxSetters != null && _boxSetters.Count > 0 && _boxSetters[0].boxData != null)
+        {
+            _inventoryMng.AddIngredient(_boxSetters[0].boxData, 100, _boxSetters[0].boxData.maxShelfLifeDays);
+        }
+    }
+
+    /// <summary>
+    /// 상자 개수를 동적으로 변경합니다. (추후 업그레이드 시 호출)
+    /// </summary>
+    public void UpdateBoxCount(int newCount)
+    {
+        maxBoxCount = newCount;
+        
+        ScrollRect parentScrollRect = _boxParent.GetComponentInParent<ScrollRect>();
+
+        while (_boxes.Count < maxBoxCount)
+        {
+            int index = _boxes.Count;
+            IngredientBox newBox = Instantiate(_boxPrefab, _boxParent);
+            _boxes.Add(newBox);
             
-            _boxes[index].Init(
+            newBox.Init(
                 onRefill: () => {
                     _currentBoxIndex = index; 
                     OpenInventoryForRefill();  
@@ -35,10 +67,10 @@ public class IngredientManager : MonoBehaviour
                 onSetup: () => { 
                     _currentBoxIndex = index; 
                     OpenInventoryForSetup(); 
-                }
+                },
+                scrollRect: parentScrollRect
             );
         }
-        _inventoryMng.AddIngredient(_boxSetters[0].boxData, 100, _boxSetters[0].boxData.maxShelfLifeDays);
     }
 
     private void OpenInventoryForSetup()
