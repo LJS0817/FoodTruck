@@ -12,14 +12,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16f13e88652c7d34cb2fa12492ede98b, type: 3}
   m_Name: Bread
   m_EditorClassIdentifier: 
-  ingredientID: 0
+  ingredientID: 548
   ingredientName: Bread
   ingredientSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
-  volume: 10
-  description: Test
-  basePrice: 10
+  volume: 1
+  description: "\uC2E0\uC120\uD55C Bread\uC785\uB2C8\uB2E4."
+  basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99
   requiredEquipment: 0
   requiredMiniGame: 0
-  flavorTags: 0200000003000000
+  flavorTags: 00000000
+  processMethods:
+  - processType: 4
+    requiredMiniGame: 3
+    requiredStamina: 5
+    stateSteps:
+    - state: 0
+      timeThreshold: 0
+      stateSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
+    - state: 4
+      timeThreshold: 3
+      stateSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
+    - state: 5
+      timeThreshold: 8
+      stateSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
+  - processType: 1
+    requiredMiniGame: 4
+    requiredStamina: 5
+    stateSteps:
+    - state: 0
+      timeThreshold: 0
+      stateSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
+    - state: 4
+      timeThreshold: 3
+      stateSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
+    - state: 5
+      timeThreshold: 8
+      stateSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}

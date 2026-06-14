@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 819335a61e0c2db4aa7024b2d23c4055, type: 3}
+  m_Name: Equip_Basic_Fryer
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentData
+  type: 4
+  equipmentName: "\uAE30\uB984\uB54C \uB080 \uD280\uAE40\uAE30"
+  equipmentSprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  tier: 1
+  price: 0
+  tradeInValue: 0
+  maxPurchaseAmount: 1
+  description: "\uC5B8\uC81C \uCCAD\uC18C\uD588\uB294\uC9C0 \uBAA8\uB97C \uAD6C\uD615
+    \uD280\uAE40\uAE30\uC785\uB2C8\uB2E4. \uAC00\uB054 \uAE30\uB984\uC774 \uD291\uB2C8\uB2E4."
+  supportedProcessTypes:
+  - processType: 2
+    timeMultiplier: 1
+    staminaMultiplier: 1
+    qualityBonus: 0
+    miniGameEaseBonus: 0
+    timeMultiplierGrowth: 0.05
+    staminaMultiplierGrowth: 0.05
+    qualityBonusGrowth: 0.01
+    miniGameEaseBonusGrowth: 0.01

@@ -20,3 +20,4 @@ MonoBehaviour:
   tradeInValue: 750
   maxPurchaseAmount: 1
   description: Provides longer lasting power for extended operations.
+  supportedProcessTypes: []

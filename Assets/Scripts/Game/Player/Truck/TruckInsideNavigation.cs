@@ -7,7 +7,7 @@ public class TruckInsideNavigation : MonoBehaviour
     public static TruckInsideNavigation Instance { get; private set; }
 
     [Header("Data")]
-    public Truck truckData; // 외부 트럭 오브젝트의 레이아웃 데이터 참조
+    public TruckData truckData; // 외부 트럭 오브젝트의 레이아웃 데이터 참조
 
     [Header("UI Buttons")]
     public Button leftButton;
@@ -104,7 +104,8 @@ public class TruckInsideNavigation : MonoBehaviour
                 SpriteRenderer sr = equipmentObject.GetComponent<SpriteRenderer>();
                 if (sr != null) sr.sprite = currentEq.equipmentSprite;
                 
-                // 진행 중이던 가공 효과 등 초기화 로직 필요시 여기에 추가
+                // 백그라운드 매니저와 연동하여 현재 장비의 시각적 진행 상태(이펙트/UI) 갱신
+                equipmentObject.SyncState();
             }
             
             if (stationNameText != null) stationNameText.text = currentEq.equipmentName;

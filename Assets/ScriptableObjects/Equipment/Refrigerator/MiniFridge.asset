@@ -20,3 +20,4 @@ MonoBehaviour:
   tradeInValue: 1250
   maxPurchaseAmount: 1
   description: A small electric refrigerator.
+  supportedProcessTypes: []

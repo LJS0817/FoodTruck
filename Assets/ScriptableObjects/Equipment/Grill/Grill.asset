@@ -22,7 +22,11 @@ MonoBehaviour:
   description: Can make grill cheese
   supportedProcessTypes:
   - processType: 1
-    timeMultiplier: 1
-    staminaMultiplier: 0.1
-    qualityBonus: 0
+    timeMultiplier: 0.9
+    staminaMultiplier: 0.9
+    qualityBonus: 0.05
     miniGameEaseBonus: 0
+    timeMultiplierGrowth: 0.02
+    staminaMultiplierGrowth: 0.02
+    qualityBonusGrowth: 0.02
+    miniGameEaseBonusGrowth: 0

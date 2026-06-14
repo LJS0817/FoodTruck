@@ -152,4 +152,9 @@ public class IngredientManager : MonoBehaviour
             }
         }
     }
+
+    public List<IngredientBox> GetAllBoxes()
+    {
+        return _boxes;
+    }
 }

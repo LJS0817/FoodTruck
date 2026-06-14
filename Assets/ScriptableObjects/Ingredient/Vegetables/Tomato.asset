@@ -15,11 +15,25 @@ MonoBehaviour:
   ingredientID: 7
   ingredientName: Tomato
   ingredientSprite: {fileID: 0}
-  volume: 5
-  description: Tomato
-  basePrice: 8
-  maxShelfLifeDays: 4
+  volume: 1
+  description: "\uC2E0\uC120\uD55C Tomato\uC785\uB2C8\uB2E4."
+  basePrice: 100
+  maxShelfLifeDays: 7
   maxPurchaseAmount: 99
   requiredEquipment: 0
   requiredMiniGame: 0
-  flavorTags: []
+  flavorTags: 09000000
+  processMethods:
+  - processType: 4
+    requiredMiniGame: 3
+    requiredStamina: 5
+    stateSteps:
+    - state: 0
+      timeThreshold: 0
+      stateSprite: {fileID: 0}
+    - state: 4
+      timeThreshold: 3
+      stateSprite: {fileID: 0}
+    - state: 5
+      timeThreshold: 8
+      stateSprite: {fileID: 0}

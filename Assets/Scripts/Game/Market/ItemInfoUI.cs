@@ -117,7 +117,7 @@ public class ItemInfoUI : MonoBehaviour
                 
                 if (!isStoreMode)
                 {
-                    maxAmount = InventoryManager.Instance.GetTotalAmount(ing.ingredientID);
+                    maxAmount = InventoryManager.Instance.GetTotalAmount(ing.ingredientID, false);
                     if (maxAmount < 1) maxAmount = 1;
                 }
                 _amountSetter.SetAmountInfo(baseValue, maxAmount);
@@ -159,7 +159,29 @@ public class ItemInfoUI : MonoBehaviour
 
     private void SetupDescription(ScriptableObject data)
     {
-        if (data is IngredientData ingredient) _descText.text = ingredient.description;
+        if (data is IngredientData ingredient) 
+        {
+            int boxAmount = 0;
+            if (IngredientManager.Instance != null)
+            {
+                foreach (var box in IngredientManager.Instance.GetAllBoxes())
+                {
+                    if (box.currentAmount > 0 && box.GetCurrentData() != null && box.GetCurrentData().ingredientID == ingredient.ingredientID)
+                    {
+                        boxAmount += box.currentAmount;
+                    }
+                }
+            }
+
+            if (boxAmount > 0)
+            {
+                _descText.text = $"<color=#00FF00>[현재 상자에 {boxAmount}개 세팅됨]</color>\n\n{ingredient.description}";
+            }
+            else
+            {
+                _descText.text = ingredient.description;
+            }
+        }
         else if (data is EquipmentData equipment) _descText.text = equipment.description;
         else if (data is FoodData food) _descText.text = "조리에 필요한 재료와 도구를 확인하세요.";
         else _descText.text = "";
@@ -174,13 +196,13 @@ public class ItemInfoUI : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        if (food.requiredIngredients != null)
+        if (food.ingredientConfigs != null)
         {
-            foreach (var ingredient in food.requiredIngredients)
+            foreach (var config in food.ingredientConfigs)
             {
-                if (ingredient == null) continue;
+                if (config.rawIngredient == null) continue;
                 var req = Instantiate(_requirementPrefab, _requirementsContainer);
-                req.Setup(ingredient.ingredientSprite, ingredient.ingredientName);
+                req.Setup(config.rawIngredient.ingredientSprite, config.rawIngredient.ingredientName);
             }
         }
 
@@ -208,7 +230,7 @@ public class ItemInfoUI : MonoBehaviour
 
         if (_currentItem.data is IngredientData ingredient)
         {
-            int amount = InventoryManager.Instance.GetTotalAmount(ingredient.ingredientID);
+            int amount = InventoryManager.Instance.GetTotalAmount(ingredient.ingredientID, !_isStoreMode);
             _ownedAmountText.text = $"X {amount}";
         }
         else if (_currentItem.data is EquipmentData equipment)
@@ -249,7 +271,7 @@ public class ItemInfoUI : MonoBehaviour
         {
             if (_currentItem.data is IngredientData ing)
             {
-                int currentTotal = InventoryManager.Instance.GetTotalAmount(ing.ingredientID);
+                int currentTotal = InventoryManager.Instance.GetTotalAmount(ing.ingredientID, true);
                 
                 if (_submitButton != null)
                 {
@@ -317,23 +339,23 @@ public class ItemInfoUI : MonoBehaviour
         {
             if (_currentItem.data is IngredientData ingredient)
             {
-                int currentTotal = InventoryManager.Instance.GetTotalAmount(ingredient.ingredientID);
+                int currentTotal = InventoryManager.Instance.GetTotalAmount(ingredient.ingredientID, false);
                 int amountToDiscard = _amountSetter.CurrentAmount;
                 if (amountToDiscard > currentTotal) amountToDiscard = currentTotal;
 
                 InventoryManager.Instance.DiscardIngredients(ingredient.ingredientID, amountToDiscard);
                 Debug.Log($"[ItemInfoUI] {ingredient.ingredientName} {amountToDiscard}개 폐기 완료.");
                 
-                int remaining = InventoryManager.Instance.GetTotalAmount(ingredient.ingredientID);
+                int remainingToDiscard = InventoryManager.Instance.GetTotalAmount(ingredient.ingredientID, false);
                 // 수량이 0이 되면 닫기
-                if (remaining <= 0)
+                if (remainingToDiscard <= 0)
                 {
                     CloseUI();
                 }
                 else
                 {
                     UpdateOwnedAmount();
-                    _amountSetter.SetAmountInfo(ingredient.basePrice, remaining);
+                    _amountSetter.SetAmountInfo(ingredient.basePrice, remainingToDiscard);
                 }
             }
         }

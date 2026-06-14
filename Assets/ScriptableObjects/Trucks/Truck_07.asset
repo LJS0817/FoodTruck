@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 711a5ef16a0e8aa40aaffb1de2428adb, type: 3}
+  m_Name: Truck_07
+  m_EditorClassIdentifier: Assembly-CSharp::TruckData
+  truckName: "\uBE44\uAC74 \uC624\uAC00\uB2C9 \uD53D\uC5C5\uD2B8\uB7ED"
+  truckDescription: "\uCE5C\uD658\uACBD \uD0DC\uC591\uAD11 \uD328\uB110\uC744 \uD0D1\uC7AC\uD574
+    \uC5F0\uB8CC \uD6A8\uC728\uC774 \uB05D\uB0B4\uC8FC\uB294 \uD53D\uC5C5\uD2B8\uB7ED\uC785\uB2C8\uB2E4."
+  purchasePrice: 85000
+  fuelCapacity: 300
+  generatorCapacity: 90
+  stationLayout:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

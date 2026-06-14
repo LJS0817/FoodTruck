@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 /// <summary>
 /// 조리 장비 오브젝트 (도마, 그릴, 믹서기 등).
@@ -10,18 +12,153 @@ public class Equipment : MonoBehaviour, IInteractable
 {
     [Header("장비 데이터")]
     [Tooltip("이 장비의 ScriptableObject 데이터. 지원 가공 방식, 보너스 등이 자동 연동됩니다.")]
+    [HideInInspector]
     public EquipmentData equipmentData;
 
-    [Header("비주얼")]
+    [Header("비주얼 및 UI")]
     [Tooltip("가공 진행 중 표시할 이펙트 (선택)")]
     [SerializeField] private GameObject processingEffect;
 
-    private bool isProcessing = false;
+    [Tooltip("조리 완료 시 표시할 이펙트 (선택)")]
+    [SerializeField] private GameObject completeEffect;
+
+    [Tooltip("타버렸을 때 표시할 이펙트 (선택)")]
+    [SerializeField] private GameObject spoiledEffect;
+
+    [Tooltip("조리 중인 재료의 상태 변화를 보여줄 스프라이트 렌더러")]
+    public SpriteRenderer ingredientVisual;
+
+    [Tooltip("진행률 슬라이더 UI (선택)")]
+    public Slider progressBar;
+
+    [Tooltip("남은 시간 텍스트 UI (선택)")]
+    public TMP_Text timerText;
+
+    [Tooltip("조리 중간에 재료를 강제로 빼내는 회수 버튼 (선택)")]
+    public Button extractButton;
+
+    private void Awake()
+    {
+        if (extractButton != null)
+        {
+            extractButton.onClick.AddListener(OnExtractButtonClicked);
+        }
+    }
+
+    private void OnExtractButtonClicked()
+    {
+        if (equipmentData == null || ProcessManager.Instance == null) return;
+        
+        ProcessManager.Instance.ExtractTask(equipmentData.type, (success, result) => 
+        {
+            SyncState();
+        });
+    }
+
+    private void Update()
+    {
+        SyncState();
+    }
+
+    /// <summary>
+    /// ProcessManager의 현재 장비 작업 상태를 읽어와 시각적 효과와 UI를 동기화합니다.
+    /// TruckInsideNavigation에서 화면을 전환할 때에도 즉시 호출하여 상태를 맞춥니다.
+    /// </summary>
+    public void SyncState()
+    {
+        if (equipmentData == null || ProcessManager.Instance == null) return;
+
+        ProcessTask task = ProcessManager.Instance.GetActiveTask(equipmentData.type);
+        
+        if (task == null)
+        {
+            SetProcessingEffect(false);
+            SetCompleteEffect(false);
+            SetSpoiledEffect(false);
+            SetUIActive(false);
+            if (extractButton != null) extractButton.gameObject.SetActive(false);
+            if (ingredientVisual != null) ingredientVisual.sprite = null;
+            return;
+        }
+
+        // 재료 스프라이트 갱신
+        if (ingredientVisual != null && task.method != null)
+        {
+            var stateEntry = task.method.GetStateAtTime(task.elapsedTime);
+            if (stateEntry != null)
+            {
+                ingredientVisual.sprite = stateEntry.stateSprite;
+            }
+        }
+
+        float optimalTime = task.method.GetOptimalTime();
+        float ruinedTime = task.method.GetRuinedTime();
+
+        if (task.state == ProcessState.Processing)
+        {
+            SetProcessingEffect(true);
+            SetCompleteEffect(false);
+            SetSpoiledEffect(false);
+            SetUIActive(true);
+            if (extractButton != null) extractButton.gameObject.SetActive(true); // 조리 중일 때만 활성화
+
+            if (progressBar != null)
+            {
+                progressBar.value = Mathf.Clamp01(task.elapsedTime / optimalTime);
+            }
+            if (timerText != null)
+            {
+                float remain = Mathf.Max(0f, optimalTime - task.elapsedTime);
+                timerText.text = $"{remain:F1}s";
+                timerText.color = Color.white;
+            }
+        }
+        else if (task.state == ProcessState.Completed)
+        {
+            SetProcessingEffect(false);
+            SetCompleteEffect(true);
+            SetSpoiledEffect(false);
+            SetUIActive(true);
+            if (extractButton != null) extractButton.gameObject.SetActive(false);
+
+            if (progressBar != null)
+            {
+                progressBar.value = 1f; // 꽉 찬 상태
+            }
+            if (timerText != null)
+            {
+                // 타버리기까지 남은 시간
+                float remainSpoil = Mathf.Max(0f, ruinedTime - task.elapsedTime);
+                timerText.text = $"Burn in: {remainSpoil:F1}s";
+                timerText.color = Color.red;
+            }
+        }
+        else if (task.state == ProcessState.Spoiled)
+        {
+            SetProcessingEffect(false);
+            SetCompleteEffect(false);
+            SetSpoiledEffect(true);
+            SetUIActive(false);
+            if (extractButton != null) extractButton.gameObject.SetActive(false);
+        }
+    }
 
     // --- IInteractable 인터페이스 구현 --- //
 
     public IInteractable OnTouchBegin(Vector2 touchPosition)
     {
+        if (equipmentData == null || ProcessManager.Instance == null) return this;
+
+        ProcessTask task = ProcessManager.Instance.GetActiveTask(equipmentData.type);
+        if (task != null)
+        {
+            // 상태에 따라 미니게임 실행 또는 요리 수거/폐기 처리
+            ProcessManager.Instance.InteractWithTask(equipmentData.type, (success, result) =>
+            {
+                // 상호작용 완료 후 상태 강제 갱신
+                SyncState();
+            });
+        }
         return this;
     }
 
@@ -31,93 +168,73 @@ public class Equipment : MonoBehaviour, IInteractable
 
     // --- 재료 수신 및 가공 시작 --- //
 
-    /// <summary>
-    /// IngredientObject가 이 장비 위에 놓였을 때 호출됩니다.
-    /// EquipmentData의 supportedProcessTypes를 순회하며, 드롭된 재료에 대해
-    /// 가능한 가공 레시피를 자동으로 찾아 ProcessManager에 위임합니다.
-    /// </summary>
-    /// <param name="ingredientObj">가공할 재료 오브젝트</param>
-    /// <returns>가공 수신 성공 여부 (이미 가공 중이거나 레시피가 없으면 false)</returns>
     public bool ReceiveIngredient(IngredientObject ingredientObj)
     {
-        IngredientData ingredientData = ingredientObj.currentData;
+        IngredientData inputData = ingredientObj.currentData;
 
-        if (isProcessing)
+        if (equipmentData == null || ProcessManager.Instance == null) return false;
+
+        ProcessTask existingTask = ProcessManager.Instance.GetActiveTask(equipmentData.type);
+        if (existingTask != null)
         {
-            Debug.LogWarning("<color=yellow>[Equipment] 이미 가공 중입니다. 완료 후 다시 시도하세요.</color>");
+            Debug.LogWarning($"<color=yellow>[Equipment] {equipmentData.type}은(는) 이미 작업 중입니다. 수거 후 사용하세요.</color>");
             return false;
         }
 
-        if (equipmentData == null)
-        {
-            Debug.LogWarning("<color=red>[Equipment] EquipmentData가 연결되지 않았습니다.</color>");
-            return false;
-        }
-
-        if (ProcessManager.Instance == null)
-        {
-            Debug.LogError("[Equipment] ProcessManager 인스턴스를 찾을 수 없습니다.");
-            return false;
-        }
-
-        // EquipmentData의 supportedProcessTypes를 순회하며 매칭되는 레시피를 탐색
-        ProcessRecipeData matchedRecipe = null;
+        // 현재 장비가 지원하는 ProcessType 순회하며 레시피 매칭
+        ProcessMethodData matchedMethod = null;
         ProcessType matchedType = ProcessType.None;
 
         for (int i = 0; i < equipmentData.supportedProcessTypes.Count; i++)
         {
             ProcessType pt = equipmentData.supportedProcessTypes[i].processType;
-            ProcessRecipeData recipe = ProcessManager.Instance.GetProcessRecipe(ingredientData, pt);
-            if (recipe != null)
+            ProcessMethodData method = inputData.GetProcessMethod(pt);
+            if (method != null)
             {
-                matchedRecipe = recipe;
+                matchedMethod = method;
                 matchedType = pt;
                 break;
             }
         }
 
-        if (matchedRecipe == null)
+        if (matchedMethod == null)
         {
-            Debug.LogWarning($"<color=red>[Equipment] {ingredientData.ingredientName}은(는) " +
-                             $"{equipmentData.equipmentName}(으)로 가공할 수 없습니다.</color>");
+            Debug.LogWarning($"<color=red>[Equipment] {inputData.ingredientName}은(는) {equipmentData.equipmentName}(으)로 가공할 수 없습니다.</color>");
             return false;
         }
 
-        // 가공 시작
-        isProcessing = true;
-        SetProcessingEffect(true);
-        ingredientObj.isProcessing = true; // 가공 중 드래그 불가
-        // 위치 고정 로직 제거 - 드래그를 놓은 위치 그대로 유지
+        // 백그라운드 가공 시작
+        bool started = ProcessManager.Instance.StartProcess(equipmentData.type, inputData, matchedType, consumeInventory: false);
 
-        Debug.Log($"<color=cyan>[Equipment] {equipmentData.equipmentName}: " +
-                  $"{ingredientData.ingredientName} → {matchedType} 가공 시작!</color>");
-
-        ProcessManager.Instance.ExecuteProcess(ingredientData, matchedType, (success, result) =>
+        if (started)
         {
-            isProcessing = false;
-            SetProcessingEffect(false);
-            ingredientObj.isProcessing = false;
+            // 조리 시작 시 장비에 들어갔으므로 화면의 재료 오브젝트는 파기합니다.
+            ingredientObj.OnDespawn();
+            SyncState();
+            return true;
+        }
 
-            if (success && result != null)
-            {
-                Debug.Log($"<color=green>[Equipment] 가공 완료! → {result.ingredientName}</color>");
-                // 1. 오브젝트 데이터 및 스프라이트 변경
-                ingredientObj.SetupIngredient(result);
-                // 2. 가공된 재료는 CookingPot으로만 이동 가능하게 설정
-                ingredientObj.isProcessed = true;
-            }
-            else
-            {
-                Debug.LogWarning("<color=red>[Equipment] 가공에 실패했습니다.</color>");
-            }
-        }, consumeInventory: false, addToInventory: false);
-
-        return true;
+        return false;
     }
 
     private void SetProcessingEffect(bool active)
     {
-        if (processingEffect != null)
-            processingEffect.SetActive(active);
+        if (processingEffect != null) processingEffect.SetActive(active);
+    }
+
+    private void SetCompleteEffect(bool active)
+    {
+        if (completeEffect != null) completeEffect.SetActive(active);
+    }
+
+    private void SetSpoiledEffect(bool active)
+    {
+        if (spoiledEffect != null) spoiledEffect.SetActive(active);
+    }
+
+    private void SetUIActive(bool active)
+    {
+        if (progressBar != null) progressBar.gameObject.SetActive(active);
+        if (timerText != null) timerText.gameObject.SetActive(active);
     }
 }

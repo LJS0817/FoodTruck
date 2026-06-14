@@ -22,7 +22,17 @@ public class RecipeManager : MonoBehaviour
         for (int i = 0; i < allFoodDatabase.Count; i++)
         {
             FoodData food = allFoodDatabase[i];
-            int hash = CalculateHash(food.requiredIngredients);
+            
+            List<IngredientData> reqs = new List<IngredientData>();
+            if (food.ingredientConfigs != null)
+            {
+                for (int j = 0; j < food.ingredientConfigs.Length; j++)
+                {
+                    if (food.ingredientConfigs[j].rawIngredient != null)
+                        reqs.Add(food.ingredientConfigs[j].rawIngredient);
+                }
+            }
+            int hash = CalculateHash(reqs);
 
             if (!recipeBook.ContainsKey(hash))
             {
@@ -103,10 +113,13 @@ public class RecipeManager : MonoBehaviour
             rst.isCustomRecipe = true;
             rst.foodName = resultCustom.customFoodName;
             rst.basePrice = resultCustom.basePrice;
-            rst.requiredIngredients = new IngredientData[resultCustom.ingredientIDs.Count];
+            rst.ingredientConfigs = new FoodIngredientConfig[resultCustom.ingredientIDs.Count];
             for(int i = 0; i < resultCustom.ingredientIDs.Count; i++)
             {
-                rst.requiredIngredients[i] = GetIngredientById(resultCustom.ingredientIDs[i]);
+                rst.ingredientConfigs[i] = new FoodIngredientConfig { 
+                    rawIngredient = GetIngredientById(resultCustom.ingredientIDs[i]), 
+                    processType = ProcessType.None 
+                };
             }
             
             return rst;
@@ -124,12 +137,16 @@ public class RecipeManager : MonoBehaviour
         foreach (var food in allFoodDatabase)
         {
             bool canMake = true;
-            foreach (var req in food.requiredIngredients)
+            if (food.ingredientConfigs != null)
             {
-                if (!availableSet.Contains(req.ingredientID))
+                foreach (var config in food.ingredientConfigs)
                 {
-                    canMake = false;
-                    break;
+                    if (config.rawIngredient == null) continue;
+                    if (!availableSet.Contains(config.rawIngredient.ingredientID))
+                    {
+                        canMake = false;
+                        break;
+                    }
                 }
             }
             if (canMake) results.Add(food);
@@ -153,10 +170,13 @@ public class RecipeManager : MonoBehaviour
                 rst.isCustomRecipe = true;
                 rst.foodName = custom.customFoodName;
                 rst.basePrice = custom.basePrice;
-                rst.requiredIngredients = new IngredientData[custom.ingredientIDs.Count];
+                rst.ingredientConfigs = new FoodIngredientConfig[custom.ingredientIDs.Count];
                 for (int i = 0; i < custom.ingredientIDs.Count; i++)
                 {
-                    rst.requiredIngredients[i] = GetIngredientById(custom.ingredientIDs[i]);
+                    rst.ingredientConfigs[i] = new FoodIngredientConfig { 
+                        rawIngredient = GetIngredientById(custom.ingredientIDs[i]), 
+                        processType = ProcessType.None 
+                    };
                 }
                 results.Add(rst);
             }

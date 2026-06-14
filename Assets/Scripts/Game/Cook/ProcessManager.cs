@@ -2,167 +2,330 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+public enum ProcessState
+{
+    None,
+    Processing,
+    Completed,
+    Spoiled
+}
+
+public class ProcessTask
+{
+    public EquipmentType equipmentType;
+    public IngredientData inputIngredient;
+    public ProcessMethodData method;
+    public ProcessTypeEntry equipmentEntry;
+    
+    public ProcessState state;
+    
+    public float elapsedTime;
+    public float qualityScore;
+}
+
 /// <summary>
 /// 재료 가공 시스템의 핵심 매니저.
-/// 가공 실행 흐름: 재료 검증 → 장비 검색 및 보너스 계산 → 체력 소모 → 미니게임 실행 → 완료 처리
+/// 백그라운드 태스크 방식으로 작동하며, 화면 전환 시에도 조리 시간이 유지됩니다.
 /// </summary>
 public class ProcessManager : MonoBehaviour
 {
     public static ProcessManager Instance { get; private set; }
 
-    [Header("모든 가공 레시피 데이터")]
-    public List<ProcessRecipeData> allProcessRecipes;
+    [Header("옵션")]
+    [Tooltip("체력 소모 배율 등 각종 매니저 관련 설정")]
 
-    // Key: inputIngredient.ingredientID, Value: 해당 재료로 가능한 레시피 목록
-    private Dictionary<int, List<ProcessRecipeData>> processDict = new Dictionary<int, List<ProcessRecipeData>>();
+    // 백그라운드 진행 중인 작업 목록 (장비 타입별 1개)
+    private Dictionary<EquipmentType, ProcessTask> activeTasks = new Dictionary<EquipmentType, ProcessTask>();
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
-
-        InitializeDict();
     }
 
-    private void InitializeDict()
+    private void Update()
     {
-        processDict.Clear();
-        for (int i = 0; i < allProcessRecipes.Count; i++)
+        // 백그라운드 타이머 업데이트
+        foreach (var kvp in activeTasks)
         {
-            ProcessRecipeData recipe = allProcessRecipes[i];
-            if (recipe.inputIngredient == null) continue;
-            int inputId = recipe.inputIngredient.ingredientID;
-            if (!processDict.ContainsKey(inputId))
-                processDict[inputId] = new List<ProcessRecipeData>();
-            processDict[inputId].Add(recipe);
+            ProcessTask task = kvp.Value;
+            
+            // timeMultiplier가 낮을수록 시간이 빨리 가도록 계산 (예: 0.5면 2배속)
+            float speedMultiplier = 1f / Mathf.Max(0.1f, task.equipmentEntry.timeMultiplier);
+            task.elapsedTime += Time.deltaTime * speedMultiplier;
+            
+            float optimalTime = task.method.GetOptimalTime();
+            float ruinedTime = task.method.GetRuinedTime();
+
+            if (task.state == ProcessState.Processing)
+            {
+                if (task.elapsedTime >= optimalTime)
+                {
+                    // 조리 자연 완료 (기본 품질 0.5)
+                    task.state = ProcessState.Completed;
+                    task.qualityScore = 0.5f; 
+                    Debug.Log($"<color=green>[ProcessManager] {task.equipmentType} 조리 자연 완료! 수거 대기 중.</color>");
+                }
+            }
+            else if (task.state == ProcessState.Completed)
+            {
+                if (task.elapsedTime >= ruinedTime)
+                {
+                    // 방치되어 타버림
+                    task.state = ProcessState.Spoiled;
+                    Debug.LogWarning($"<color=red>[ProcessManager] {task.equipmentType} 결과물이 타버렸습니다!</color>");
+                }
+            }
         }
     }
 
-    // ─── 조회 ──────────────────────────────────────────────
-
-    /// <summary>
-    /// 특정 재료로 가능한 모든 가공 방식 반환
-    /// </summary>
-    public List<ProcessRecipeData> GetPossibleProcesses(IngredientData input)
+    // 특정 장비에 진행 중인 작업이 있는지 확인
+    public ProcessTask GetActiveTask(EquipmentType type)
     {
-        if (input != null && processDict.TryGetValue(input.ingredientID, out List<ProcessRecipeData> list))
-            return list;
-        return new List<ProcessRecipeData>();
-    }
-
-    /// <summary>
-    /// 재료 + 가공 타입으로 레시피 검색
-    /// </summary>
-    public ProcessRecipeData GetProcessRecipe(IngredientData input, ProcessType processType)
-    {
-        List<ProcessRecipeData> list = GetPossibleProcesses(input);
-        for (int i = 0; i < list.Count; i++)
+        if (activeTasks.TryGetValue(type, out ProcessTask task))
         {
-            if (list[i].processType == processType)
-                return list[i];
+            return task;
         }
         return null;
     }
 
-    // ─── 가공 실행 ─────────────────────────────────────────
+    // ─── 가공 실행 (백그라운드 등록) ──────────────────────────
 
-    /// <summary>
-    /// 가공 실행 진입점.
-    /// 장비가 있으면 보너스를 적용하고, 미니게임이 설정되어 있으면 미니게임 실행 후 완료합니다.
-    /// </summary>
-    public void ExecuteProcess(IngredientData input, ProcessType processType, Action<bool, IngredientData> onComplete, bool consumeInventory = true, bool addToInventory = true)
+    public bool StartProcess(EquipmentType equipType, IngredientData input, ProcessType processType, bool consumeInventory = true)
     {
-        ProcessRecipeData recipe = GetProcessRecipe(input, processType);
-
-        if (recipe == null)
+        if (activeTasks.ContainsKey(equipType))
         {
-            Debug.LogWarning($"[가공 실패] {input.ingredientName} 를 {processType} 방식으로 가공할 수 없습니다.");
-            onComplete?.Invoke(false, null);
-            return;
+            Debug.LogWarning($"[가공 실패] {equipType} 은(는) 이미 작업 중입니다.");
+            return false;
         }
 
-        // 1. 장비 조회 및 보너스 계산
-        ProcessTypeEntry equipmentEntry = GetEquipmentEntry(processType);
-        float finalStamina = recipe.requiredStamina * equipmentEntry.staminaMultiplier;
-        float finalTime    = recipe.processTime      * equipmentEntry.timeMultiplier;
+        ProcessMethodData method = input.GetProcessMethod(processType);
+        if (method == null)
+        {
+            Debug.LogWarning($"[가공 실패] {input.ingredientName} 를 {processType} 방식으로 가공할 수 없습니다.");
+            return false;
+        }
 
-        // 2. 인벤토리 차감 (UI 등에서 직접 호출했을 때만)
+        ProcessTypeEntry equipmentEntry = GetEquipmentEntry(processType);
+        float finalStamina = method.requiredStamina * equipmentEntry.staminaMultiplier;
+
         if (consumeInventory)
         {
             if (InventoryManager.Instance.UseIngredient(input.ingredientID) == -1)
             {
                 Debug.LogWarning("[가공 실패] 재고가 부족합니다.");
-                onComplete?.Invoke(false, null);
-                return;
+                return false;
             }
         }
 
-        // 3. 체력 검사 및 차감
+        if (PlayerStaminaManager.Instance != null)
+        {
+            if (PlayerStaminaManager.Instance.CurrentStamina < finalStamina)
+            {
+                Debug.LogWarning("[가공 실패] 체력이 부족합니다.");
+                if (consumeInventory) InventoryManager.Instance.AddIngredient(input, 1, input.maxShelfLifeDays);
+                return false;
+            }
+            // 미니게임 참여 여부와 무관하게 시작 시 체력 소모
+            PlayerStaminaManager.Instance.DrainStamina(finalStamina);
+        }
+
+        ProcessTask newTask = new ProcessTask
+        {
+            equipmentType = equipType,
+            inputIngredient = input,
+            method = method,
+            equipmentEntry = equipmentEntry,
+            state = ProcessState.Processing,
+            elapsedTime = 0f
+        };
+
+        activeTasks[equipType] = newTask;
+        Debug.Log($"<color=cyan>[ProcessManager] {equipType} 조리 시작: {input.ingredientName} → {processType}</color>");
+        return true;
+    }
+
+    // ─── 유저 상호작용 (미니게임 / 수거) ──────────────────────────
+
+    /// <summary>
+    /// 수동으로 조리 중인 장비를 터치했을 때 호출됩니다.
+    /// Processing 중이라면 미니게임 시작.
+    /// Completed 라면 수거 (성공 아이템 획득)
+    /// Spoiled 라면 타버린 아이템 획득 (또는 폐기)
+    /// </summary>
+    public void InteractWithTask(EquipmentType equipType, Action<bool, IngredientData> onCollected)
+    {
+        if (!activeTasks.TryGetValue(equipType, out ProcessTask task))
+        {
+            return;
+        }
+
+        if (task.state == ProcessState.Processing)
+        {
+            // 아직 조리 중이면 미니게임 실행
+            if (task.method.requiredMiniGame != MiniGameType.None && MiniGameManager.Instance != null)
+            {
+                Action<MiniGameResult> onMiniGameFinished = null;
+                onMiniGameFinished = (result) =>
+                {
+                    MiniGameManager.Instance.OnMiniGameFinished -= onMiniGameFinished;
+                    // 미니게임 완료 시 즉시 조리 완료(Optimal) 상태로 건너뜀
+                    task.elapsedTime = task.method.GetOptimalTime();
+                    task.state = ProcessState.Completed;
+                    task.qualityScore = result.qualityScore;
+                    CollectTask(equipType, onCollected);
+                };
+                MiniGameManager.Instance.OnMiniGameFinished += onMiniGameFinished;
+                MiniGameManager.Instance.StartMiniGame(task.method.requiredMiniGame, task.equipmentEntry.miniGameEaseBonus);
+            }
+        }
+        else if (task.state == ProcessState.Completed)
+        {
+            // 자연 완료된 요리 수거
+            CollectTask(equipType, onCollected);
+        }
+        else if (task.state == ProcessState.Spoiled)
+        {
+            // 타버린 요리 수거
+            CollectSpoiledTask(equipType, onCollected);
+        }
+    }
+
+    private ItemGrade GetGrade(float quality)
+    {
+        if (quality >= 0.95f) return ItemGrade.Perfect;
+        if (quality >= 0.8f) return ItemGrade.Premium;
+        return ItemGrade.Normal;
+    }
+
+    private void CollectTask(EquipmentType equipType, Action<bool, IngredientData> onCollected)
+    {
+        if (activeTasks.TryGetValue(equipType, out ProcessTask task))
+        {
+            float finalQuality = Mathf.Min(1f, task.qualityScore + task.equipmentEntry.qualityBonus);
+            ItemGrade finalGrade = GetGrade(finalQuality);
+            string mark = finalGrade == ItemGrade.Perfect ? "🌟" : (finalGrade == ItemGrade.Premium ? "✨" : "");
+
+            IngredientData resultItem = task.inputIngredient;
+            Debug.Log($"<color=green>[ProcessManager] {equipType} 수거 완료! {mark}{resultItem.ingredientName} ({task.method.processType}, Optimal) 획득! (품질: {finalQuality:P0})</color>");
+            
+            InventoryManager.Instance.AddIngredient(resultItem, 1, resultItem.maxShelfLifeDays, IngredientState.Optimal, task.method.processType, finalGrade);
+
+            // 태스크 삭제
+            activeTasks.Remove(equipType);
+        }
+    }
+
+    /// <summary>
+    /// 조리 중간에 강제로 재료를 회수할 때 호출됩니다.
+    /// 누른 시점의 상태(Raw, Optimal 등)를 반환합니다.
+    /// </summary>
+    public void ExtractTask(EquipmentType equipType, Action<bool, IngredientData> onCollected)
+    {
+        if (activeTasks.TryGetValue(equipType, out ProcessTask task))
+        {
+            var stateEntry = task.method.GetStateAtTime(task.elapsedTime);
+            IngredientState currentState = stateEntry != null ? stateEntry.state : IngredientState.Raw;
+
+            // 품질은 진행도에 비례해서 계산 (취소 시 최대 절반 품질까지만 허용 등)
+            float progress = Mathf.Clamp01(task.elapsedTime / task.method.GetOptimalTime());
+            float quality = Mathf.Lerp(0f, 0.5f, progress); // 미완성이므로 기본 품질(0.5)을 넘지 못함
+            ItemGrade grade = GetGrade(quality);
+
+            IngredientData resultItem = task.inputIngredient;
+            Debug.Log($"<color=cyan>[ProcessManager] {equipType} 강제 회수! {resultItem.ingredientName} ({task.method.processType}, {currentState}) 획득!</color>");
+            
+            InventoryManager.Instance.AddIngredient(resultItem, 1, resultItem.maxShelfLifeDays, currentState, task.method.processType, grade);
+
+            activeTasks.Remove(equipType);
+            onCollected?.Invoke(true, resultItem);
+        }
+    }
+
+    private void CollectSpoiledTask(EquipmentType equipType, Action<bool, IngredientData> onCollected)
+    {
+        if (activeTasks.TryGetValue(equipType, out ProcessTask task))
+        {
+            IngredientData spoiledResult = task.inputIngredient;
+            Debug.Log($"<color=red>[ProcessManager] {equipType}에서 타버린 요리({spoiledResult.ingredientName}, Ruined)를 수거했습니다.</color>");
+            InventoryManager.Instance.AddIngredient(spoiledResult, 1, spoiledResult.maxShelfLifeDays, IngredientState.Ruined, task.method.processType, ItemGrade.Normal);
+
+            activeTasks.Remove(equipType);
+            onCollected?.Invoke(false, spoiledResult);
+        }
+    }
+
+    /// <summary>
+    /// 인벤토리 UI 등에서 장비 없이 즉시 가공을 시도할 때 사용되는 메서드입니다.
+    /// </summary>
+    public void ExecuteProcess(IngredientData input, ProcessType processType, Action<bool, IngredientData> onCollected)
+    {
+        ProcessMethodData method = input.GetProcessMethod(processType);
+        if (method == null)
+        {
+            Debug.LogWarning($"[가공 실패] {input.ingredientName} 를 {processType} 방식으로 가공할 수 없습니다.");
+            onCollected?.Invoke(false, null);
+            return;
+        }
+
+        ProcessTypeEntry equipmentEntry = GetEquipmentEntry(processType);
+        float finalStamina = method.requiredStamina * equipmentEntry.staminaMultiplier;
+
+        if (InventoryManager.Instance.UseIngredient(input.ingredientID) == -1)
+        {
+            Debug.LogWarning("[가공 실패] 재고가 부족합니다.");
+            onCollected?.Invoke(false, null);
+            return;
+        }
+
         if (PlayerStaminaManager.Instance != null)
         {
             if (PlayerStaminaManager.Instance.CurrentStamina < finalStamina)
             {
                 Debug.LogWarning("[가공 실패] 체력이 부족합니다.");
                 InventoryManager.Instance.AddIngredient(input, 1, input.maxShelfLifeDays);
-                onComplete?.Invoke(false, null);
+                onCollected?.Invoke(false, null);
                 return;
             }
             PlayerStaminaManager.Instance.DrainStamina(finalStamina);
         }
 
-        Debug.Log($"[가공 시작] {input.ingredientName} → {processType} | 시간:{finalTime:F1}초 | 장비 보너스 적용");
-
-        // 4. 미니게임 실행 (설정된 경우)
-        if (recipe.miniGameType != MiniGameType.None && MiniGameManager.Instance != null)
+        Action<float> completeAction = (float quality) =>
         {
-            // 콜백 클로저 – 미니게임 결과를 받아 완료 처리
+            IngredientData resultItem = input;
+            float finalQuality = Mathf.Min(1f, quality + equipmentEntry.qualityBonus);
+            ItemGrade finalGrade = GetGrade(finalQuality);
+            
+            InventoryManager.Instance.AddIngredient(resultItem, 1, resultItem.maxShelfLifeDays, IngredientState.Optimal, processType, finalGrade);
+            Debug.Log($"<color=green>[ProcessManager] 직접 가공 완료! {resultItem.ingredientName} ({processType}) 획득!</color>");
+            
+            onCollected?.Invoke(true, resultItem);
+        };
+
+        if (method.requiredMiniGame != MiniGameType.None && MiniGameManager.Instance != null)
+        {
             Action<MiniGameResult> onMiniGameFinished = null;
             onMiniGameFinished = (result) =>
             {
                 MiniGameManager.Instance.OnMiniGameFinished -= onMiniGameFinished;
-                CompleteProcess(recipe, result.qualityScore, equipmentEntry, onComplete, addToInventory);
+                completeAction(result.qualityScore);
             };
             MiniGameManager.Instance.OnMiniGameFinished += onMiniGameFinished;
-            MiniGameManager.Instance.StartMiniGame(recipe.miniGameType, equipmentEntry.miniGameEaseBonus);
+            MiniGameManager.Instance.StartMiniGame(method.requiredMiniGame, equipmentEntry.miniGameEaseBonus);
         }
         else
         {
-            // 미니게임 없음 → 시간만 대기하고 기본 품질로 완료
-            // 실제 타이머가 필요하면 Coroutine으로 finalTime 만큼 대기 후 호출
-            CompleteProcess(recipe, 0.5f, equipmentEntry, onComplete, addToInventory);
+            completeAction(0.5f); // 기본 품질 0.5
         }
     }
 
-    // ─── 내부 처리 ─────────────────────────────────────────
+    // ─── 기존 내부 함수 ─────────────────────────────────────────
 
-    private void CompleteProcess(ProcessRecipeData recipe, float rawQualityScore,
-                                  ProcessTypeEntry equipmentEntry, Action<bool, IngredientData> onComplete, bool addToInventory)
-    {
-        // 장비의 품질 보너스를 합산하되 1.0을 초과하지 않게 제한
-        float finalQuality = Mathf.Min(1f, rawQualityScore + equipmentEntry.qualityBonus);
-        bool isPremium = finalQuality >= 0.8f;
-
-        string mark = isPremium ? "✨" : "";
-        Debug.Log($"<color=cyan>[가공 완료] {mark}{recipe.outputIngredient.ingredientName} 획득! (품질: {finalQuality:P0})</color>");
-
-        if (addToInventory)
-        {
-            InventoryManager.Instance.AddIngredient(recipe.outputIngredient, 1, recipe.outputIngredient.maxShelfLifeDays);
-        }
-        onComplete?.Invoke(true, recipe.outputIngredient);
-    }
-
-    /// <summary>
-    /// 현재 보유 장비 중 해당 ProcessType을 지원하는 장비의 효과를 반환합니다.
-    /// 장비가 없거나 지원하지 않으면 보너스가 없는 기본값(multiplier = 1.0)을 반환합니다.
-    /// </summary>
     private ProcessTypeEntry GetEquipmentEntry(ProcessType processType)
     {
         if (EquipmentStoreManager.Instance == null)
             return DefaultEntry(processType);
 
-        // EquipmentType 순서대로 장비를 검색하여 해당 ProcessType을 지원하는 장비를 찾음
-        // (Tier가 높은 장비일수록 더 좋은 보너스를 가지므로, 같은 ProcessType이 중복되면 높은 Tier가 우선)
         EquipmentData bestEquipment = null;
         foreach (EquipmentType eqType in System.Enum.GetValues(typeof(EquipmentType)))
         {
@@ -177,7 +340,6 @@ public class ProcessManager : MonoBehaviour
         if (bestEquipment != null)
         {
             int level = EquipmentStoreManager.Instance.GetEquipmentLevel(bestEquipment);
-            Debug.Log($"[가공] 장비 '{bestEquipment.equipmentName}' (Lv.{level}) 효과 적용");
             return bestEquipment.GetEntryWithLevel(processType, level);
         }
 
@@ -196,3 +358,4 @@ public class ProcessManager : MonoBehaviour
         };
     }
 }
+

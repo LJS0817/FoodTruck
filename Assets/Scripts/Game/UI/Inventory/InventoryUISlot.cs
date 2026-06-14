@@ -20,7 +20,20 @@ public class InventoryUISlot : MonoBehaviour, IPointerClickHandler
         this.Item = item;
         this._onSlotClicked = onClicked;
         
-        _icon.sprite = item.data.ingredientSprite;
+        Sprite displaySprite = item.data.ingredientSprite;
+        if (item.processType != ProcessType.None)
+        {
+            ProcessMethodData method = item.data.GetProcessMethod(item.processType);
+            if (method != null)
+            {
+                var stateEntry = method.stateSteps.Find(s => s.state == item.state);
+                if (stateEntry != null && stateEntry.stateSprite != null)
+                {
+                    displaySprite = stateEntry.stateSprite;
+                }
+            }
+        }
+        _icon.sprite = displaySprite;
         _focus.gameObject.SetActive(false);
         if (_ingredientAmount != null) _ingredientAmount.SetText(item.amount.ToString());
 

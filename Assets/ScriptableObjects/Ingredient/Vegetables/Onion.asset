@@ -15,11 +15,38 @@ MonoBehaviour:
   ingredientID: 8
   ingredientName: Onion
   ingredientSprite: {fileID: 0}
-  volume: 5
-  description: Onion
-  basePrice: 6
+  volume: 1
+  description: "\uC2E0\uC120\uD55C Onion\uC785\uB2C8\uB2E4."
+  basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99
   requiredEquipment: 0
   requiredMiniGame: 0
-  flavorTags: []
+  flavorTags: 00000000
+  processMethods:
+  - processType: 4
+    requiredMiniGame: 3
+    requiredStamina: 5
+    stateSteps:
+    - state: 0
+      timeThreshold: 0
+      stateSprite: {fileID: 0}
+    - state: 4
+      timeThreshold: 3
+      stateSprite: {fileID: 0}
+    - state: 5
+      timeThreshold: 8
+      stateSprite: {fileID: 0}
+  - processType: 2
+    requiredMiniGame: 4
+    requiredStamina: 5
+    stateSteps:
+    - state: 0
+      timeThreshold: 0
+      stateSprite: {fileID: 0}
+    - state: 4
+      timeThreshold: 3
+      stateSprite: {fileID: 0}
+    - state: 5
+      timeThreshold: 8
+      stateSprite: {fileID: 0}

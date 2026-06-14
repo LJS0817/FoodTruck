@@ -20,3 +20,4 @@ MonoBehaviour:
   tradeInValue: 4500
   maxPurchaseAmount: 1
   description: Provides immense power. Ideal for complex truck setups.
+  supportedProcessTypes: []

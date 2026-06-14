@@ -15,11 +15,12 @@ MonoBehaviour:
   ingredientID: 16
   ingredientName: TacoShell
   ingredientSprite: {fileID: 0}
-  volume: 5
-  description: TacoShell
-  basePrice: 10
-  maxShelfLifeDays: 14
+  volume: 1
+  description: "\uC2E0\uC120\uD55C TacoShell\uC785\uB2C8\uB2E4."
+  basePrice: 100
+  maxShelfLifeDays: 7
   maxPurchaseAmount: 99
   requiredEquipment: 0
   requiredMiniGame: 0
-  flavorTags: []
+  flavorTags: 00000000
+  processMethods: []

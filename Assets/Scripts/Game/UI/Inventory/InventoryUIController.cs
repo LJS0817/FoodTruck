@@ -34,6 +34,7 @@ public class InventoryUIController : MonoBehaviour
     private Vector2 _originalPivot;
     private bool _originalSaved = false;
     private bool _isPopupMode = false;
+    public bool IsPopupMode => _isPopupMode;
 
     [SerializeField] CanvasGroup _inventoryUI;
     [SerializeField] InventoryUISlot slotPrefab;
@@ -187,6 +188,20 @@ public class InventoryUIController : MonoBehaviour
             {
                 // 인벤토리 모드로 띄우기 (isStoreMode = false)
                 StoreItem dummyStoreItem = StoreItem.FromIngredient(slot.Item.data, slot.Item.data.basePrice, slot.Item.amount);
+                
+                // 클래스 멤버 변수 추가 없이 텍스트 문자열 자체에 정보를 붙여서 전달
+                string gradeText = slot.Item.grade == ItemGrade.Perfect ? "🌟 최고급 " : (slot.Item.grade == ItemGrade.Premium ? "✨ 고급 " : "");
+                
+                if (slot.Item.processType != ProcessType.None)
+                {
+                    string stateText = slot.Item.state == IngredientState.Optimal ? "완벽" : (slot.Item.state == IngredientState.Ruined ? "망친" : "준비중");
+                    dummyStoreItem.itemName = $"[{stateText} {slot.Item.processType}] {gradeText}{dummyStoreItem.itemName}";
+                }
+                else if (slot.Item.grade != ItemGrade.Normal)
+                {
+                    dummyStoreItem.itemName = $"{gradeText}{dummyStoreItem.itemName}";
+                }
+
                 _itemInfoUI.OpenInfo(dummyStoreItem, false);
             }
         }
@@ -304,7 +319,69 @@ public class InventoryUIController : MonoBehaviour
 
     public void UpdateUI(List<InventoryItem> items)
     {
-        currentItems = items;
+        currentItems = new List<InventoryItem>();
+        if (_isPopupMode)
+        {
+            currentItems.AddRange(items);
+        }
+        else
+        {
+            // 일반 모드: 인벤토리의 내용 + 상자에 들어간 내용을 합산해서 시각적으로만 보여줌
+            foreach(var item in items) 
+            {
+                currentItems.Add(new InventoryItem { 
+                    data = item.data, 
+                    amount = item.amount, 
+                    remainingDays = item.remainingDays, 
+                    state = item.state, 
+                    processType = item.processType, 
+                    grade = item.grade 
+                });
+            }
+
+            if (IngredientManager.Instance != null)
+            {
+                foreach (var box in IngredientManager.Instance.GetAllBoxes())
+                {
+                    if (box.currentAmount > 0 && box.GetCurrentData() != null)
+                    {
+                        IngredientData data = box.GetCurrentData();
+                        ItemGrade grade = box.qualityScore >= 1.15f ? ItemGrade.Premium : ItemGrade.Normal; 
+                        
+                        foreach (int days in box.storedItemDays)
+                        {
+                            bool found = false;
+                            foreach (var item in currentItems)
+                            {
+                                if (item.data.ingredientID == data.ingredientID && 
+                                    item.remainingDays == days &&
+                                    item.state == IngredientState.Raw && 
+                                    item.processType == ProcessType.None &&
+                                    item.grade == grade)
+                                {
+                                    item.amount++;
+                                    found = true;
+                                    break;
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                currentItems.Add(new InventoryItem {
+                                    data = data,
+                                    amount = 1,
+                                    remainingDays = days,
+                                    state = IngredientState.Raw,
+                                    processType = ProcessType.None,
+                                    grade = grade
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         _selectedSlot = null; // UI 갱신 시 선택 해제
         
         // 정렬 수행 (람다식 대신 전용 비교 메서드 사용하여 가비지 할당 방지)

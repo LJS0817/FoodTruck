@@ -25,7 +25,7 @@ public class AutoCookManager : MonoBehaviour
         if (nextOrder != null)
         {
             // 💡 인벤토리에 요리에 필요한 재료가 충분한지 먼저 확인합니다.
-            if (InventoryManager.Instance.HasIngredients(nextOrder.orderedFood.requiredIngredients))
+            if (InventoryManager.Instance.HasIngredients(nextOrder.orderedFood.ingredientConfigs))
             {
                 StartCoroutine(AutoCookRoutine(nextOrder.owner, nextOrder.orderedFood));
             }
@@ -81,7 +81,7 @@ public class AutoCookManager : MonoBehaviour
         }
 
         // 💡 시간이 다 차면 실제로 인벤토리에서 재료를 일괄 차감하고 요리 생성
-        InventoryManager.Instance.ConsumeIngredients(orderedFood.requiredIngredients);
+        InventoryManager.Instance.ConsumeIngredients(orderedFood.ingredientConfigs);
 
         Dish autoDish = new Dish();
         autoDish.Initialize(orderedFood, false, 1.0f);

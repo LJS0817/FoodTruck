@@ -8,6 +8,11 @@ public class InventoryItem
     public IngredientData data;
     public int amount;
     public int remainingDays;
+    
+    // 새롭게 추가되는 메타데이터
+    public IngredientState state = IngredientState.Raw;
+    public ProcessType processType = ProcessType.None;
+    public ItemGrade grade = ItemGrade.Normal;
 }
 
 public class InventoryManager : MonoBehaviour
@@ -27,14 +32,17 @@ public class InventoryManager : MonoBehaviour
     }
 
     // 시장에서 재료를 사 오거나 보상을 얻었을 때 호출
-    public void AddIngredient(IngredientData data, int amount, int remainingDays)
+    public void AddIngredient(IngredientData data, int amount, int remainingDays, IngredientState state = IngredientState.Raw, ProcessType processType = ProcessType.None, ItemGrade grade = ItemGrade.Normal)
     {
         bool found = false;
         for (int i = 0; i < inventoryItems.Count; i++)
         {
-            // ID와 남은 유통기한이 모두 같은 슬롯이 있으면 개수만 합칩니다.
+            // ID와 남은 유통기한, 상태, 가공방식, 품질등급이 모두 같은 슬롯이 있으면 개수만 합칩니다.
             if (inventoryItems[i].data.ingredientID == data.ingredientID && 
-                inventoryItems[i].remainingDays == remainingDays)
+                inventoryItems[i].remainingDays == remainingDays &&
+                inventoryItems[i].state == state &&
+                inventoryItems[i].processType == processType &&
+                inventoryItems[i].grade == grade)
             {
                 inventoryItems[i].amount += amount;
                 found = true;
@@ -44,7 +52,14 @@ public class InventoryManager : MonoBehaviour
 
         if (!found)
         {
-            inventoryItems.Add(new InventoryItem { data = data, amount = amount, remainingDays = remainingDays });
+            inventoryItems.Add(new InventoryItem { 
+                data = data, 
+                amount = amount, 
+                remainingDays = remainingDays,
+                state = state,
+                processType = processType,
+                grade = grade
+            });
         }
 
         Debug.Log($"[인벤토리] {data.ingredientName} {amount}개 추가됨. (남은 유통기한: {remainingDays}일)");
@@ -117,13 +132,14 @@ public class InventoryManager : MonoBehaviour
         return filledDays;
     }
 
-    // 💡 특정 레시피에 필요한 재료들을 모두 보유하고 있는지 확인
-    public bool HasIngredients(IngredientData[] requiredIngredients)
+    // 💡 특정 레시피에 필요한 원재료들을 모두 보유하고 있는지 확인 (상태 무관)
+    public bool HasIngredients(FoodIngredientConfig[] configs)
     {
         Dictionary<int, int> requiredCounts = new Dictionary<int, int>();
-        for (int i = 0; i < requiredIngredients.Length; i++)
+        for (int i = 0; i < configs.Length; i++)
         {
-            int id = requiredIngredients[i].ingredientID;
+            if (configs[i].rawIngredient == null) continue;
+            int id = configs[i].rawIngredient.ingredientID;
             if (requiredCounts.ContainsKey(id)) requiredCounts[id]++;
             else requiredCounts[id] = 1;
         }
@@ -135,6 +151,7 @@ public class InventoryManager : MonoBehaviour
             
             for (int i = 0; i < inventoryItems.Count; i++)
             {
+                // 유저의 요청: State와 무관하게 Base Ingredient ID만 같으면 사용할 수 있도록 허용
                 if (inventoryItems[i].data.ingredientID == kvp.Key)
                 {
                     currentAmount += inventoryItems[i].amount;
@@ -148,12 +165,13 @@ public class InventoryManager : MonoBehaviour
         return true;
     }
 
-    // 💡 특정 레시피에 필요한 재료들을 한 번에 소비
-    public void ConsumeIngredients(IngredientData[] requiredIngredients)
+    // 💡 특정 레시피에 필요한 재료들을 한 번에 소비 (유통기한 임박한 것부터 차감)
+    public void ConsumeIngredients(FoodIngredientConfig[] configs)
     {
-        for (int i = 0; i < requiredIngredients.Length; i++)
+        for (int i = 0; i < configs.Length; i++)
         {
-            UseIngredient(requiredIngredients[i].ingredientID);
+            if (configs[i].rawIngredient == null) continue;
+            UseIngredient(configs[i].rawIngredient.ingredientID);
         }
     }
 
@@ -236,7 +254,7 @@ public class InventoryManager : MonoBehaviour
     /// <summary>
     /// 특정 재료 ID의 총 보유 수량을 반환합니다.
     /// </summary>
-    public int GetTotalAmount(int ingredientID)
+    public int GetTotalAmount(int ingredientID, bool includeBoxItems = false)
     {
         int total = 0;
         for (int i = 0; i < inventoryItems.Count; i++)
@@ -246,6 +264,18 @@ public class InventoryManager : MonoBehaviour
                 total += inventoryItems[i].amount;
             }
         }
+        
+        if (includeBoxItems && IngredientManager.Instance != null)
+        {
+            foreach (var box in IngredientManager.Instance.GetAllBoxes())
+            {
+                if (box.currentAmount > 0 && box.GetCurrentData() != null && box.GetCurrentData().ingredientID == ingredientID)
+                {
+                    total += box.currentAmount;
+                }
+            }
+        }
+        
         return total;
     }
 

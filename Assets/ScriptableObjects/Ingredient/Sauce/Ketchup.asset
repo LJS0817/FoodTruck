@@ -15,11 +15,12 @@ MonoBehaviour:
   ingredientID: 20
   ingredientName: Ketchup
   ingredientSprite: {fileID: 0}
-  volume: 5
-  description: Ketchup
-  basePrice: 10
-  maxShelfLifeDays: 30
+  volume: 1
+  description: "\uC2E0\uC120\uD55C Ketchup\uC785\uB2C8\uB2E4."
+  basePrice: 100
+  maxShelfLifeDays: 7
   maxPurchaseAmount: 99
   requiredEquipment: 0
   requiredMiniGame: 0
-  flavorTags: []
+  flavorTags: 00000000
+  processMethods: []
