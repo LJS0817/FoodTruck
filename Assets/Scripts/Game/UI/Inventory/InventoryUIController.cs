@@ -18,7 +18,12 @@ public class InventoryUIController : MonoBehaviour
 {
     [Header("Popup & Info UI Settings")]
     [SerializeField] private RectTransform _inventoryPanel;
+    CanvasGroup _inventoryPanelGroup;
+    Canvas _panelCanvas;
+    [Tooltip("팝업 모드일 때 인벤토리의 렌더링 순서 (다른 UI보다 뒤에 그리려면 낮게 설정)")]
+    [SerializeField] private int _popupSortingOrder = 1;
     [SerializeField] private RectTransform _popupTransform;
+    [SerializeField] CanvasGroup _popupCanvasGroup;
     [SerializeField] private ItemSimpleInfoUI _itemSimpleInfoUI;
     [SerializeField] private ItemInfoUI _itemInfoUI;
     
@@ -43,6 +48,15 @@ public class InventoryUIController : MonoBehaviour
     void Start()
     {
         CloseInventory();
+        _inventoryPanelGroup = _inventoryPanel.GetComponent<CanvasGroup>();
+        _panelCanvas = _inventoryPanel.GetComponent<Canvas>();
+        
+        // 최적화를 위한 Sub-Canvas 자동 생성
+        if (_panelCanvas == null)
+        {
+            _panelCanvas = _inventoryPanel.gameObject.AddComponent<Canvas>();
+            _inventoryPanel.gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+        }
     }
 
     public void OpenInventory(IngredientData targetData = null)
@@ -75,11 +89,26 @@ public class InventoryUIController : MonoBehaviour
 
             if (isPopup)
             {
-                _inventoryPanel.anchorMin = _popupTransform.anchorMin;
-                _inventoryPanel.anchorMax = _popupTransform.anchorMax;
+                // 부모 계층이 달라도 위치와 크기가 정확히 일치하도록 월드 좌표와 Rect 크기를 사용합니다.
                 _inventoryPanel.pivot = _popupTransform.pivot;
-                _inventoryPanel.sizeDelta = _popupTransform.sizeDelta;
-                _inventoryPanel.anchoredPosition = _popupTransform.anchoredPosition;
+                _inventoryPanel.anchorMin = new Vector2(0.5f, 0.5f);
+                _inventoryPanel.anchorMax = new Vector2(0.5f, 0.5f);
+                _inventoryPanel.sizeDelta = new Vector2(_popupTransform.rect.width, _popupTransform.rect.height);
+                _inventoryPanel.position = _popupTransform.position;
+                _inventoryPanel.rotation = _popupTransform.rotation;
+                
+                _inventoryPanelGroup.ignoreParentGroups = true; // 팝업 모드에서는 부모 그룹의 영향을 받지 않도록 설정
+                
+                if (_panelCanvas != null)
+                {
+                    _panelCanvas.overrideSorting = true;
+                    _panelCanvas.sortingOrder = _popupSortingOrder;
+                }
+
+                _popupCanvasGroup.alpha = 1f;
+                _popupCanvasGroup.interactable = true;
+                _popupCanvasGroup.blocksRaycasts = true;
+
             }
             else
             {
@@ -88,6 +117,16 @@ public class InventoryUIController : MonoBehaviour
                 _inventoryPanel.pivot = _originalPivot;
                 _inventoryPanel.sizeDelta = _originalSize;
                 _inventoryPanel.anchoredPosition = _originalAnchoredPos;
+                _inventoryPanelGroup.ignoreParentGroups = false;
+                
+                if (_panelCanvas != null)
+                {
+                    _panelCanvas.overrideSorting = false; // 일반 모드에서는 Hierarchy 순서를 따름
+                }
+
+                _popupCanvasGroup.alpha = 0f;
+                _popupCanvasGroup.interactable = false;
+                _popupCanvasGroup.blocksRaycasts = false;
             }
         }
 
@@ -104,6 +143,13 @@ public class InventoryUIController : MonoBehaviour
             _inventoryUI.alpha = 0f;
             _inventoryUI.interactable = false;
             _inventoryUI.blocksRaycasts = false;
+        }
+
+        if (_popupCanvasGroup != null)
+        {
+            _popupCanvasGroup.alpha = 0f;
+            _popupCanvasGroup.interactable = false;
+            _popupCanvasGroup.blocksRaycasts = false;
         }
 
         // 💡 인벤토리를 닫을 때 선택 상태 초기화
@@ -159,7 +205,7 @@ public class InventoryUIController : MonoBehaviour
         {
             if (spawnedSlots[i].gameObject.activeSelf && spawnedSlots[i].Item.data.ingredientID == targetData.ingredientID)
             {
-                SetSelectedSlot(spawnedSlots[i]);
+                OnSlotClicked(spawnedSlots[i]); // 선택 및 UI 오픈 동시 처리
                 return; // 찾았으면 리턴
             }
         }

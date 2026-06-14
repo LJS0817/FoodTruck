@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 [Serializable]
 public class IngredientBoxSetter
@@ -41,6 +42,12 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public float capacity = 100f;
     public int currentAmount = 0;
     public float qualityScore = 1.0f; // 💡 가공 품질 (1.0 = 일반, 1.2 = 프리미엄 등)
+    public List<int> storedItemDays = new List<int>(); // 유통기한 보존용
+
+    [Header("UI Elements")]
+    public Image iconImage;
+    public TMPro.TMP_Text amountText;
+
     IngredientBoxSetter _setter;
 
     Action RefillEvent;
@@ -50,6 +57,7 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private bool _isDraggingItem = false;
     private IngredientObject _spawnedIngredient;
     private ScrollRect _parentScrollRect;
+    private int _draggedItemDays = -1; // 드래그 실패 시 복구용
 
     public void Init(Action onRefill, Action onSetup = null, ScrollRect scrollRect = null)
     {
@@ -64,36 +72,39 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         DayPhase phase = DayCycleManager.Instance.CurrentPhase;
 
-        // 준비 단계(Preparation)에서는 재료 세팅/변경 UI를 띄웁니다.
-        if (phase == DayPhase.Preparation)
-        {
-            SetupEvent?.Invoke();
-            return;
-        }
+        SetupEvent?.Invoke();
+        // if (phase == DayPhase.Preparation)
+        // {
+        //     SetupEvent?.Invoke();
+        //     return;
+        // }
 
-        // 세팅되지 않은 상자일 경우 처리
-        if (_setter == null)
-        {
-            Debug.Log("<color=yellow>빈 상자입니다. 준비 단계(09시~12시)에서 재료를 세팅하세요.</color>");
-            return;
-        }
-
-        // 재고가 없을 경우 리필 이벤트
-        if (currentAmount <= 0)
-        {
-            Debug.Log($"<color=red>재료 부족: {_setter.boxData.ingredientName} 상자가 비었습니다!</color>");
-            RefillEvent?.Invoke();
-        }
+        // // 재고가 없을 경우 리필 이벤트
+        // if (currentAmount <= 0)
+        // {
+        //     Debug.Log($"<color=red>재료 부족: {_setter.boxData.ingredientName} 상자가 비었습니다!</color>");
+        //     RefillEvent?.Invoke();
+        // }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         // Y축 드래그가 X축보다 크고, 준비 단계가 아니며, 상자가 세팅되었고, 재고가 있을 때 아이템 스폰
         DayPhase phase = DayCycleManager.Instance.CurrentPhase;
-        if (phase != DayPhase.Preparation && _setter != null && currentAmount > 0 && Mathf.Abs(eventData.delta.y) > Mathf.Abs(eventData.delta.x))
+        // if (phase != DayPhase.Preparation && _setter != null && currentAmount > 0 && Mathf.Abs(eventData.delta.y) > Mathf.Abs(eventData.delta.x))
+        if (_setter != null && currentAmount > 0 && Mathf.Abs(eventData.delta.y) > Mathf.Abs(eventData.delta.x))
         {
             _isDraggingItem = true;
             currentAmount--;
+            
+            _draggedItemDays = -1;
+            if (storedItemDays.Count > 0)
+            {
+                _draggedItemDays = storedItemDays[0];
+                storedItemDays.RemoveAt(0); // 첫 번째 재료 추출
+            }
+            
+            UpdateUI();
             
             // 화면 좌표를 월드 좌표로 변환
             Vector3 worldPos = Camera.main.ScreenToWorldPoint(eventData.position);
@@ -136,7 +147,21 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if (_isDraggingItem && _spawnedIngredient != null)
         {
             _spawnedIngredient.OnTouchEnd();
+            
+            // 허공에 떨어졌거나 유효하지 않은 곳에 놓였을 때
+            if (!_spawnedIngredient.wasDroppedSuccessfully)
+            {
+                _spawnedIngredient.OnDespawn(); // 사라지게 만듦
+                currentAmount++;
+                if (_draggedItemDays != -1)
+                {
+                    storedItemDays.Add(_draggedItemDays); // 유통기한 복구
+                }
+                UpdateUI(); // 상자에 다시 들어간 것을 UI에 반영
+            }
+            
             _spawnedIngredient = null;
+            _draggedItemDays = -1;
         }
         else if (!_isDraggingItem)
         {
@@ -155,10 +180,14 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         this.qualityScore = quality;
         
         if (amount > 0) {
-            currentAmount += InventoryManager.Instance.FillIngredient(_setter.boxData.ingredientID, amount);
+            List<int> filled = InventoryManager.Instance.FillIngredient(_setter.boxData.ingredientID, amount);
+            currentAmount += filled.Count;
+            storedItemDays.AddRange(filled);
         } else {
             Refill();
         }
+        
+        UpdateUI();
         
         if (MenuManager.Instance != null)
         {
@@ -175,20 +204,61 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         ReturnToInventory();
         _setter = null;
+        UpdateUI();
     }
 
     public void ReturnToInventory()
     {
         if (currentAmount > 0 && _setter != null && _setter.boxData != null)
         {
-            InventoryManager.Instance.AddIngredient(_setter.boxData, currentAmount, 1);
+            foreach (int days in storedItemDays)
+            {
+                InventoryManager.Instance.AddIngredient(_setter.boxData, 1, days);
+            }
             Debug.Log($"[IngredientBox] {_setter.boxData.ingredientName} {currentAmount}개를 인벤토리로 반환했습니다.");
             currentAmount = 0;
+            storedItemDays.Clear();
+            UpdateUI();
         }
     }
 
     public void Refill() 
     {
-        currentAmount += InventoryManager.Instance.FillIngredient(_setter.boxData.ingredientID, (int)Math.Floor(capacity / _setter.boxData.volume) - currentAmount);
+        int targetAmount = (int)Math.Floor(capacity / _setter.boxData.volume) - currentAmount;
+        if (targetAmount > 0)
+        {
+            List<int> filled = InventoryManager.Instance.FillIngredient(_setter.boxData.ingredientID, targetAmount);
+            currentAmount += filled.Count;
+            storedItemDays.AddRange(filled);
+            UpdateUI();
+        }
+    }
+
+    private void UpdateUI()
+    {
+        if (iconImage != null)
+        {
+            if (_setter != null && _setter.boxData != null && currentAmount > 0)
+            {
+                iconImage.sprite = _setter.boxData.ingredientSprite;
+                iconImage.enabled = true;
+            }
+            else
+            {
+                iconImage.enabled = false;
+            }
+        }
+        
+        if (amountText != null)
+        {
+            if (_setter != null && _setter.boxData != null && currentAmount > 0)
+            {
+                amountText.text = currentAmount.ToString();
+            }
+            else
+            {
+                amountText.text = "";
+            }
+        }
     }
 }

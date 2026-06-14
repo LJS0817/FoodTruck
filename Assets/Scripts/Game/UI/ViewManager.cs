@@ -94,6 +94,12 @@ public class ViewManager : MonoBehaviour
         isInsideTruck = toInside;
         SwitchUI(isInsideTruck);
 
+        // 내부에 진입할 때 무조건 카운터 화면으로 초기화
+        if (isInsideTruck && TruckInsideNavigation.Instance != null)
+        {
+            TruckInsideNavigation.Instance.OnEnterTruck();
+        }
+
         // 2. 화면이 가려진 상태에서 카메라 위치 이동
         if (isInsideTruck)
         {

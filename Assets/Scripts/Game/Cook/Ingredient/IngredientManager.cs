@@ -75,8 +75,9 @@ public class IngredientManager : MonoBehaviour
 
     private void OpenInventoryForSetup()
     {
-        Debug.Log($"[IngredientBoxManager] {_currentBoxIndex}번 상자 세팅을 위해 인벤토리를 엽니다.");
-        _inventoryMng.OpenUIWithApplyBtn();
+        IngredientData targetData = _boxes[_currentBoxIndex].GetCurrentData();
+        Debug.Log($"[IngredientBoxManager] {_currentBoxIndex}번 상자 세팅을 위해 인벤토리를 엽니다. (대상: {targetData?.ingredientName})");
+        _inventoryMng.OpenUIWithApplyBtn(targetData);
     }
 
     private void OpenInventoryForRefill()

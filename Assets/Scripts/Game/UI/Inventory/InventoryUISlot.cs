@@ -39,7 +39,6 @@ public class InventoryUISlot : MonoBehaviour, IPointerClickHandler
     }
 
     public void OnPointerClick(PointerEventData eventData) {
-        StoreManager.Instance.UIController.ShowItemInfo(StoreItem.FromIngredient(Item.data, Item.data.basePrice), false);
         _onSlotClicked?.Invoke(this);
     }
 

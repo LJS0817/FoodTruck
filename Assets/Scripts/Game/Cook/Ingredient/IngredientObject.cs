@@ -11,6 +11,7 @@ public class IngredientObject : PoolableObject, IInteractable
     private bool isDragging = false;
     public bool isProcessing = false; // 가공 진행 중 (드래그 불가)
     public bool isProcessed = false;  // 가공 완료 (장비로 다시 드래그 불가, 냄비로만 가능)
+    public bool wasDroppedSuccessfully = false;
 
     int _layerMask;
 
@@ -67,11 +68,11 @@ public class IngredientObject : PoolableObject, IInteractable
         transform.localScale = Vector3.one; // 크기 원상복구
         spriteRenderer.sortingOrder = 0;
 
-        CheckDropLocation();
+        wasDroppedSuccessfully = CheckDropLocation();
     }
 
     // 드래그를 놓았을 때 냄비(또는 장비) 위에 있는지 판별
-    private void CheckDropLocation()
+    private bool CheckDropLocation()
     {
         Collider2D overlap = Physics2D.OverlapPoint(transform.position, _layerMask);
 
@@ -79,7 +80,7 @@ public class IngredientObject : PoolableObject, IInteractable
         {
             // 허공에 놓으면 제자리로 (부드러운 복귀는 이후 iTween이나 DOTween 권장)
             transform.position = originalPosition;
-            return;
+            return false;
         }
 
         // 1. 냄비(CookingPot) 위에 놓인 경우
@@ -87,7 +88,7 @@ public class IngredientObject : PoolableObject, IInteractable
         {
             pot.ReceiveIngredient(this.currentData);
             OnDespawn();
-            return;
+            return true;
         }
 
         // 2. 장비(Equipment) 위에 놓인 경우 → 가공 시작
@@ -96,16 +97,18 @@ public class IngredientObject : PoolableObject, IInteractable
             if (equipment.ReceiveIngredient(this))
             {
                 // 성공적으로 장비에 올라가면 풀로 반환하지 않고, 장비가 제어합니다.
+                return true;
             }
             else
             {
                 // 가공 불가 시 제자리로 복귀
                 transform.position = originalPosition;
+                return false;
             }
-            return;
         }
 
         // 어떤 대상에도 해당하지 않거나, 이미 가공된 재료를 장비에 또 올린 경우 제자리로 복귀
         transform.position = originalPosition;
+        return false;
     }
 }

@@ -89,7 +89,7 @@ public class ProcessManager : MonoBehaviour
         // 2. 인벤토리 차감 (UI 등에서 직접 호출했을 때만)
         if (consumeInventory)
         {
-            if (!InventoryManager.Instance.UseIngredient(input.ingredientID))
+            if (InventoryManager.Instance.UseIngredient(input.ingredientID) == -1)
             {
                 Debug.LogWarning("[가공 실패] 재고가 부족합니다.");
                 onComplete?.Invoke(false, null);

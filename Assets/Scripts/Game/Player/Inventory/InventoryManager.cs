@@ -52,7 +52,7 @@ public class InventoryManager : MonoBehaviour
     }
 
     // 요리를 위해 재료통에서 재료를 하나 꺼낼 때 호출 (유통기한 임박한 것부터 차감)
-    public bool UseIngredient(int ingredientID)
+    public int UseIngredient(int ingredientID)
     {
         int targetIndex = -1;
         int closestExpiration = int.MaxValue;
@@ -72,30 +72,32 @@ public class InventoryManager : MonoBehaviour
 
         if (targetIndex != -1)
         {
+            int days = inventoryItems[targetIndex].remainingDays;
             inventoryItems[targetIndex].amount--;
             if (inventoryItems[targetIndex].amount <= 0)
             {
                 inventoryItems.RemoveAt(targetIndex); // 개수가 0이면 슬롯 삭제
             }
             UpdateUI();
-            return true;
+            return days;
         }
 
         Debug.LogWarning($"[인벤토리] 재료 ID {ingredientID}의 재고가 부족합니다!");
-        return false;
+        return -1;
     }
 
     // 요리를 위해 재료통에 재료를 채울 때 호출 (최대 보유량 확인)
-    public int FillIngredient(int ingredientID, int amount)
+    public List<int> FillIngredient(int ingredientID, int amount)
     {
-        int totalFilled = 0;
+        List<int> filledDays = new List<int>();
         
         // 💡 UseIngredient를 호출하여 실제로 인벤토리에서 차감 (유통기한 임박한 것부터 자동 차감됨)
         for (int i = 0; i < amount; i++)
         {
-            if (UseIngredient(ingredientID))
+            int days = UseIngredient(ingredientID);
+            if (days != -1)
             {
-                totalFilled++;
+                filledDays.Add(days);
             }
             else
             {
@@ -103,16 +105,16 @@ public class InventoryManager : MonoBehaviour
             }
         }
 
-        if (totalFilled == 0)
+        if (filledDays.Count == 0)
         {
             Debug.LogWarning($"[인벤토리] 재료 ID {ingredientID}의 재고가 부족하여 채울 수 없습니다!");
         }
         else
         {
-            Debug.Log($"[인벤토리] 재료 ID {ingredientID}를 {totalFilled}개 상자에 채웠습니다.");
+            Debug.Log($"[인벤토리] 재료 ID {ingredientID}를 {filledDays.Count}개 상자에 채웠습니다.");
         }
         
-        return totalFilled;
+        return filledDays;
     }
 
     // 💡 특정 레시피에 필요한 재료들을 모두 보유하고 있는지 확인
@@ -254,7 +256,7 @@ public class InventoryManager : MonoBehaviour
     {
         for (int i = 0; i < amount; i++)
         {
-            if (!UseIngredient(ingredientID)) break;
+            if (UseIngredient(ingredientID) == -1) break;
         }
     }
 
