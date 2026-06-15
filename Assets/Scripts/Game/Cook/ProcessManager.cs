@@ -209,7 +209,15 @@ public class ProcessManager : MonoBehaviour
             IngredientData resultItem = task.inputIngredient;
             Debug.Log($"<color=green>[ProcessManager] {equipType} 수거 완료! {mark}{resultItem.ingredientName} ({task.method.processType}, Optimal) 획득! (품질: {finalQuality:P0})</color>");
             
-            InventoryManager.Instance.AddIngredient(resultItem, 1, resultItem.maxShelfLifeDays, IngredientState.Optimal, task.method.processType, finalGrade);
+            IngredientBox targetBox = IngredientManager.Instance.FindOrAssignBoxFor(resultItem, IngredientState.Optimal, task.method.processType, finalGrade);
+            if (targetBox != null)
+            {
+                targetBox.AddCollectedItem(1, finalQuality, resultItem.maxShelfLifeDays);
+            }
+            else
+            {
+                InventoryManager.Instance.AddIngredient(resultItem, 1, resultItem.maxShelfLifeDays, IngredientState.Optimal, task.method.processType, finalGrade);
+            }
 
             // 태스크 삭제
             activeTasks.Remove(equipType);
@@ -235,7 +243,15 @@ public class ProcessManager : MonoBehaviour
             IngredientData resultItem = task.inputIngredient;
             Debug.Log($"<color=cyan>[ProcessManager] {equipType} 강제 회수! {resultItem.ingredientName} ({task.method.processType}, {currentState}) 획득!</color>");
             
-            InventoryManager.Instance.AddIngredient(resultItem, 1, resultItem.maxShelfLifeDays, currentState, task.method.processType, grade);
+            IngredientBox targetBox = IngredientManager.Instance.FindOrAssignBoxFor(resultItem, currentState, task.method.processType, grade);
+            if (targetBox != null)
+            {
+                targetBox.AddCollectedItem(1, quality, resultItem.maxShelfLifeDays);
+            }
+            else
+            {
+                InventoryManager.Instance.AddIngredient(resultItem, 1, resultItem.maxShelfLifeDays, currentState, task.method.processType, grade);
+            }
 
             activeTasks.Remove(equipType);
             onCollected?.Invoke(true, resultItem);
@@ -248,7 +264,16 @@ public class ProcessManager : MonoBehaviour
         {
             IngredientData spoiledResult = task.inputIngredient;
             Debug.Log($"<color=red>[ProcessManager] {equipType}에서 타버린 요리({spoiledResult.ingredientName}, Ruined)를 수거했습니다.</color>");
-            InventoryManager.Instance.AddIngredient(spoiledResult, 1, spoiledResult.maxShelfLifeDays, IngredientState.Ruined, task.method.processType, ItemGrade.Normal);
+            
+            IngredientBox targetBox = IngredientManager.Instance.FindOrAssignBoxFor(spoiledResult, IngredientState.Ruined, task.method.processType, ItemGrade.Normal);
+            if (targetBox != null)
+            {
+                targetBox.AddCollectedItem(1, 1.0f, spoiledResult.maxShelfLifeDays);
+            }
+            else
+            {
+                InventoryManager.Instance.AddIngredient(spoiledResult, 1, spoiledResult.maxShelfLifeDays, IngredientState.Ruined, task.method.processType, ItemGrade.Normal);
+            }
 
             activeTasks.Remove(equipType);
             onCollected?.Invoke(false, spoiledResult);

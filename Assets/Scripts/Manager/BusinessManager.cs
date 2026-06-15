@@ -99,6 +99,10 @@ public class BusinessManager : MonoBehaviour
             if (CookingManager.Instance != null)
                 CookingManager.Instance.ClearDish();
 
+            // 5. 임시 바트에 남은 요리를 인벤토리로 환수 및 초기화
+            if (IngredientManager.Instance != null)
+                IngredientManager.Instance.ClearAllTempBoxes();
+
             // 5. 시간 0.5배속으로 느리게 흐르도록 설정
             if (GameTimeManager.Instance != null)
                 GameTimeManager.Instance.timeScaleMultiplier = 0.5f;

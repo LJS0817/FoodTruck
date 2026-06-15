@@ -44,9 +44,15 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public float qualityScore = 1.0f; // 💡 가공 품질 (1.0 = 일반, 1.2 = 프리미엄 등)
     public List<int> storedItemDays = new List<int>(); // 유통기한 보존용
 
+    public IngredientState targetState = IngredientState.Raw;
+    public ProcessType targetProcess = ProcessType.None;
+    public bool isTemporary = false;
+
     [Header("UI Elements")]
     public Image iconImage;
     public TMPro.TMP_Text amountText;
+    [Tooltip("상자가 비어있을 때 활성화할 게임오브젝트 (예: '+' 버튼이나 빈 박스 이미지)")]
+    public GameObject emptyIndicator;
 
     IngredientBoxSetter _setter;
 
@@ -73,25 +79,12 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         DayPhase phase = DayCycleManager.Instance.CurrentPhase;
 
         SetupEvent?.Invoke();
-        // if (phase == DayPhase.Preparation)
-        // {
-        //     SetupEvent?.Invoke();
-        //     return;
-        // }
-
-        // // 재고가 없을 경우 리필 이벤트
-        // if (currentAmount <= 0)
-        // {
-        //     Debug.Log($"<color=red>재료 부족: {_setter.boxData.ingredientName} 상자가 비었습니다!</color>");
-        //     RefillEvent?.Invoke();
-        // }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         // Y축 드래그가 X축보다 크고, 준비 단계가 아니며, 상자가 세팅되었고, 재고가 있을 때 아이템 스폰
         DayPhase phase = DayCycleManager.Instance.CurrentPhase;
-        // if (phase != DayPhase.Preparation && _setter != null && currentAmount > 0 && Mathf.Abs(eventData.delta.y) > Mathf.Abs(eventData.delta.x))
         if (_setter != null && currentAmount > 0 && Mathf.Abs(eventData.delta.y) > Mathf.Abs(eventData.delta.x))
         {
             _isDraggingItem = true;
@@ -112,7 +105,7 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
             // 2D 재료 생성
             _spawnedIngredient = Instantiate(_setter.prefabToSpawn, worldPos, Quaternion.identity);
-            _spawnedIngredient.SetupIngredient(_setter.boxData);
+            _spawnedIngredient.SetupIngredient(_setter.boxData, targetState, targetProcess);
             _spawnedIngredient.OnTouchBegin(worldPos);
 
             // 스크롤 이벤트 차단 (옵션)
@@ -159,6 +152,14 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                 }
                 UpdateUI(); // 상자에 다시 들어간 것을 UI에 반영
             }
+            else
+            {
+                // 사용 완료 시 수량이 0이고 임시 바트라면 즉시 초기화
+                if (isTemporary && currentAmount <= 0)
+                {
+                    ResetBox();
+                }
+            }
             
             _spawnedIngredient = null;
             _draggedItemDays = -1;
@@ -204,6 +205,35 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         ReturnToInventory();
         _setter = null;
+        targetState = IngredientState.Raw;
+        targetProcess = ProcessType.None;
+        UpdateUI();
+    }
+
+    public void SetupFromCollectedItem(IngredientBoxSetter data, IngredientState state, ProcessType processType, float quality, int amount)
+    {
+        _setter = data;
+        this.targetState = state;
+        this.targetProcess = processType;
+        this.qualityScore = quality;
+        this.currentAmount += amount;
+        
+        UpdateUI();
+        
+        if (MenuManager.Instance != null)
+        {
+            MenuManager.Instance.UpdateAvailableRecipes();
+        }
+    }
+
+    public void AddCollectedItem(int amount, float quality, int shelfLifeDays)
+    {
+        this.currentAmount += amount;
+        this.qualityScore = quality;
+        for (int i = 0; i < amount; i++)
+        {
+            this.storedItemDays.Add(shelfLifeDays);
+        }
         UpdateUI();
     }
 
@@ -236,11 +266,36 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     private void UpdateUI()
     {
+        bool isEmpty = (_setter == null || _setter.boxData == null || currentAmount <= 0);
+
+        if (emptyIndicator != null)
+        {
+            emptyIndicator.SetActive(isEmpty);
+        }
+
         if (iconImage != null)
         {
-            if (_setter != null && _setter.boxData != null && currentAmount > 0)
+            if (!isEmpty)
             {
-                iconImage.sprite = _setter.boxData.ingredientSprite;
+                Sprite displaySprite = _setter.boxData.ingredientSprite;
+                
+                if (targetProcess != ProcessType.None)
+                {
+                    ProcessMethodData method = _setter.boxData.GetProcessMethod(targetProcess);
+                    if (method != null && method.stateSteps != null)
+                    {
+                        foreach (var step in method.stateSteps)
+                        {
+                            if (step.state == targetState)
+                            {
+                                displaySprite = step.stateSprite;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                iconImage.sprite = displaySprite;
                 iconImage.enabled = true;
             }
             else
@@ -251,7 +306,7 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         
         if (amountText != null)
         {
-            if (_setter != null && _setter.boxData != null && currentAmount > 0)
+            if (!isEmpty)
             {
                 amountText.text = currentAmount.ToString();
             }

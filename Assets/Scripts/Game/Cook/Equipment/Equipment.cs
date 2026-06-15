@@ -138,7 +138,15 @@ public class Equipment : MonoBehaviour, IInteractable
             SetProcessingEffect(false);
             SetCompleteEffect(false);
             SetSpoiledEffect(true);
-            SetUIActive(false);
+            
+            if (progressBar != null) progressBar.gameObject.SetActive(false);
+            if (timerText != null)
+            {
+                timerText.gameObject.SetActive(true);
+                timerText.text = "Ruined";
+                timerText.color = Color.red;
+            }
+
             if (extractButton != null) extractButton.gameObject.SetActive(false);
         }
     }

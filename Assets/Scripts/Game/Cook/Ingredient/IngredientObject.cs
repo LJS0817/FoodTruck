@@ -22,10 +22,33 @@ public class IngredientObject : PoolableObject, IInteractable
     }
 
     // 오브젝트 풀에서 꺼내질 때 데이터와 스프라이트 세팅
-    public void SetupIngredient(IngredientData data)
+    public void SetupIngredient(IngredientData data, IngredientState state = IngredientState.Raw, ProcessType processType = ProcessType.None)
     {
         currentData = data;
-        spriteRenderer.sprite = data.ingredientSprite;
+        
+        Sprite displaySprite = data.ingredientSprite;
+        if (processType != ProcessType.None)
+        {
+            ProcessMethodData method = data.GetProcessMethod(processType);
+            if (method != null && method.stateSteps != null)
+            {
+                foreach (var step in method.stateSteps)
+                {
+                    if (step.state == state)
+                    {
+                        displaySprite = step.stateSprite;
+                        break;
+                    }
+                }
+            }
+        }
+
+        spriteRenderer.sprite = displaySprite;
+        
+        if (state != IngredientState.Raw)
+        {
+            isProcessed = true;
+        }
     }
 
     public override void OnSpawn()

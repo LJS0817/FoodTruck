@@ -17,6 +17,12 @@ public class IngredientManager : MonoBehaviour
     [Tooltip("초기 상자 개수. 추후 업그레이드 시스템과 연동 시 이 값을 변경하거나 UpdateBoxCount를 호출하세요.")]
     public int maxBoxCount = 4;
 
+    [Header("Temp Box Settings")]
+    [Tooltip("임시 상자가 스폰될 부모 오브젝트입니다. (Inspector에서 할당 필요)")]
+    [SerializeField] Transform _tempBoxParent;
+    public int tempBoxCount = 3;
+    private List<IngredientBox> _tempBoxes;
+
     List<IngredientBox> _boxes;
     int _currentBoxIndex;
 
@@ -29,14 +35,24 @@ public class IngredientManager : MonoBehaviour
     {
         _currentBoxIndex = -1;
         _boxes = new List<IngredientBox>();
+        _tempBoxes = new List<IngredientBox>();
 
         // 에디터 등에 남아있을 수 있는 더미 데이터 삭제
-        for (int i = _boxParent.childCount - 1; i >= 0; i--)
+        for (int i = _boxParent.childCount - 1; i > 0; i--)
         {
             Destroy(_boxParent.GetChild(i).gameObject);
         }
+        
+        if (_tempBoxParent != null)
+        {
+            for (int i = _tempBoxParent.childCount - 1; i >= 0; i--)
+            {
+                Destroy(_tempBoxParent.GetChild(i).gameObject);
+            }
+        }
 
         UpdateBoxCount(maxBoxCount);
+        InitTempBoxes();
         
         if (_boxSetters != null && _boxSetters.Count > 0 && _boxSetters[0].boxData != null)
         {
@@ -70,6 +86,22 @@ public class IngredientManager : MonoBehaviour
                 },
                 scrollRect: parentScrollRect
             );
+        }
+    }
+
+    private void InitTempBoxes()
+    {
+        if (_tempBoxParent == null) return;
+
+        ScrollRect parentScrollRect = _tempBoxParent.GetComponentInParent<ScrollRect>();
+
+        for (int i = 0; i < tempBoxCount; i++)
+        {
+            IngredientBox newBox = Instantiate(_boxPrefab, _tempBoxParent);
+            newBox.isTemporary = true;
+            _tempBoxes.Add(newBox);
+            
+            newBox.Init(null, null, parentScrollRect);
         }
     }
 
@@ -156,5 +188,87 @@ public class IngredientManager : MonoBehaviour
     public List<IngredientBox> GetAllBoxes()
     {
         return _boxes;
+    }
+
+    public IngredientBox FindOrAssignBoxFor(IngredientData data, IngredientState state, ProcessType pt, ItemGrade grade)
+    {
+        // 1. Exact match (not empty)
+        foreach (var box in _boxes)
+        {
+            if (box.currentAmount > 0 && box.GetCurrentData() != null &&
+                box.GetCurrentData().ingredientID == data.ingredientID &&
+                box.targetState == state && box.targetProcess == pt)
+            {
+                return box;
+            }
+        }
+        if (_tempBoxes != null)
+        {
+            foreach (var box in _tempBoxes)
+            {
+                if (box.currentAmount > 0 && box.GetCurrentData() != null &&
+                    box.GetCurrentData().ingredientID == data.ingredientID &&
+                    box.targetState == state && box.targetProcess == pt)
+                {
+                    return box;
+                }
+            }
+        }
+
+        IngredientBoxSetter setter = GetSetterFor(data);
+        if (setter == null) return null;
+
+        // 2. Empty Fixed Box
+        foreach (var box in _boxes)
+        {
+            if (box.currentAmount == 0)
+            {
+                box.SetupFromCollectedItem(setter, state, pt, 1.0f, 0);
+                return box;
+            }
+        }
+
+        // 3. Empty Temp Box
+        if (_tempBoxes != null)
+        {
+            foreach (var box in _tempBoxes)
+            {
+                if (box.currentAmount == 0)
+                {
+                    box.SetupFromCollectedItem(setter, state, pt, 1.0f, 0);
+                    return box;
+                }
+            }
+        }
+
+        // 4. No space
+        return null;
+    }
+
+    private IngredientBoxSetter GetSetterFor(IngredientData data)
+    {
+        if (_boxSetters == null) return null;
+        for (int i = 0; i < _boxSetters.Count; i++)
+        {
+            if (_boxSetters[i].boxData != null && _boxSetters[i].boxData.ingredientID == data.ingredientID)
+            {
+                return _boxSetters[i];
+            }
+        }
+        return null;
+    }
+
+    public void ClearAllTempBoxes()
+    {
+        if (_tempBoxes == null) return;
+        
+        foreach (var box in _tempBoxes)
+        {
+            if (box.currentAmount > 0)
+            {
+                box.ResetBox(); // 내부적으로 ReturnToInventory 호출
+            }
+        }
+        Debug.Log("<color=cyan>[IngredientManager] 임시 바트에 남은 재료를 모두 인벤토리로 환수하고 초기화했습니다.</color>");
     }
 }
