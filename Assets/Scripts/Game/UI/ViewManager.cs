@@ -172,5 +172,10 @@ public class ViewManager : MonoBehaviour
             SetCanvasGroupState(insideUIPanel, false);
             SetCanvasGroupState(outsideUIPanel, true);
         }
+
+        if (BusinessManager.Instance != null)
+        {
+            BusinessManager.Instance.ChangeBusinessButton(isGoingInside);
+        }
     }
 }

@@ -9,19 +9,31 @@ public class BusinessManager : MonoBehaviour
     public bool IsBusinessOpen { get; private set; } = false;
 
     [Header("UI Settings")]
-    [SerializeField] private TMP_Text toggleButtonText;
+    [SerializeField] GameObject _toggleButtonOutside;
+    [SerializeField] GameObject _toggleButtonInside;
+    TMP_Text _toggleButtonOutsideText;
+    TMP_Text _toggleButtonInsideText;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
+
+        _toggleButtonOutsideText = _toggleButtonOutside.transform.GetChild(0).GetComponentInChildren<TMP_Text>();
+        _toggleButtonInsideText = _toggleButtonInside.transform.GetChild(0).GetComponentInChildren<TMP_Text>();
     }
 
     private void Start()
     {
         // 게임 시작 시 장사는 종료된 상태로 시작
         IsBusinessOpen = false;
-        GameTimeManager.Instance.timeScaleMultiplier = 0.5f;
+        if (GameTimeManager.Instance != null)
+            GameTimeManager.Instance.timeScaleMultiplier = 0.5f;
         UpdateButtonUI();
+
+        if (ViewManager.Instance != null)
+        {
+            ChangeBusinessButton(ViewManager.Instance.isInsideTruck);
+        }
 
         // 💡 피로도 소진 시 자동 장사 종료 이벤트 구독
         if (PlayerStaminaManager.Instance != null)
@@ -100,12 +112,32 @@ public class BusinessManager : MonoBehaviour
         }
     }
 
+    public void ChangeBusinessButton(bool isInside)
+    {
+        if (isInside)
+        {
+            _toggleButtonInside.SetActive(true);
+            _toggleButtonOutside.SetActive(false);
+        }
+        else
+        {
+            _toggleButtonInside.SetActive(false);
+            _toggleButtonOutside.SetActive(true);
+        }
+    }
+
     private void UpdateButtonUI()
     {
-        if (toggleButtonText != null)
+        if (_toggleButtonOutsideText != null)
         {
             // 장사 중이면 '장사 종료' 버튼으로, 종료 상태면 '장사 시작' 버튼으로 표시
-            toggleButtonText.text = IsBusinessOpen ? "Close" : "Open";
+            _toggleButtonOutsideText.text = IsBusinessOpen ? "Close" : "Open";
+        }
+
+        if (_toggleButtonInsideText != null)
+        {
+            // 장사 중이면 '장사 종료' 버튼으로, 종료 상태면 '장사 시작' 버튼으로 표시
+            _toggleButtonInsideText.text = IsBusinessOpen ? "Close" : "Open";
         }
     }
 }
