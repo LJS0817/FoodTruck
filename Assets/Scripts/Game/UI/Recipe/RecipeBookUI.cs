@@ -10,6 +10,8 @@ public class RecipeBookUI : MonoBehaviour
 
     private List<RecipeSlotUI> spawnedSlots = new List<RecipeSlotUI>();
 
+    public RectTransform GetContent() => contentParent as RectTransform;
+
     void Start() {
         CloseRecipeBook();
     }

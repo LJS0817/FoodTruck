@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class StoreUIController : MonoBehaviour, MarketUIInterface
 {
     [SerializeField] CanvasGroup storeUIPanel;
-    [SerializeField] CanvasGroup _marketGroup;
-    [SerializeField] CanvasGroup _recipeGroup;
-    [SerializeField] CanvasGroup _decorationGroup;
-    [SerializeField] CanvasGroup _marketingGroup;
-    [SerializeField] CanvasGroup _equipmentGroup; // 에디터에서 할당 필요
+    private CanvasGroup _marketGroup;
+    private CanvasGroup _recipeGroup;
+    private CanvasGroup _decorationGroup;
+    private CanvasGroup _marketingGroup;
+    private CanvasGroup _equipmentGroup; // 에디터에서 할당 필요
 
     [Header("Slot Content Parents (ScrollView Content)")]
     [SerializeField] private Transform _marketContent;
@@ -16,6 +17,12 @@ public class StoreUIController : MonoBehaviour, MarketUIInterface
     [SerializeField] private Transform _decorationContent;
     [SerializeField] private Transform _marketingContent;
     [SerializeField] private Transform _equipmentContent; // 에디터에서 할당 필요
+
+    [SerializeField] private Button _marketTabButton;
+    [SerializeField] private Button _recipeTabButton;
+    [SerializeField] private Button _decorationTabButton;
+    [SerializeField] private Button _marketingTabButton;
+    [SerializeField] private Button _equipmentTabButton;
 
     [Header("Info Panel")]
     [SerializeField] private ItemInfoUI _itemInfoUI;
@@ -42,12 +49,25 @@ public class StoreUIController : MonoBehaviour, MarketUIInterface
 
     private void Awake()
     {
+        _marketGroup = _marketContent.GetComponent<CanvasGroup>();
+        _recipeGroup = _recipeContent.GetComponent<CanvasGroup>();
+        _decorationGroup = _decorationContent.GetComponent<CanvasGroup>();
+        _marketingGroup = _marketingContent.GetComponent<CanvasGroup>();
+        _equipmentGroup = _equipmentContent.GetComponent<CanvasGroup>();
+
         _categoryGroups = new CanvasGroup[] { 
-            _marketGroup, _recipeGroup, _decorationGroup, _marketingGroup, _equipmentGroup
+            _marketGroup, _recipeGroup, _equipmentGroup, _decorationGroup, _marketingGroup
         };
         _contentParents = new Transform[] { 
-            _marketContent, _recipeContent, _decorationContent, _marketingContent, _equipmentContent
+            _marketContent, _recipeContent, _equipmentContent, _decorationContent, _marketingContent
         };
+
+        if (_marketTabButton != null) _marketTabButton.onClick.AddListener(() => ChangeCategory(0));
+        if (_recipeTabButton != null) _recipeTabButton.onClick.AddListener(() => ChangeCategory(1));
+        if (_equipmentTabButton != null) _equipmentTabButton.onClick.AddListener(() => ChangeCategory(2));
+        if (_decorationTabButton != null) _decorationTabButton.onClick.AddListener(() => ChangeCategory(3));
+        if (_marketingTabButton != null) _marketingTabButton.onClick.AddListener(() => ChangeCategory(4));
+
         CloseUI();
     }
 

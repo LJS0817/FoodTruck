@@ -10,6 +10,7 @@ public class InventoryRecipeUIController : MonoBehaviour
     [Header("Sub UI Controllers")]
     [SerializeField] private InventoryUIController inventoryUI;
     [SerializeField] private RecipeBookUI recipeBookUI;
+    [SerializeField] ScrollRect scrollRect;
 
     [Header("Sub Menu Buttons")]
     [SerializeField] private Button inventoryTabButton;
@@ -84,5 +85,7 @@ public class InventoryRecipeUIController : MonoBehaviour
             
         if (recipeTabButton != null) 
             recipeTabButton.interactable = isInventorySelected;
+
+        scrollRect.content = isInventorySelected ? inventoryUI.GetContent() : recipeBookUI.GetContent();
     }
 }
