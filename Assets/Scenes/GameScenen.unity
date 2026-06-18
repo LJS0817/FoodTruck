@@ -3090,7 +3090,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8117647, g: 0.89984196, b: 0.9764706, a: 0.3882353}
+  m_Color: {r: 0.9764706, g: 0.8117647, b: 0.8288553, a: 0.3882353}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4374,7 +4374,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -7431418905019230840, guid: 2219c2cc36cbd0a4cb83fe016e745a8b, type: 3}
+  m_Sprite: {fileID: -8894378161134838276, guid: b3dc3a21241b09549a1ba20fd1f85f25, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -11104,6 +11104,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreUIController
   storeUIPanel: {fileID: 191862044}
+  scrollRect: {fileID: 937541523}
   _marketContent: {fileID: 316573037}
   _recipeContent: {fileID: 866284549}
   _decorationContent: {fileID: 1775170501}

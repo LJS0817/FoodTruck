@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class StoreUIController : MonoBehaviour, MarketUIInterface
 {
     [SerializeField] CanvasGroup storeUIPanel;
+    [SerializeField] private ScrollRect scrollRect;
     private CanvasGroup _marketGroup;
     private CanvasGroup _recipeGroup;
     private CanvasGroup _decorationGroup;
@@ -126,6 +127,7 @@ public class StoreUIController : MonoBehaviour, MarketUIInterface
         SetVisibleCategory(_currentCategoryIndex, false);
         _currentCategoryIndex = categoryIndex;
         SetVisibleCategory(_currentCategoryIndex, true);
+        scrollRect.content = _contentParents[categoryIndex] as RectTransform;
 
         if (_itemInfoUI != null)
         {
