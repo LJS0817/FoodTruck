@@ -114,3 +114,9 @@ ProjectSettings/ProjectVersion.txt
 ProjectSettings/ProjectVersion.txt
 *.txt
 /Assets/Plugins
+/Assets/Settings
+Assets/UI Toolkit.meta
+/Assets/UI Toolkit
+Assets/UniversalRenderPipelineGlobalSettings.asset
+Packages/packages-lock.json
+ProjectSettings/ProjectVersion.txt

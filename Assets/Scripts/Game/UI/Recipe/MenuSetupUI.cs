@@ -42,6 +42,8 @@ public class MenuSetupUI : MonoBehaviour
 
         if (_resetButton != null)
             _resetButton.onClick.AddListener(OnResetClicked);
+
+        CloseUI();
     }
 
     public void OpenUI()
