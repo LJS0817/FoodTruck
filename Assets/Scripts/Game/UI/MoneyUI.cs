@@ -10,34 +10,29 @@ public class MoneyUI : MonoBehaviour
     [Header("Animation Settings")]
     [SerializeField] private float countDuration = 0.5f; // 숫자 카운팅 연출 시간
 
+    [SerializeField] PlayerManager playerManager;
     private int currentDisplayMoney = 0;
     private Coroutine countingCoroutine;
 
-    private void OnEnable()
+    private void Start()
     {
-        // 오브젝트 활성화 시 이벤트 구독
-        if (PlayerManager.Instance != null)
-        {
-            PlayerManager.Instance.OnMoneyChanged += HandleMoneyChanged;
-
-            // 이벤트 구독 시점의 초기값을 즉시 UI에 반영
-            currentDisplayMoney = PlayerManager.Instance.CurrentMoney;
-        }
-        UpdateTextFast(currentDisplayMoney);
+        playerManager.OnMoneyChanged -= HandleMoneyChanged; // 중복 방지
+        playerManager.OnMoneyChanged += HandleMoneyChanged;
+        currentDisplayMoney = playerManager.CurrentMoney;
+        // UpdateTextFast(currentDisplayMoney);
+        HandleMoneyChanged(currentDisplayMoney);
     }
 
     private void OnDisable()
     {
         // 오브젝트 비활성화 시 반드시 구독 해제 (메모리 누수 방지)
-        if (PlayerManager.Instance != null)
-        {
-            PlayerManager.Instance.OnMoneyChanged -= HandleMoneyChanged;
-        }
+        playerManager.OnMoneyChanged -= HandleMoneyChanged;
     }
 
     // PlayerManager에서 OnMoneyChanged 이벤트가 발생할 때 호출됨
     private void HandleMoneyChanged(int targetMoney)
     {
+        Debug.Log($"<color=cyan>[MoneyUI] 돈 변경 감지: {targetMoney}원</color>");
         // 이미 숫자가 올라가고 있는 중이라면 이전 연출을 멈추고 새 목표값으로 재시작
         if (countingCoroutine != null)
         {
@@ -52,9 +47,10 @@ public class MoneyUI : MonoBehaviour
         float elapsedTime = 0f;
         int startMoney = currentDisplayMoney;
 
+
         while (elapsedTime < countDuration)
         {
-            elapsedTime += Time.deltaTime;
+            elapsedTime += Time.unscaledDeltaTime;
 
             float t = elapsedTime / countDuration;
             // Mathf.Lerp를 통해 시작 금액과 목표 금액 사이의 값을 보간

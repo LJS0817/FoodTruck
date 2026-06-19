@@ -13,17 +13,16 @@ MonoBehaviour:
   m_Name: ChickenBurger
   m_EditorClassIdentifier: 
   foodName: ChickenBurger
+  description: "\uB2ED\uAC00\uC2B4\uC0B4 \uC0D0\uB7EC\uB4DC\uAC00 \uB2E4\uC774\uC5B4\uD2B8
+    \uC2DD\uD488\uC774\uB77C\uBA74, \uBE75 \uC0AC\uC774\uC5D0 \uB07C\uC6B4 \uCE58\uD0A8
+    \uD328\uD2F0\uB294 \uC815\uC2E0 \uAC74\uAC15\uC744 \uC704\uD55C \uB2E4\uC774\uC5B4\uD2B8
+    \uC2DD\uD488\uC785\uB2C8\uB2E4. \uBC14\uC0AD\uD55C \uD280\uAE40\uC637\uACFC \uCD09\uCD09\uD55C
+    \uC721\uC999\uC774 \uD30D\uD30D\uD55C \uC0B6\uC744 \uC704\uB85C\uD574 \uC90D\uB2C8\uB2E4."
   basePrice: 45
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 792fafd078ba8844cbab1cb2561aa89e, type: 2}
-  - {fileID: 11400000, guid: 10ac37b64bd68c746bfd82f879dfee55, type: 2}
-  - {fileID: 11400000, guid: cec3ca160079bb349b6e8cb530c5f237, type: 2}
-  - {fileID: 11400000, guid: 8a3b1144b6ded7d4e8103f45a561ccbd, type: 2}
-  - {fileID: 11400000, guid: 792fafd078ba8844cbab1cb2561aa89e, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

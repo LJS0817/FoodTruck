@@ -16,7 +16,10 @@ MonoBehaviour:
   ingredientName: HotSauce
   ingredientSprite: {fileID: 0}
   volume: 1
-  description: "\uC2E0\uC120\uD55C HotSauce\uC785\uB2C8\uB2E4."
+  description: "\uC785\uC220\uC774 \uD241\uD241 \uBD93\uACE0 \uD600\uAC00 \uC5BC\uC5BC\uD574\uC838\uB3C4
+    \uC790\uAFB8\uB9CC \uBFCC\uB9AC\uAC8C \uB418\uB294 \uB9C8\uC131\uC758 \uBE68\uAC04
+    \uBB3C\uC57D. \uB9E4\uC6B4\uB9DB\uC73C\uB85C \uC0B6\uC758 \uACE0\uD1B5\uC744
+    \uC78A\uACE0 \uC2F6\uC740 \uB0A0 \uD544\uC218 \uC544\uC774\uD15C\uC785\uB2C8\uB2E4."
   basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99

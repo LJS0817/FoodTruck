@@ -13,18 +13,17 @@ MonoBehaviour:
   m_Name: VeggieRiceBowl
   m_EditorClassIdentifier: 
   foodName: VeggieRiceBowl
+  description: "\uAC74\uAC15\uAC80\uC9C4 \uACB0\uACFC\uB97C \uBCF4\uACE0 \uCDA9\uACA9\uBC1B\uC740
+    \uC9C1\uC7A5\uC778\uB4E4\uC758 \uD68C\uAC1C\uC6A9 \uC2DD\uB2E8! \uD615\uD615\uC0C9\uC0C9\uC758
+    \uC2E0\uC120\uD55C \uCC44\uC18C\uB4E4\uC774 \uBC25 \uC704\uC5D0 \uB9CC\uAC1C\uD558\uC5EC,
+    \uBA39\uB294 \uC21C\uAC04 \uBAB8\uC774 \uC815\uD654\uB418\uACE0 \uB0B4\uC77C
+    \uB2E4\uC2DC \uACE0\uAE30\uB97C \uBA39\uC744 \uC218 \uC788\uB294 \uD798\uC744
+    \uC90D\uB2C8\uB2E4."
   basePrice: 45
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: a70a672d269e8b946958e6e0f98ebbf9, type: 2}
-  - {fileID: 11400000, guid: cec3ca160079bb349b6e8cb530c5f237, type: 2}
-  - {fileID: 11400000, guid: 74e9da260f36f0c48bf0c9941ed08f3c, type: 2}
-  - {fileID: 11400000, guid: cd35ddd07c4d7e94eb472b055cc10ea8, type: 2}
-  - {fileID: 11400000, guid: a3f84ec6433ff71409f9b191fe26aeee, type: 2}
-  - {fileID: 11400000, guid: 3ed39607bc8c52e40969c73445f50cfc, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

@@ -13,19 +13,16 @@ MonoBehaviour:
   m_Name: CheeseBurger
   m_EditorClassIdentifier: 
   foodName: CheeseBurger
+  description: "\uBBF8\uAC01\uC744 \uC9C0\uBC30\uD558\uB294 \uAFB8\uB355\uAFB8\uB355\uD55C
+    \uB178\uB780\uC0C9 \uB9C8\uBC95! \uCE58\uC988 \uD55C \uC7A5\uC774 \uD328\uD2F0\uC758
+    \uC628\uAE30\uC5D0 \uB179\uC544\uB0B4\uB9AC\uB294 \uC21C\uAC04, \uC774\uAC83\uC740
+    \uB2E8\uC21C\uD55C \uD584\uBC84\uAC70\uAC00 \uC544\uB2C8\uB77C \uD608\uAD00\uC5D0
+    \uC9C1\uC811 \uAF42\uD788\uB294 \uD569\uBC95\uC801 \uB9C8\uC57D\uC774 \uB429\uB2C8\uB2E4."
   basePrice: 50
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 792fafd078ba8844cbab1cb2561aa89e, type: 2}
-  - {fileID: 11400000, guid: f4782ef0b84d6d14383c45261d464f5c, type: 2}
-  - {fileID: 11400000, guid: a8a5f28f1fadda24c8537f56be559f3a, type: 2}
-  - {fileID: 11400000, guid: cec3ca160079bb349b6e8cb530c5f237, type: 2}
-  - {fileID: 11400000, guid: 74e9da260f36f0c48bf0c9941ed08f3c, type: 2}
-  - {fileID: 11400000, guid: c99ed4ee641af944e945d969cf62c56f, type: 2}
-  - {fileID: 11400000, guid: 792fafd078ba8844cbab1cb2561aa89e, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

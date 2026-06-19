@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: Steak
   m_EditorClassIdentifier: 
   foodName: Steak
+  description: "\uADF8 \uC5B4\uB5A4 \uC218\uC2DD\uC5B4\uB3C4 \uD544\uC694 \uC5C6\uB294
+    \uC790\uBCF8\uC8FC\uC758 \uB9DB\uC758 \uACB0\uC815\uCCB4! \uB728\uAC70\uC6B4
+    \uBD88\uD310 \uC704\uC5D0\uC11C \uCE58\uBA85\uC801\uC778 \uC18C\uB9AC\uB97C \uB0B4\uBA70
+    \uAD6C\uC6CC\uC9C0\uB294 \uC774 \uACE0\uAE30 \uB369\uC5B4\uB9AC\uB294, \uB2F9\uC2E0\uC774
+    \uB3C8\uC744 \uC5F4\uC2EC\uD788 \uBC8C\uC5B4\uC57C \uD558\uB294 \uAC00\uC7A5
+    \uBA85\uD655\uD55C \uC774\uC720\uB97C \uC54C\uB824\uC90D\uB2C8\uB2E4."
   basePrice: 80
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: f4782ef0b84d6d14383c45261d464f5c, type: 2}
-  - {fileID: 11400000, guid: 0a968e98cd5b9944e935ec8caabc12aa, type: 2}
-  - {fileID: 11400000, guid: 9a7d639f0104a60449747ffb9f4120cf, type: 2}
-  - {fileID: 11400000, guid: a3f84ec6433ff71409f9b191fe26aeee, type: 2}
-  - {fileID: 11400000, guid: 942de24488d44a04398c2f563b078b26, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

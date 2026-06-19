@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: ChickenNoodle
   m_EditorClassIdentifier: 
   foodName: ChickenNoodle
+  description: "\uC544\uD50C \uB54C \uB053\uC5EC\uBA39\uB358 \uC601\uD63C\uC758 \uC218\uD504\uB97C
+    \uC0C1\uC5C5\uC801\uC73C\uB85C \uC644\uBCBD\uD558\uAC8C \uC7AC\uD604\uD588\uC2B5\uB2C8\uB2E4!
+    \uB9D1\uACE0 \uAE4A\uC740 \uB2ED\uC721\uC218\uC640 \uBD80\uB4DC\uB7FD\uAC8C \uB118\uC5B4\uAC00\uB294
+    \uBA74\uBC1C\uC740 \uC9C0\uCE5C \uC2EC\uC2E0\uC744 \uB530\uB73B\uD558\uAC8C \uB370\uC6CC\uC8FC\uB294
+    \uB9C8\uBC95\uC758 \uBB3C\uC57D\uACFC \uAC19\uC2B5\uB2C8\uB2E4."
   basePrice: 50
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 4d5b35edf7de2c348b18dbcef8bb293e, type: 2}
-  - {fileID: 11400000, guid: 10ac37b64bd68c746bfd82f879dfee55, type: 2}
-  - {fileID: 11400000, guid: a3f84ec6433ff71409f9b191fe26aeee, type: 2}
-  - {fileID: 11400000, guid: 91902c4494c0af148af3f973679b7100, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

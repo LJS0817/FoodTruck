@@ -13,17 +13,16 @@ MonoBehaviour:
   m_Name: PorkTaco
   m_EditorClassIdentifier: 
   foodName: PorkTaco
+  description: "\uB3FC\uC9C0\uACE0\uAE30\uC758 \uD48D\uBD80\uD55C \uAC10\uCE60\uB9DB\uACFC
+    \uCAC4\uAE43\uD55C \uC2DD\uAC10\uC774 \uD0C0\uCF54\uC758 \uC2E0\uC138\uACC4\uB97C
+    \uC5FD\uB2C8\uB2E4. \uD55C \uC785 \uBA39\uC73C\uBA74 \uC190\uAC00\uB77D \uC0AC\uC774\uB85C
+    \uB69D\uB69D \uB5A8\uC5B4\uC9C0\uB294 \uC721\uC999\uC740 \uD0C0\uCF54\uAC00 \uC9C4\uC815\uD55C
+    \uC18C\uC6B8 \uD478\uB4DC\uC784\uC744 \uC99D\uBA85\uD569\uB2C8\uB2E4."
   basePrice: 40
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 65e98466930a36548a5c9bc909dae07e, type: 2}
-  - {fileID: 11400000, guid: 73c63ab69c4cba54fa3ff11b858e3d7a, type: 2}
-  - {fileID: 11400000, guid: 9a7d639f0104a60449747ffb9f4120cf, type: 2}
-  - {fileID: 11400000, guid: a8a5f28f1fadda24c8537f56be559f3a, type: 2}
-  - {fileID: 11400000, guid: 942de24488d44a04398c2f563b078b26, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

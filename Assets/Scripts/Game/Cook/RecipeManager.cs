@@ -185,6 +185,55 @@ public class RecipeManager : MonoBehaviour
         return results;
     }
 
+    /// <summary>
+    /// 현재 유저가 해금/보유하고 있는 모든 레시피(기본 상점 구매 + 커스텀)를 반환합니다.
+    /// </summary>
+    public List<FoodData> GetAllUnlockedRecipes()
+    {
+        List<FoodData> results = new List<FoodData>();
+
+        // 1. 상점에서 해금된 기본 레시피 추가
+        if (DataManager.Instance != null && DataManager.Instance.CurrentData != null)
+        {
+            var unlockedList = DataManager.Instance.CurrentData.unlockedRecipes;
+            foreach (var record in unlockedList)
+            {
+                if (record.isUnlocked)
+                {
+                    // allFoodDatabase에서 찾아서 반환
+                    for (int i = 0; i < allFoodDatabase.Count; i++)
+                    {
+                        if (allFoodDatabase[i].foodName == record.foodName)
+                        {
+                            results.Add(allFoodDatabase[i]);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2. 연금술로 얻은 커스텀 레시피 추가
+        foreach (var custom in customRecipeBook.Values)
+        {
+            FoodData rst = ScriptableObject.CreateInstance<FoodData>();
+            rst.isCustomRecipe = true;
+            rst.foodName = custom.customFoodName;
+            rst.basePrice = custom.basePrice;
+            rst.ingredientConfigs = new FoodIngredientConfig[custom.ingredientIDs.Count];
+            for (int i = 0; i < custom.ingredientIDs.Count; i++)
+            {
+                rst.ingredientConfigs[i] = new FoodIngredientConfig { 
+                    rawIngredient = GetIngredientById(custom.ingredientIDs[i]), 
+                    processType = ProcessType.None 
+                };
+            }
+            results.Add(rst);
+        }
+
+        return results;
+    }
+
     // 💡 추가: 요리가 완성되었을 때 도감 데이터를 업데이트하는 함수
     public void RecordCookedDish(string targetName, bool isPremium)
     {

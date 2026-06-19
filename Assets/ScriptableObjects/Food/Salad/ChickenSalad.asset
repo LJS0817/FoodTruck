@@ -13,16 +13,17 @@ MonoBehaviour:
   m_Name: ChickenSalad
   m_EditorClassIdentifier: 
   foodName: ChickenSalad
+  description: "\uD53C\uD2B8\uB2C8\uC2A4 \uC13C\uD130 \uD68C\uC6D0\uB4E4\uC758 \uC8FC\uC2DD
+    1\uD638! \uD37D\uD37D\uD55C \uB2ED\uAC00\uC2B4\uC0B4\uC758 \uD55C\uACC4\uB97C
+    \uB9DB\uC788\uB294 \uB4DC\uB808\uC2F1\uACFC \uC2E0\uC120\uD55C \uC57C\uCC44\uB85C
+    \uADF9\uBCF5\uD574\uB0B8 \uB208\uBB3C\uACA8\uC6B4 \uB178\uB825\uC758 \uACB0\uC815\uCCB4\uC785\uB2C8\uB2E4.
+    \uADFC\uC721\uC774 \uD38C\uD551\uB418\uB294 \uB290\uB08C\uC744 \uD600\uB05D\uC73C\uB85C
+    \uC990\uAE30\uC138\uC694."
   basePrice: 45
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: cec3ca160079bb349b6e8cb530c5f237, type: 2}
-  - {fileID: 11400000, guid: 10ac37b64bd68c746bfd82f879dfee55, type: 2}
-  - {fileID: 11400000, guid: 74e9da260f36f0c48bf0c9941ed08f3c, type: 2}
-  - {fileID: 11400000, guid: 8a3b1144b6ded7d4e8103f45a561ccbd, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

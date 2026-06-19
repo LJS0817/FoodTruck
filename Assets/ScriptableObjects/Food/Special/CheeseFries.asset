@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: CheeseFries
   m_EditorClassIdentifier: 
   foodName: CheeseFries
+  description: "\uD280\uAE34 \uAC10\uC790\uB9CC\uC73C\uB85C\uB3C4 \uC774\uBBF8 \uC8C4\uC545\uC778\uB370,
+    \uADF8 \uC704\uC5D0 \uAFB8\uB355\uD558\uACE0 \uC9C4\uD55C \uCCB4\uB2E4 \uCE58\uC988
+    \uC18C\uC2A4\uB97C \uD3ED\uD3EC\uC218\uCC98\uB7FC \uC3DF\uC544\uBD80\uC5C8\uC2B5\uB2C8\uB2E4.
+    \uD608\uAD00\uC774 \uBE44\uBA85\uC744 \uC9C0\uB974\uC9C0\uB9CC \uD613\uBC14\uB2E5\uC740
+    \uAE30\uB9BD\uBC15\uC218\uB97C \uCE58\uB294 \uAD81\uADF9\uC758 \uAC04\uC2DD\uC785\uB2C8\uB2E4."
   basePrice: 30
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 0a968e98cd5b9944e935ec8caabc12aa, type: 2}
-  - {fileID: 11400000, guid: a8a5f28f1fadda24c8537f56be559f3a, type: 2}
-  - {fileID: 11400000, guid: 5426b77cb98076f4da4fa5848e3d51ab, type: 2}
-  - {fileID: 11400000, guid: c99ed4ee641af944e945d969cf62c56f, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

@@ -13,17 +13,16 @@ MonoBehaviour:
   m_Name: SpicyBeefBurrito
   m_EditorClassIdentifier: 
   foodName: SpicyBeefBurrito
+  description: "\uD654\uB048\uD55C \uB9E4\uC6B4\uB9DB\uC744 \uCC3E\uB294 \uB9F5\uBD80\uC2EC
+    \uAC00\uB4DD\uD55C \uC190\uB2D8\uB4E4\uC758 \uB3C4\uC804 \uC815\uC2E0\uC744 \uC790\uADF9\uD558\uB294
+    \uD3ED\uD0C4 \uBD80\uB9AC\uD1A0! \uACE0\uAE30\uBCF4\uB2E4 \uD600\uB05D\uC744
+    \uD0C0\uACA9\uD558\uB294 \uB9E4\uC6B4 \uC18C\uC2A4\uAC00 \uC8FC\uB3C4\uAD8C\uC744
+    \uC950\uACE0 \uD754\uB4ED\uB2C8\uB2E4. \uC6B0\uC720\uB97C \uBBF8\uB9AC \uC900\uBE44\uD558\uC138\uC694!"
   basePrice: 55
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: e3d142690339e2141b962abb1f546355, type: 2}
-  - {fileID: 11400000, guid: f4782ef0b84d6d14383c45261d464f5c, type: 2}
-  - {fileID: 11400000, guid: a70a672d269e8b946958e6e0f98ebbf9, type: 2}
-  - {fileID: 11400000, guid: 9a7d639f0104a60449747ffb9f4120cf, type: 2}
-  - {fileID: 11400000, guid: 942de24488d44a04398c2f563b078b26, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

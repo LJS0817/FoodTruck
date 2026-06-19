@@ -13,18 +13,16 @@ MonoBehaviour:
   m_Name: BeefTaco
   m_EditorClassIdentifier: 
   foodName: BeefTaco
+  description: "\uBA55\uC2DC\uCF54\uC758 \uC815\uC5F4\uC744 \uC791\uC740 \uD1A0\uB974\uD2F0\uC57C
+    \uC548\uC5D0 \uC6B1\uC5EC\uB123\uC5C8\uC2B5\uB2C8\uB2E4! \uC721\uC999 \uD321\uD321
+    \uD130\uC9C0\uB294 \uC18C\uACE0\uAE30\uC640 \uB9E4\uCF64\uC0C1\uD07C\uD55C \uC0B4\uC0AC\uC758
+    \uC870\uD569\uC740, \uC190\uB2D8\uB4E4\uB85C \uD558\uC5EC\uAE08 \uB9C8\uB77C\uCE74\uC2A4\uB97C
+    \uD754\uB4E4\uBA70 \uCDA4\uCD94\uACE0 \uC2F6\uAC8C \uB9CC\uB4ED\uB2C8\uB2E4."
   basePrice: 45
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 65e98466930a36548a5c9bc909dae07e, type: 2}
-  - {fileID: 11400000, guid: f4782ef0b84d6d14383c45261d464f5c, type: 2}
-  - {fileID: 11400000, guid: cec3ca160079bb349b6e8cb530c5f237, type: 2}
-  - {fileID: 11400000, guid: 74e9da260f36f0c48bf0c9941ed08f3c, type: 2}
-  - {fileID: 11400000, guid: a8a5f28f1fadda24c8537f56be559f3a, type: 2}
-  - {fileID: 11400000, guid: 942de24488d44a04398c2f563b078b26, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

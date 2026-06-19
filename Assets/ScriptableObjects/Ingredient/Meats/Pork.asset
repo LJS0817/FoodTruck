@@ -16,7 +16,10 @@ MonoBehaviour:
   ingredientName: Pork
   ingredientSprite: {fileID: 0}
   volume: 1
-  description: "\uC2E0\uC120\uD55C Pork\uC785\uB2C8\uB2E4."
+  description: "\uAE30\uB984\uAE30\uAC00 \uC894\uC894 \uD750\uB974\uB294 \uC0BC\uACB9\uC0B4\uBD80\uD130
+    \uCAC4\uAE43\uD55C \uBAA9\uC0B4\uAE4C\uC9C0, \uC11C\uBBFC\uB4E4\uC758 \uC560\uD658\uC744
+    \uAC00\uC7A5 \uB9CE\uC774 \uB2EC\uB798\uC900 \uC601\uD63C\uC758 \uACE0\uAE30!
+    \uD0C0\uAE30 \uC9C1\uC804 \uBC14\uC2F9 \uAD6C\uC6CC\uC57C \uC81C\uB9DB\uC785\uB2C8\uB2E4."
   basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99

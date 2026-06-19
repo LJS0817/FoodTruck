@@ -13,16 +13,17 @@ MonoBehaviour:
   m_Name: BeefRiceBowl
   m_EditorClassIdentifier: 
   foodName: BeefRiceBowl
+  description: "\uB2E8\uC9E0\uB2E8\uC9E0 \uD2B9\uC81C \uC18C\uC2A4\uB97C \uBA38\uAE08\uC740
+    \uC18C\uACE0\uAE30\uAC00 \uD558\uC580 \uC300\uBC25\uC744 \uBD80\uB4DC\uB7FD\uAC8C
+    \uAC10\uC2F8 \uC548\uC558\uC2B5\uB2C8\uB2E4. \uC813\uAC00\uB77D\uC73C\uB85C \uD6CC\uD6CC
+    \uBE44\uBCBC \uBA39\uC73C\uBA74 5\uBD84 \uB9CC\uC5D0 \uADF8\uB987\uC774 \uD145
+    \uBE44\uC5B4\uBC84\uB9AC\uB294 \uB9C8\uC220\uC744 \uACBD\uD5D8\uD558\uAC8C \uB420
+    \uAC83\uC785\uB2C8\uB2E4."
   basePrice: 60
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: a70a672d269e8b946958e6e0f98ebbf9, type: 2}
-  - {fileID: 11400000, guid: f4782ef0b84d6d14383c45261d464f5c, type: 2}
-  - {fileID: 11400000, guid: 9a7d639f0104a60449747ffb9f4120cf, type: 2}
-  - {fileID: 11400000, guid: 3ed39607bc8c52e40969c73445f50cfc, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

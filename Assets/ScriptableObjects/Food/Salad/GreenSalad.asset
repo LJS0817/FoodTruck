@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: GreenSalad
   m_EditorClassIdentifier: 
   foodName: GreenSalad
+  description: "\uC790\uC5F0 \uADF8\uB300\uB85C\uC758 \uCD08\uB85D\uBE5B \uC5D0\uB108\uC9C0\uB97C
+    \uADF8\uB987\uC5D0 \uB2F4\uC558\uC2B5\uB2C8\uB2E4! \uCF54\uB07C\uB9AC\uB3C4 \uCD08\uC2DD\uB3D9\uBB3C\uC774\uB77C\uB294
+    \uC0AC\uC2E4\uC744 \uC77C\uAE68\uC6CC\uC8FC\uB4EF, \uBA39\uB2E4 \uBCF4\uBA74
+    \uD131\uAD00\uC808\uC774 \uBED0\uADFC\uD574\uC9C8 \uC815\uB3C4\uB85C \uD48D\uBD80\uD55C
+    \uCC44\uC18C\uC758 \uD5A5\uC5F0\uC774 \uD3BC\uCCD0\uC9D1\uB2C8\uB2E4."
   basePrice: 35
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: cec3ca160079bb349b6e8cb530c5f237, type: 2}
-  - {fileID: 11400000, guid: cd35ddd07c4d7e94eb472b055cc10ea8, type: 2}
-  - {fileID: 11400000, guid: 74e9da260f36f0c48bf0c9941ed08f3c, type: 2}
-  - {fileID: 11400000, guid: 0c6170d4f06628c4eaf73a61bd0bd760, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

@@ -76,6 +76,8 @@ public struct FoodIngredientConfig
 public class FoodData : ScriptableObject
 {
     public string foodName;
+    [TextArea(2, 4)]
+    public string description;
     public int basePrice;
     public float autoCookTime = 5.0f;
     public FoodPackageType foodPackageType;

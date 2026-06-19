@@ -13,18 +13,17 @@ MonoBehaviour:
   m_Name: BasicBurger
   m_EditorClassIdentifier: 
   foodName: BasicBurger
+  description: "\uBE75, \uACE0\uAE30, \uC591\uC0C1\uCD94\uB77C\uB294 \uC644\uBCBD\uD55C
+    \uC0BC\uC704\uC77C\uCCB4! \uC790\uBCF8\uC8FC\uC758 \uC0AC\uD68C\uC5D0\uC11C \uAC00\uC7A5
+    \uBE60\uB974\uACE0 \uC800\uB834\uD558\uAC8C \uCE7C\uB85C\uB9AC\uB97C \uCC44\uC6B8
+    \uC218 \uC788\uB294 \uD601\uBA85\uC801\uC778 \uBC1C\uBA85\uD488\uC785\uB2C8\uB2E4.
+    \uAC00\uC131\uBE44\uB97C \uB530\uC9C0\uB294 \uD604\uB300\uC778\uB4E4\uC5D0\uAC8C
+    \uC601\uD63C\uC758 \uC548\uC2DD\uCC98\uAC00 \uB418\uC5B4\uC90D\uB2C8\uB2E4."
   basePrice: 40
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 792fafd078ba8844cbab1cb2561aa89e, type: 2}
-  - {fileID: 11400000, guid: f4782ef0b84d6d14383c45261d464f5c, type: 2}
-  - {fileID: 11400000, guid: cec3ca160079bb349b6e8cb530c5f237, type: 2}
-  - {fileID: 11400000, guid: 74e9da260f36f0c48bf0c9941ed08f3c, type: 2}
-  - {fileID: 11400000, guid: c99ed4ee641af944e945d969cf62c56f, type: 2}
-  - {fileID: 11400000, guid: 792fafd078ba8844cbab1cb2561aa89e, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

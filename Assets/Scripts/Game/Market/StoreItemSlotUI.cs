@@ -9,6 +9,7 @@ public class StoreItemSlotUI : MonoBehaviour
     [SerializeField] private TMP_Text _priceText;
     [SerializeField] private GameObject _lockIcon;
     [SerializeField] private GameObject _saleTag;
+    [SerializeField] private GameObject _ownedIcon;
     [SerializeField] private Image _iconImage;
     [SerializeField] private Image _categoryIcon;
 
@@ -32,6 +33,26 @@ public class StoreItemSlotUI : MonoBehaviour
         {
             // 필요 시 각 카테고리별 Sprite를 필드로 받아와서 표시
             // _categoryIcon.sprite = item.categoryIcon;
+        }
+
+        // 보유 아이콘 표시 (재료 제외)
+        if (_ownedIcon != null)
+        {
+            bool isOwned = false;
+            if (item.data is FoodData food)
+            {
+                isOwned = StoreManager.Instance.RecipeStore.IsRecipeUnlocked(food.foodName);
+            }
+            else if (item.data is EquipmentData equipment)
+            {
+                isOwned = UpgradeManager.Instance.EquipmentStore.HasEquipment(equipment);
+            }
+            else if (item.data is MarketingData marketing)
+            {
+                isOwned = StoreManager.Instance.Marketing.ActiveCampaign == marketing;
+            }
+            
+            _ownedIcon.SetActive(isOwned);
         }
 
         // 잠금 아이콘

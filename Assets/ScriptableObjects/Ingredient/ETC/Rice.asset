@@ -16,7 +16,10 @@ MonoBehaviour:
   ingredientName: Rice
   ingredientSprite: {fileID: 0}
   volume: 1
-  description: "\uC2E0\uC120\uD55C Rice\uC785\uB2C8\uB2E4."
+  description: "\uD0C4\uC218\uD654\uBB3C\uC758 \uBBFC\uC871, \uD55C\uAD6D\uC778\uC758
+    \uD608\uAD00\uC744 \uD750\uB974\uB294 \uC5D0\uB108\uC9C0\uC6D0! '\uBC25 \uD55C
+    \uBC88 \uBA39\uC790'\uB294 \uC778\uC0AC\uB9D0\uC5D0\uC11C \uC54C \uC218 \uC788\uB4EF
+    \uBAA8\uB4E0 \uC778\uAC04\uAD00\uACC4\uC758 \uC2DC\uC791\uC774\uC790 \uB05D\uC785\uB2C8\uB2E4."
   basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99

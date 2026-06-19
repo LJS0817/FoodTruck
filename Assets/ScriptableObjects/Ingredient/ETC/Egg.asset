@@ -16,7 +16,11 @@ MonoBehaviour:
   ingredientName: Egg
   ingredientSprite: {fileID: 0}
   volume: 1
-  description: "\uC2E0\uC120\uD55C Egg\uC785\uB2C8\uB2E4."
+  description: "\uD504\uB77C\uC774, \uC2A4\uD06C\uB7A8\uBE14, \uC0B6\uAE30\uAE4C\uC9C0
+    \uBAA8\uB4E0 \uC694\uB9AC\uC758 \uD654\uB8E1\uC810\uC815\uC744 \uB2F4\uB2F9\uD558\uB294
+    \uC644\uC804\uC2DD\uD488. \uB178\uB978\uC790\uB97C \uD1A1 \uD130\uB728\uB824
+    \uBA39\uC744 \uB54C \uB290\uAEF4\uC9C0\uB294 \uD76C\uC5F4\uC740 \uB3C8\uC73C\uB85C
+    \uC0B4 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
   basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99

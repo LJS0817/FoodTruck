@@ -16,7 +16,10 @@ MonoBehaviour:
   ingredientName: Sausage
   ingredientSprite: {fileID: 0}
   volume: 1
-  description: "\uC2E0\uC120\uD55C Sausage\uC785\uB2C8\uB2E4."
+  description: "\uC785\uC220\uC744 \uD1A1 \uCE58\uACE0 \uD130\uC9C0\uB294 \uC2DD\uAC10\uC774
+    \uC77C\uD488\uC778 \uC721\uC999 \uD3ED\uD0C4 \uC18C\uC2DC\uC9C0! \uCF00\uCCA9\uACFC
+    \uBA38\uC2A4\uD130\uB4DC\uB77C\uB294 \uC601\uD63C\uC758 \uB2E8\uC9DD\uC744 \uB9CC\uB098\uBA74
+    \uC804\uD22C\uB825\uC774 \uBB34\uD55C\uB300\uB85C \uC0C1\uC2B9\uD569\uB2C8\uB2E4."
   basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99

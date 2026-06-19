@@ -129,12 +129,6 @@ public class IngredientManager : MonoBehaviour
         if (_currentBoxIndex >= 0 && _currentBoxIndex < _boxes.Count)
         {
             _boxes[_currentBoxIndex].ResetBox();
-            
-            // 재료가 빠졌으므로 레시피 갱신
-            if (MenuManager.Instance != null)
-            {
-                MenuManager.Instance.UpdateAvailableRecipes();
-            }
         }
     }
 
@@ -270,5 +264,44 @@ public class IngredientManager : MonoBehaviour
             }
         }
         Debug.Log("<color=cyan>[IngredientManager] 임시 바트에 남은 재료를 모두 인벤토리로 환수하고 초기화했습니다.</color>");
+    }
+
+    /// <summary>
+    /// 메뉴 팝업에서 선택한 레시피들의 요구 재료들을 빈 상자에 자동으로 세팅합니다.
+    /// </summary>
+    public void AutoFillBoxes(List<IngredientData> uniqueIngredients)
+    {
+        // 1. 기존 상자 초기화 (원한다면 기존에 들어있던 재료를 유지할 수도 있으나, 여기서는 덮어쓰거나 리셋하는 방식을 취합니다)
+        // 안전하게 인벤토리로 모두 환수
+        for (int i = 0; i < _boxes.Count; i++)
+        {
+            if (_boxes[i].currentAmount > 0)
+            {
+                _boxes[i].ResetBox();
+            }
+        }
+
+        // 2. 전달받은 고유 재료들을 상자에 할당
+        for (int i = 0; i < uniqueIngredients.Count; i++)
+        {
+            if (i >= _boxes.Count) break; // 상자 개수를 초과하면 무시
+
+            IngredientData data = uniqueIngredients[i];
+            IngredientBoxSetter setter = GetSetterFor(data);
+            
+            if (setter != null)
+            {
+                // 보유한 재고 확인
+                int stock = InventoryManager.Instance.GetTotalAmount(data.ingredientID);
+                if (stock > 0)
+                {
+                    // 최대 수량만큼 세팅 (예: 10개) -> Inventory에서 실제로 차감
+                    int amountToPut = Mathf.Min(stock, 10); // 임의로 10개씩 올린다고 가정
+                    _boxes[i].SetupIngredient(setter, 1.0f, amountToPut);
+                }
+            }
+        }
+        
+        Debug.Log($"<color=cyan>[IngredientManager] {uniqueIngredients.Count}개의 재료를 조리대에 자동 세팅 완료!</color>");
     }
 }

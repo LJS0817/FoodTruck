@@ -13,16 +13,17 @@ MonoBehaviour:
   m_Name: MeatSalad
   m_EditorClassIdentifier: 
   foodName: MeatSalad
+  description: "\uC774\uB984\uB9CC \uC0D0\uB7EC\uB4DC\uC77C \uBFD0, \uC0AC\uC2E4\uC0C1
+    '\uD480\uC744 \uACC1\uB4E4\uC778 \uACE0\uAE30 \uBAA8\uB460'\uC5D0 \uAC00\uAE5D\uC2B5\uB2C8\uB2E4.
+    \uB2E4\uC774\uC5B4\uD2B8 \uC911\uC774\uB77C\uB294 \uD551\uACC4\uB85C \uACE0\uAE30\uB97C
+    \uC591\uAECF \uBA39\uACE0 \uC2F6\uC5B4 \uD558\uB294 \uD604\uB300\uC778\uB4E4\uC758
+    \uC740\uBC00\uD55C \uC695\uB9DD\uC744 \uC644\uBCBD\uD558\uAC8C \uCDA9\uC871\uC2DC\uCF1C
+    \uC90D\uB2C8\uB2E4."
   basePrice: 55
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: cec3ca160079bb349b6e8cb530c5f237, type: 2}
-  - {fileID: 11400000, guid: f4782ef0b84d6d14383c45261d464f5c, type: 2}
-  - {fileID: 11400000, guid: 9a7d639f0104a60449747ffb9f4120cf, type: 2}
-  - {fileID: 11400000, guid: 0c6170d4f06628c4eaf73a61bd0bd760, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

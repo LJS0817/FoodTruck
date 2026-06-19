@@ -16,7 +16,11 @@ MonoBehaviour:
   ingredientName: Cucumber
   ingredientSprite: {fileID: 0}
   volume: 1
-  description: "\uC2E0\uC120\uD55C Cucumber\uC785\uB2C8\uB2E4."
+  description: "\uC2DC\uC6D0\uD568\uACFC \uC544\uC0AD\uD568\uC744 \uB3D9\uC2DC\uC5D0
+    \uAC00\uC9C4 \uC218\uBD84 \uD3ED\uD0C4! \uD638\uBD88\uD638\uAC00 \uADF9\uBA85\uD558\uAC8C
+    \uAC08\uB824, \uC8FC\uBB38 \uC2DC '\uC624\uC774 \uBE7C\uC8FC\uC138\uC694'\uB77C\uB294
+    \uC694\uCCAD\uC744 \uC218\uC5C6\uC774 \uBC1B\uAC8C \uB9CC\uB4DC\uB294 \uBB38\uC81C\uC758
+    \uCC44\uC18C\uC785\uB2C8\uB2E4."
   basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99

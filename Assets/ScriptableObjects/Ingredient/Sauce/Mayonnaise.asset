@@ -16,7 +16,10 @@ MonoBehaviour:
   ingredientName: Mayonnaise
   ingredientSprite: {fileID: 0}
   volume: 1
-  description: "\uC2E0\uC120\uD55C Mayonnaise\uC785\uB2C8\uB2E4."
+  description: "\uACC4\uB780\uACFC \uAE30\uB984\uC744 \uC11E\uC5B4 \uB9CC\uB4E0 \uADF9\uAC15\uC758
+    \uACE0\uC18C\uD568! \uC5B4\uB514\uC5D0 \uBFCC\uB824\uB3C4 \uD6CC\uB96D\uD558\uC9C0\uB9CC
+    \uCE7C\uB85C\uB9AC\uB97C \uC0DD\uAC01\uD558\uB294 \uC21C\uAC04 \uC190\uC774 \uBA48\uCE6B\uD558\uAC8C
+    \uB418\uB294 \uC545\uB9C8\uC758 \uC18C\uC2A4\uC785\uB2C8\uB2E4."
   basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99

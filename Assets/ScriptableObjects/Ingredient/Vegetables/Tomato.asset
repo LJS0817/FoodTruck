@@ -16,7 +16,10 @@ MonoBehaviour:
   ingredientName: Tomato
   ingredientSprite: {fileID: 0}
   volume: 1
-  description: "\uC2E0\uC120\uD55C Tomato\uC785\uB2C8\uB2E4."
+  description: "\uCC44\uC18C\uC778\uC9C0 \uACFC\uC77C\uC778\uC9C0 \uC5EC\uC804\uD788
+    \uC815\uCCB4\uC131 \uD63C\uB780\uC744 \uACAA\uACE0 \uC788\uC9C0\uB9CC, \uC0C1\uD07C\uD55C
+    \uB9DB \uD558\uB098\uB85C \uC804 \uC138\uACC4 \uC694\uB9AC\uB97C \uC810\uB839\uD55C
+    \uBD89\uC740 \uC81C\uC655. \uC775\uD600 \uBA39\uC744\uC218\uB85D \uB354 \uB9DB\uC788\uC5B4\uC9D1\uB2C8\uB2E4."
   basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99

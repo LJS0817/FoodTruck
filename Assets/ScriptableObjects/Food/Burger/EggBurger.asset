@@ -13,18 +13,16 @@ MonoBehaviour:
   m_Name: EggBurger
   m_EditorClassIdentifier: 
   foodName: EggBurger
+  description: "\uC544\uCE68\uC744 \uB4E0\uB4E0\uD558\uAC8C \uC2DC\uC791\uD558\uB77C\uB294
+    \uC5B4\uBA38\uB2C8\uC758 \uB9C8\uC74C\uC744 \uD584\uBC84\uAC70\uC5D0 \uB2F4\uC558\uC2B5\uB2C8\uB2E4.
+    \uBC18\uC219 \uACC4\uB780\uC774 \uD130\uC9C0\uBA70 \uD750\uB974\uB294 \uB178\uB978\uC790\uB294
+    \uADF8 \uC5B4\uB5A4 \uC18C\uC2A4\uBCF4\uB2E4 \uC644\uBCBD\uD55C \uD48D\uBBF8\uB97C
+    \uC790\uB791\uD569\uB2C8\uB2E4."
   basePrice: 50
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 792fafd078ba8844cbab1cb2561aa89e, type: 2}
-  - {fileID: 11400000, guid: f4782ef0b84d6d14383c45261d464f5c, type: 2}
-  - {fileID: 11400000, guid: 3ed39607bc8c52e40969c73445f50cfc, type: 2}
-  - {fileID: 11400000, guid: a8a5f28f1fadda24c8537f56be559f3a, type: 2}
-  - {fileID: 11400000, guid: c99ed4ee641af944e945d969cf62c56f, type: 2}
-  - {fileID: 11400000, guid: 792fafd078ba8844cbab1cb2561aa89e, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: StirFriedVegetables
   m_EditorClassIdentifier: 
   foodName: StirFriedVegetables
+  description: "\uC13C \uBD88\uC5D0 \uBE60\uB974\uAC8C \uBCF6\uC544\uB0B4\uC5B4 \uCC44\uC18C\uC758
+    \uC544\uC0AD\uD568\uC744 \uC0B4\uB9B0 \uC57C\uCC44 \uBCF6\uC74C\uC785\uB2C8\uB2E4.
+    \uCCA0\uD310\uC758 \uBD88\uB9DB\uC744 \uB367\uC785\uC740 \uC57C\uCC44\uC758 \uBC18\uB780\uC774
+    \uC2DC\uC791\uB418\uBA70, \uACE0\uAE30 \uC5C6\uC774\uB3C4 \uC813\uAC00\uB77D\uC744
+    \uBA48\uCD9C \uC218 \uC5C6\uAC8C \uB9CC\uB4ED\uB2C8\uB2E4."
   basePrice: 25
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 91902c4494c0af148af3f973679b7100, type: 2}
-  - {fileID: 11400000, guid: a3f84ec6433ff71409f9b191fe26aeee, type: 2}
-  - {fileID: 11400000, guid: 9a7d639f0104a60449747ffb9f4120cf, type: 2}
-  - {fileID: 11400000, guid: 0c6170d4f06628c4eaf73a61bd0bd760, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

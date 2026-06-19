@@ -89,7 +89,21 @@ public class CustomerManager : MonoBehaviour
             currentPool = UpgradeManager.Instance.District.CurrentDistrict.districtCustomerTypes;
         }
 
-        if (currentPool == null || currentPool.Length == 0 || customerPool.Count == 0 || appearanceDB == null) return;
+        if (currentPool == null || currentPool.Length == 0) 
+        {
+            Debug.LogWarning("[CustomerManager] 현재 구역의 손님 풀이 비어있습니다!");
+            return;
+        }
+        if (customerPool.Count == 0)
+        {
+            Debug.LogWarning("[CustomerManager] 스폰 가능한 손님 껍데기 풀(customerPool)이 바닥났습니다!");
+            return;
+        }
+        if (appearanceDB == null)
+        {
+            Debug.LogWarning("[CustomerManager] appearanceDB가 할당되지 않았습니다!");
+            return;
+        }
 
         // 💡 VIP 등장 확률 체크 (평판 + 마케팅 보너스 + 돌발 이벤트)
         CustomerData selectedData = null;

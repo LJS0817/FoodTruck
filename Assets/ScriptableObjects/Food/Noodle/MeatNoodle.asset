@@ -13,16 +13,17 @@ MonoBehaviour:
   m_Name: MeatNoodle
   m_EditorClassIdentifier: 
   foodName: MeatNoodle
+  description: "\uBA74\uC740 \uAC70\uB4E4 \uBFD0, \uC9C4\uC9DC \uBAA9\uC801\uC740
+    \uC0B0\uCC98\uB7FC \uC313\uC778 \uACE0\uAE30 \uD1A0\uD551\uC5D0 \uC788\uC2B5\uB2C8\uB2E4!
+    \uC813\uAC00\uB77D\uC73C\uB85C \uACE0\uAE30\uB97C \uD30C\uD5E4\uCCD0\uC57C \uBE44\uB85C\uC18C
+    \uBA74\uC774 \uBAA8\uC2B5\uC744 \uB4DC\uB7EC\uB0B4\uB294, \uC721\uC2DD\uC8FC\uC758\uC790\uB4E4\uC758
+    \uC5F4\uB82C\uD55C \uC9C0\uC9C0\uB97C \uBC1B\uB294 \uAD81\uADF9\uC758 \uC0AC\uCE58
+    \uB204\uB4E4\uC785\uB2C8\uB2E4."
   basePrice: 55
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 4d5b35edf7de2c348b18dbcef8bb293e, type: 2}
-  - {fileID: 11400000, guid: f4782ef0b84d6d14383c45261d464f5c, type: 2}
-  - {fileID: 11400000, guid: 9a7d639f0104a60449747ffb9f4120cf, type: 2}
-  - {fileID: 11400000, guid: 91902c4494c0af148af3f973679b7100, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

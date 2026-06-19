@@ -13,19 +13,17 @@ MonoBehaviour:
   m_Name: BaconBurger
   m_EditorClassIdentifier: 
   foodName: BaconBurger
+  description: "\uC0BC\uACB9\uC0B4\uC744 \uBC14\uC2F9 \uAD6C\uC6CC \uD584\uBC84\uAC70\uC5D0
+    \uB123\uC744 \uC0DD\uAC01\uC744 \uD55C \uCD5C\uCD08\uC758 \uC778\uB958\uC5D0\uAC8C
+    \uB178\uBCA8 \uD3C9\uD654\uC0C1\uC744! \uC9ED\uC9E4\uD558\uAC8C \uBC14\uC2A4\uB7EC\uC9C0\uB294
+    \uBCA0\uC774\uCEE8\uC758 \uC2DD\uAC10\uC774 \uD3C9\uBC94\uD55C \uBC84\uAC70\uB97C
+    \uD504\uB9AC\uBBF8\uC5C4\uC73C\uB85C \uB454\uAC11\uC2DC\uD0A4\uB294 \uAE30\uC801\uC744
+    \uBCF4\uC5EC\uC90D\uB2C8\uB2E4."
   basePrice: 60
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 792fafd078ba8844cbab1cb2561aa89e, type: 2}
-  - {fileID: 11400000, guid: f4782ef0b84d6d14383c45261d464f5c, type: 2}
-  - {fileID: 11400000, guid: 5426b77cb98076f4da4fa5848e3d51ab, type: 2}
-  - {fileID: 11400000, guid: a8a5f28f1fadda24c8537f56be559f3a, type: 2}
-  - {fileID: 11400000, guid: 9a7d639f0104a60449747ffb9f4120cf, type: 2}
-  - {fileID: 11400000, guid: 942de24488d44a04398c2f563b078b26, type: 2}
-  - {fileID: 11400000, guid: 792fafd078ba8844cbab1cb2561aa89e, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

@@ -16,7 +16,10 @@ MonoBehaviour:
   ingredientName: Carrot
   ingredientSprite: {fileID: 0}
   volume: 1
-  description: "\uC2E0\uC120\uD55C Carrot\uC785\uB2C8\uB2E4."
+  description: "\uD654\uB824\uD55C \uC8FC\uD669\uC0C9\uC73C\uB85C \uC694\uB9AC\uC758
+    \uC0C9\uAC10\uC744 \uB2F4\uB2F9\uD558\uC9C0\uB9CC, \uD3B8\uC2DD\uB7EC\uB4E4\uC5D0\uAC90
+    \uC601\uC6D0\uD55C \uAE30\uD53C \uB300\uC0C1 1\uD638! \uD558\uC9C0\uB9CC \uCE74\uB808\uC5D0
+    \uC5C6\uC73C\uBA74 \uC660\uC9C0 \uC12D\uC12D\uD55C \uC874\uC7AC\uC785\uB2C8\uB2E4."
   basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99

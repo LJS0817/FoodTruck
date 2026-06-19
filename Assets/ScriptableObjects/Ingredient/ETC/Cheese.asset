@@ -16,7 +16,10 @@ MonoBehaviour:
   ingredientName: Cheese
   ingredientSprite: {fileID: 0}
   volume: 1
-  description: "\uC2E0\uC120\uD55C Cheese\uC785\uB2C8\uB2E4."
+  description: "\uC5B4\uB5A4 \uC4F0\uB808\uAE30 \uAC19\uC740 \uC694\uB9AC\uB3C4 \uC2EC\uD3D0\uC18C\uC0DD\uC220\uB85C
+    \uC0B4\uB824\uB0B8\uB2E4\uB294 \uB9CC\uB2A5 \uB9C8\uBC95\uC758 \uB178\uB780 \uC7A5\uD310!
+    \uCB49 \uB298\uC5B4\uB098\uB294 \uCF8C\uAC10 \uD558\uB098\uB85C \uBAA8\uB4E0
+    \uC8C4\uCC45\uAC10\uC744 \uC78A\uAC8C \uB9CC\uB4ED\uB2C8\uB2E4."
   basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99

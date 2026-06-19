@@ -13,18 +13,17 @@ MonoBehaviour:
   m_Name: HamCheeseSandwich
   m_EditorClassIdentifier: 
   foodName: HamCheeseSandwich
+  description: "\uD584\uACFC \uCE58\uC988, \uADF8 \uD754\uD558\uB514\uD754\uD55C
+    \uC870\uD569\uC774 \uC65C \uC218\uC2ED \uB144\uAC04 \uC0CC\uB4DC\uC704\uCE58\uACC4\uC758
+    \uC81C\uC655\uC73C\uB85C \uAD70\uB9BC\uD558\uACE0 \uC788\uB294\uC9C0 \uC99D\uBA85\uD558\uB294
+    \uD074\uB798\uC2DD \uBA54\uB274\uC785\uB2C8\uB2E4. \uD654\uB824\uD558\uC9C4 \uC54A\uC9C0\uB9CC
+    \uC5B8\uC81C \uBA39\uC5B4\uB3C4 \uBC30\uC2E0\uD558\uC9C0 \uC54A\uB294 \uB4E0\uB4E0\uD55C
+    \uCE5C\uAD6C\uC8E0."
   basePrice: 40
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 90f9523bc5cd78a499c1af258b9fedd5, type: 2}
-  - {fileID: 11400000, guid: 73c63ab69c4cba54fa3ff11b858e3d7a, type: 2}
-  - {fileID: 11400000, guid: a8a5f28f1fadda24c8537f56be559f3a, type: 2}
-  - {fileID: 11400000, guid: cec3ca160079bb349b6e8cb530c5f237, type: 2}
-  - {fileID: 11400000, guid: 64c23d196e81f904da24f4b339856313, type: 2}
-  - {fileID: 11400000, guid: 90f9523bc5cd78a499c1af258b9fedd5, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

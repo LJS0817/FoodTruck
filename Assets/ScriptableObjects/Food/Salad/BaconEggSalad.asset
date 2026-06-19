@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: BaconEggSalad
   m_EditorClassIdentifier: 
   foodName: BaconEggSalad
+  description: "\uD480\uB9CC \uBA39\uAE30\uC5D4 \uB108\uBB34 \uC5B5\uC6B8\uD55C \uC721\uC2DD\uD30C\uB4E4\uC744
+    \uC704\uD55C \uD0C0\uD611\uC810. \uC57C\uCC44\uC758 \uC544\uC0AD\uD568 \uC0AC\uC774\uB85C
+    \uD6C5 \uB4E4\uC5B4\uC624\uB294 \uC9ED\uC9E4\uD55C \uBCA0\uC774\uCEE8\uACFC \uB4E0\uB4E0\uD55C
+    \uB2EC\uAC40\uC774, \uC774\uAC83\uC740 \uC808\uB300 \uAC00\uBCBC\uC6B4 \uB2E4\uC774\uC5B4\uD2B8\uC2DD\uC774
+    \uC544\uB2D8\uC744 \uC99D\uBA85\uD569\uB2C8\uB2E4."
   basePrice: 50
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 91902c4494c0af148af3f973679b7100, type: 2}
-  - {fileID: 11400000, guid: 5426b77cb98076f4da4fa5848e3d51ab, type: 2}
-  - {fileID: 11400000, guid: 3ed39607bc8c52e40969c73445f50cfc, type: 2}
-  - {fileID: 11400000, guid: a8a5f28f1fadda24c8537f56be559f3a, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

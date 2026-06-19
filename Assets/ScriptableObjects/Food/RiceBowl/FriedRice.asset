@@ -13,17 +13,16 @@ MonoBehaviour:
   m_Name: FriedRice
   m_EditorClassIdentifier: 
   foodName: FriedRice
+  description: "\uAE30\uB984\uC744 \uB4EC\uBFCD \uCF54\uD305\uD574 \uBC25\uC54C\uC774
+    \uCDA4\uCD94\uB4EF \uACE0\uC2AC\uACE0\uC2AC\uD558\uAC8C \uBCF6\uC544\uB0B8 \uC815\uD1B5
+    \uBCF6\uC74C\uBC25! \uC6CD\uC9C8\uD558\uB294 \uC170\uD504\uC758 \uC190\uBAA9
+    \uAC74\uAC15\uACFC \uB9DE\uBC14\uAFBC \uB208\uBB3C\uACA8\uC6B4 \uAC10\uCE60\uB9DB\uC744
+    \uC790\uB791\uD569\uB2C8\uB2E4."
   basePrice: 50
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: a70a672d269e8b946958e6e0f98ebbf9, type: 2}
-  - {fileID: 11400000, guid: 3ed39607bc8c52e40969c73445f50cfc, type: 2}
-  - {fileID: 11400000, guid: 5426b77cb98076f4da4fa5848e3d51ab, type: 2}
-  - {fileID: 11400000, guid: 9a7d639f0104a60449747ffb9f4120cf, type: 2}
-  - {fileID: 11400000, guid: a3f84ec6433ff71409f9b191fe26aeee, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

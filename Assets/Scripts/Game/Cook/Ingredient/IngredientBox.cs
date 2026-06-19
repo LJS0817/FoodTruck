@@ -189,11 +189,6 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
         
         UpdateUI();
-        
-        if (MenuManager.Instance != null)
-        {
-            MenuManager.Instance.UpdateAvailableRecipes();
-        }
     }
 
     public IngredientData GetCurrentData()
@@ -219,11 +214,6 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         this.currentAmount += amount;
         
         UpdateUI();
-        
-        if (MenuManager.Instance != null)
-        {
-            MenuManager.Instance.UpdateAvailableRecipes();
-        }
     }
 
     public void AddCollectedItem(int amount, float quality, int shelfLifeDays)

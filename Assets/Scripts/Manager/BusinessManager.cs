@@ -58,9 +58,24 @@ public class BusinessManager : MonoBehaviour
 
     /// <summary>
     /// 장사 시작/종료 버튼 OnClick 이벤트에 연결될 메서드
+    /// UI 버튼에서 호출할 때는 forceOpen=false 로 팝업을 거칩니다.
     /// </summary>
-    public void ToggleBusiness()
+    public void ToggleBusiness(bool forceOpen = false)
     {
+        if (!IsBusinessOpen && !forceOpen)
+        {
+            // 장사를 켜려는 시도인 경우, 바로 켜지 않고 팝업을 호출
+            if (MenuSetupUI.Instance != null)
+            {
+                MenuSetupUI.Instance.OpenUI();
+                return;
+            }
+            else
+            {
+                Debug.LogWarning("[BusinessManager] MenuSetupUI.Instance가 존재하지 않아 바로 장사를 시작합니다.");
+            }
+        }
+
         IsBusinessOpen = !IsBusinessOpen;
         
         UpdateButtonUI();

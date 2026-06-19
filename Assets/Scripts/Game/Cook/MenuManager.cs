@@ -23,40 +23,28 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        UpdateAvailableRecipes();
-    }
 
     /// <summary>
-    /// 현재 재료통에 세팅된 재료들을 기반으로 판매 가능한 모든 레시피를 추출합니다.
+    /// 장사 시작 전 팝업에서 확정된 오늘의 메뉴 리스트를 받아와 세팅합니다.
     /// </summary>
-    public void UpdateAvailableRecipes()
+    public void SetTodayMenu(List<FoodData> selectedRecipes)
     {
-        List<int> ingredientIDs = new List<int>();
-        foreach (var box in boxes)
+        availableRecipes.Clear();
+
+        if (selectedRecipes == null || selectedRecipes.Count == 0)
         {
-            var data = box.GetCurrentData();
-            if (data != null)
-            {
-                ingredientIDs.Add(data.ingredientID);
-            }
+            Debug.LogWarning("[MenuManager] 전달받은 메뉴가 없습니다.");
+        }
+        else
+        {
+            availableRecipes.AddRange(selectedRecipes);
         }
 
-        if (ingredientIDs.Count == 0)
-        {
-            availableRecipes.Clear();
-            Debug.Log("[MenuManager] 세팅된 재료가 없어 판매 가능한 레시피가 없습니다.");
-            return;
-        }
-
-        availableRecipes = CookingManager.Instance.recipeManager.GetRecipesByIngredients(ingredientIDs);
-        
         _cachedTrend = FlavorTag.None;
         
         OnMenuUpdated?.Invoke();
         
-        Debug.Log($"[MenuManager] 현재 재료로 판매 가능한 레시피: {availableRecipes.Count}개");
+        Debug.Log($"<color=cyan>[MenuManager] 오늘의 판매 메뉴 세팅 완료: {availableRecipes.Count}개</color>");
         foreach (var recipe in availableRecipes)
         {
             Debug.Log($"- {recipe.foodName}");

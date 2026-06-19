@@ -13,16 +13,17 @@ MonoBehaviour:
   m_Name: CheeseHotdog
   m_EditorClassIdentifier: 
   foodName: CheeseHotdog
+  description: "\uC18C\uC2DC\uC9C0\uAC00 \uBCF4\uC774\uC9C0 \uC54A\uC744 \uC815\uB3C4\uB85C
+    \uC3DF\uC544\uBD80\uC740 \uCCB4\uB2E4 \uCE58\uC988 \uC18C\uC2A4! \uC785\uAC00\uB97C
+    \uB178\uB797\uAC8C \uBB3C\uB4E4\uC774\uBA70 \uBA39\uC5B4\uC57C \uC81C\uB9DB\uC778
+    \uC774 \uD56B\uB3C4\uADF8\uB294, \uBA39\uB294 \uB0B4\uB0B4 \uC8C4\uCC45\uAC10\uACFC
+    \uD669\uD640\uD568\uC744 \uB3D9\uC2DC\uC5D0 \uC120\uC0AC\uD558\uB294 \uAE38\uD2F0
+    \uD50C\uB808\uC800\uC758 \uB05D\uD310\uC655\uC785\uB2C8\uB2E4."
   basePrice: 40
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 185cd3161fa75a346a0d20d2f8c6f565, type: 2}
-  - {fileID: 11400000, guid: 3b90680db0186f547af187d350e37147, type: 2}
-  - {fileID: 11400000, guid: a8a5f28f1fadda24c8537f56be559f3a, type: 2}
-  - {fileID: 11400000, guid: c99ed4ee641af944e945d969cf62c56f, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

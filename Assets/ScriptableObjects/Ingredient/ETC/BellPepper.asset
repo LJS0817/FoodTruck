@@ -16,7 +16,10 @@ MonoBehaviour:
   ingredientName: BellPepper
   ingredientSprite: {fileID: 0}
   volume: 1
-  description: "\uC2E0\uC120\uD55C BellPepper\uC785\uB2C8\uB2E4."
+  description: "\uBE68\uAC1B\uACE0 \uB178\uB780 \uC0C9\uAC10\uC73C\uB85C \uC694\uB9AC\uC758
+    \uBE44\uC8FC\uC5BC\uC744 \uCE90\uB9AC\uD558\uB294 \uD30C\uD504\uB9AC\uCE74! \uB9E4\uC6B4\uB9DB\uC774
+    \uB0A0 \uAC83 \uAC19\uC9C0\uB9CC \uC758\uC678\uB85C \uB2EC\uB2EC\uD574\uC11C
+    \uD3B8\uC2DD\uD558\uB294 \uC544\uC774\uB4E4\uC758 \uD1B5\uC218\uB97C \uCE69\uB2C8\uB2E4."
   basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99

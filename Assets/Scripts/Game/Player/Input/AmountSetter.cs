@@ -88,12 +88,23 @@ public class AmountSetter : MonoBehaviour
         }
     }
 
-    public void SetAmountInfo(int basePrice, int max)
+    public void SetAmountInfo(int basePrice, int max, bool isStoreMode = true)
     {
         _basePrice = basePrice;
         
-        // 슬라이더 위치와 수량을 중앙(절반)으로 초기화
-        currentAmount = Mathf.Max(1, Mathf.RoundToInt(maxAmount / 2f));
         SetMaxAmount(max);
+        
+        if (isStoreMode)
+        {
+            // 상점에서는 기본 수량을 1로 초기화
+            currentAmount = 1;
+        }
+        else
+        {
+            // 인벤토리에서는 슬라이더 위치와 수량을 중앙(절반)으로 초기화
+            currentAmount = Mathf.Max(1, Mathf.RoundToInt(max / 2f));
+        }
+        
+        UpdateAmountText();
     }
 }

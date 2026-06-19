@@ -13,16 +13,17 @@ MonoBehaviour:
   m_Name: CheeseNoodle
   m_EditorClassIdentifier: 
   foodName: CheeseNoodle
+  description: "\uBA74\uBC1C \uD558\uB098\uD558\uB098\uC5D0 \uAFB8\uB355\uD55C \uCE58\uC988
+    \uCF54\uD305\uC744 \uC785\uD614\uC2B5\uB2C8\uB2E4! \uB77C\uBA74\uC778\uC9C0 \uCE58\uC988
+    \uD0D5\uC778\uC9C0 \uC815\uCCB4\uC131\uC774 \uBAA8\uD638\uD574\uC9C8 \uC815\uB3C4\uB85C
+    \uC9C4\uD55C \uD48D\uBBF8\uB97C \uC790\uB791\uD558\uBA70, \uC6B0\uC6B8\uC99D\uB9C8\uC800
+    \uB2E8\uBC88\uC5D0 \uCE58\uB8CC\uD560 \uAC83 \uAC19\uC740 \uCE7C\uB85C\uB9AC\uB97C
+    \uC790\uB791\uD569\uB2C8\uB2E4."
   basePrice: 55
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 4d5b35edf7de2c348b18dbcef8bb293e, type: 2}
-  - {fileID: 11400000, guid: a8a5f28f1fadda24c8537f56be559f3a, type: 2}
-  - {fileID: 11400000, guid: 5426b77cb98076f4da4fa5848e3d51ab, type: 2}
-  - {fileID: 11400000, guid: 9a7d639f0104a60449747ffb9f4120cf, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

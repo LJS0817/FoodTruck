@@ -36,6 +36,8 @@ public class ItemInfoUI : MonoBehaviour
 
         if (_submitButton != null)
             _submitButton.onClick.AddListener(OnClickSubmit);
+        else
+            Debug.LogError("[ItemInfoUI] _submitButton이 할당되지 않았습니다! 인스펙터에서 버튼을 연결해주세요.");
 
         // 인벤토리 업데이트 시 보유량 UI 갱신을 위해 이벤트 구독
         if (InventoryManager.Instance != null)
@@ -71,8 +73,16 @@ public class ItemInfoUI : MonoBehaviour
         // 레시피 상세 정보 처리
         if (item.data is FoodData foodData)
         {
-            if (_recipeDetailsArea != null) _recipeDetailsArea.SetActive(true);
-            PopulateRecipeRequirements(foodData);
+            bool isOwned = StoreManager.Instance.RecipeStore.IsRecipeUnlocked(foodData.foodName);
+            if (isOwned)
+            {
+                if (_recipeDetailsArea != null) _recipeDetailsArea.SetActive(true);
+                PopulateRecipeRequirements(foodData);
+            }
+            else
+            {
+                if (_recipeDetailsArea != null) _recipeDetailsArea.SetActive(false);
+            }
         }
         else
         {
@@ -120,7 +130,7 @@ public class ItemInfoUI : MonoBehaviour
                     maxAmount = InventoryManager.Instance.GetTotalAmount(ing.ingredientID, false);
                     if (maxAmount < 1) maxAmount = 1;
                 }
-                _amountSetter.SetAmountInfo(baseValue, maxAmount);
+                _amountSetter.SetAmountInfo(baseValue, maxAmount, _isStoreMode);
             }
             else
             {
@@ -183,7 +193,10 @@ public class ItemInfoUI : MonoBehaviour
             }
         }
         else if (data is EquipmentData equipment) _descText.text = equipment.description;
-        else if (data is FoodData food) _descText.text = "조리에 필요한 재료와 도구를 확인하세요.";
+        else if (data is FoodData food) 
+        {
+            _descText.text = string.IsNullOrEmpty(food.description) ? "조리에 필요한 재료와 도구를 확인하세요." : food.description;
+        }
         else _descText.text = "";
     }
 
@@ -275,9 +288,8 @@ public class ItemInfoUI : MonoBehaviour
                 
                 if (_submitButton != null)
                 {
-                    _submitButton.gameObject.SetActive(currentTotal > 0);
-                    _submitButton.interactable = true;
-                    if (_submitButtonText != null) _submitButtonText.text = "적용";
+                    // 일반 인벤토리에서는 적용 버튼을 숨깁니다.
+                    _submitButton.gameObject.SetActive(false);
                 }
 
                 if (_discardButton != null)
@@ -305,7 +317,12 @@ public class ItemInfoUI : MonoBehaviour
 
     public void OnClickSubmit() 
     {
-        if (_currentItem == null) return;
+        Debug.Log("[ItemInfoUI] OnClickSubmit 호출됨");
+        if (_currentItem == null) 
+        {
+            Debug.LogWarning("[ItemInfoUI] _currentItem이 null이라 구매가 취소되었습니다.");
+            return;
+        }
 
         if (_amountSetter != null && _amountSetter.gameObject.activeSelf)
         {
@@ -319,6 +336,7 @@ public class ItemInfoUI : MonoBehaviour
 
     private void ExecuteSubmitAction(int amount)
     {
+        Debug.Log($"[ItemInfoUI] ExecuteSubmitAction 호출됨 (amount: {amount})");
         if (_isStoreMode)
         {
             // 상점 모드: 구매
@@ -355,7 +373,7 @@ public class ItemInfoUI : MonoBehaviour
                 else
                 {
                     UpdateOwnedAmount();
-                    _amountSetter.SetAmountInfo(ingredient.basePrice, remainingToDiscard);
+                    _amountSetter.SetAmountInfo(ingredient.basePrice, remainingToDiscard, _isStoreMode);
                 }
             }
         }

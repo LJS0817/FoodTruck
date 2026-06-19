@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: ChickenSandwich
   m_EditorClassIdentifier: 
   foodName: ChickenSandwich
+  description: "\uD131\uC774 \uBE60\uC9C8 \uB4EF\uD55C \uC5C4\uCCAD\uB09C \uB450\uAED8\uC758
+    \uCE58\uD0A8 \uD328\uD2F0\uB97C \uBE75 \uC0AC\uC774\uC5D0 \uC6B0\uACA8\uB123\uC5C8\uC2B5\uB2C8\uB2E4!
+    \uD55C \uC785\uC5D0 \uBA39\uAE30 \uBD88\uAC00\uB2A5\uC5D0 \uAC00\uAE4C\uC6CC
+    \uCCB4\uBA74 \uB530\uC704\uB294 \uB358\uC838\uBC84\uB9AC\uACE0 \uC57C\uC131\uBBF8
+    \uB118\uCE58\uAC8C \uB72F\uC5B4\uBA39\uC5B4\uC57C \uC81C\uB9DB\uC778 \uC640\uC77C\uB4DC
+    \uC0CC\uB4DC\uC704\uCE58."
   basePrice: 45
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 90f9523bc5cd78a499c1af258b9fedd5, type: 2}
-  - {fileID: 11400000, guid: 10ac37b64bd68c746bfd82f879dfee55, type: 2}
-  - {fileID: 11400000, guid: cec3ca160079bb349b6e8cb530c5f237, type: 2}
-  - {fileID: 11400000, guid: 8a3b1144b6ded7d4e8103f45a561ccbd, type: 2}
-  - {fileID: 11400000, guid: 90f9523bc5cd78a499c1af258b9fedd5, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

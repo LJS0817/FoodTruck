@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: VeggieHotdog
   m_EditorClassIdentifier: 
   foodName: VeggieHotdog
+  description: "'\uD56B\uB3C4\uADF8\uC5D0\uC11C \uACE0\uAE30 \uB9DB\uC774 \uC548
+    \uB098\uBA74 \uBB34\uC2A8 \uC18C\uC6A9\uC774\uB0D0'\uB294 \uD3B8\uACAC\uC744
+    \uAE68\uBD80\uC218\uB294 \uC0C1\uD07C\uD568! \uC57C\uCC44\uAC00 \uAC00\uB4DD\uD574
+    \uBA39\uACE0 \uB098\uC11C\uB3C4 \uC18D\uC774 \uB354\uBD80\uB8E9\uD558\uC9C0 \uC54A\uC544,
+    \uC0AC\uC7A5\uB2D8\uC758 \uC591\uC2EC\uC744 \uB35C\uC5B4\uC8FC\uB294 \uCC29\uD55C
+    \uBA54\uB274\uC785\uB2C8\uB2E4."
   basePrice: 30
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 185cd3161fa75a346a0d20d2f8c6f565, type: 2}
-  - {fileID: 11400000, guid: 3b90680db0186f547af187d350e37147, type: 2}
-  - {fileID: 11400000, guid: 91902c4494c0af148af3f973679b7100, type: 2}
-  - {fileID: 11400000, guid: 74e9da260f36f0c48bf0c9941ed08f3c, type: 2}
-  - {fileID: 11400000, guid: 8a3b1144b6ded7d4e8103f45a561ccbd, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

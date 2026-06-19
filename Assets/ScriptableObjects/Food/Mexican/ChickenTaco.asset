@@ -13,17 +13,16 @@ MonoBehaviour:
   m_Name: ChickenTaco
   m_EditorClassIdentifier: 
   foodName: ChickenTaco
+  description: "\uAC00\uBCBC\uC6B4 \uC8FC\uBA38\uB2C8 \uC0AC\uC815\uC5D0\uB3C4 \uBA55\uC2DC\uCE78
+    \uAC10\uC131\uC744 \uB290\uB07C\uACE0 \uC2F6\uC740 \uD559\uC0DD\uB4E4\uC744 \uC704\uD55C
+    \uCD5C\uACE0\uC758 \uD53D! \uB77C\uC784 \uC999\uC744 \uCAD9 \uBFCC\uB824 \uBA39\uC73C\uBA74
+    \uC774\uAD6D\uC801\uC778 \uD48D\uBBF8\uAC00 \uD3ED\uBC1C\uD558\uC5EC \uC7A0\uC2DC\uB098\uB9C8
+    \uD734\uC591\uC9C0\uC5D0 \uC628 \uB4EF\uD55C \uCC29\uAC01\uC744 \uBD88\uB7EC\uC77C\uC73C\uD0B5\uB2C8\uB2E4."
   basePrice: 40
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 65e98466930a36548a5c9bc909dae07e, type: 2}
-  - {fileID: 11400000, guid: 10ac37b64bd68c746bfd82f879dfee55, type: 2}
-  - {fileID: 11400000, guid: 91902c4494c0af148af3f973679b7100, type: 2}
-  - {fileID: 11400000, guid: 74e9da260f36f0c48bf0c9941ed08f3c, type: 2}
-  - {fileID: 11400000, guid: 8a3b1144b6ded7d4e8103f45a561ccbd, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

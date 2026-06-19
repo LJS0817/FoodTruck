@@ -13,19 +13,16 @@ MonoBehaviour:
   m_Name: VeggieBurger
   m_EditorClassIdentifier: 
   foodName: VeggieBurger
+  description: "\uAC74\uAC15\uC744 \uCC59\uAE30\uACE0 \uC2F6\uC9C0\uB9CC \uD584\uBC84\uAC70\uB294
+    \uD3EC\uAE30\uD560 \uC218 \uC5C6\uB294 \uBAA8\uC21C\uC801\uC778 \uD604\uB300\uC778\uB4E4\uC744
+    \uC704\uD55C \uCD5C\uACE0\uC758 \uD0C0\uD611\uC548! \uCC44\uC18C\uB85C \uB9CC\uB4E4\uC5C8\uC73C\uB2C8
+    \uC0B4\uC774 \uCC0C\uC9C0 \uC54A\uC744 \uAC70\uB77C\uB294 \uC790\uAE30 \uCD5C\uBA74\uC744
+    \uAC78\uAE30\uC5D0 \uC544\uC8FC \uC801\uD569\uD569\uB2C8\uB2E4."
   basePrice: 35
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 792fafd078ba8844cbab1cb2561aa89e, type: 2}
-  - {fileID: 11400000, guid: 91902c4494c0af148af3f973679b7100, type: 2}
-  - {fileID: 11400000, guid: 74e9da260f36f0c48bf0c9941ed08f3c, type: 2}
-  - {fileID: 11400000, guid: 9a7d639f0104a60449747ffb9f4120cf, type: 2}
-  - {fileID: 11400000, guid: 0c6170d4f06628c4eaf73a61bd0bd760, type: 2}
-  - {fileID: 11400000, guid: 8a3b1144b6ded7d4e8103f45a561ccbd, type: 2}
-  - {fileID: 11400000, guid: 792fafd078ba8844cbab1cb2561aa89e, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:

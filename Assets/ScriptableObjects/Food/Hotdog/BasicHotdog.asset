@@ -13,16 +13,17 @@ MonoBehaviour:
   m_Name: BasicHotdog
   m_EditorClassIdentifier: 
   foodName: BasicHotdog
+  description: "\uAE38\uAC70\uB9AC \uC74C\uC2DD\uC758 \uC601\uC6D0\uD55C \uBCA0\uC2A4\uD2B8\uC140\uB7EC!
+    \uD55C \uC190\uC5D0\uB294 \uC2A4\uB9C8\uD2B8\uD3F0\uC744, \uB2E4\uB978 \uD55C
+    \uC190\uC5D0\uB294 \uD56B\uB3C4\uADF8\uB97C \uC954 \uBC14\uC05C \uB3C4\uC2DC\uC778\uB4E4\uC744
+    \uC704\uD55C \uC644\uBCBD\uD55C \uC778\uCCB4\uACF5\uD559\uC801 \uB514\uC790\uC778\uC758
+    \uAC04\uC2DD\uC785\uB2C8\uB2E4. \uCF00\uCCA9\uACFC \uBA38\uC2A4\uD130\uB4DC \uBC94\uBC85\uC740
+    \uD544\uC218\uC8E0."
   basePrice: 30
   autoCookTime: 2
   foodPackageType: 0
   iconSprite: {fileID: 0}
   isCustomRecipe: 0
-  requiredIngredients:
-  - {fileID: 11400000, guid: 185cd3161fa75a346a0d20d2f8c6f565, type: 2}
-  - {fileID: 11400000, guid: 3b90680db0186f547af187d350e37147, type: 2}
-  - {fileID: 11400000, guid: c99ed4ee641af944e945d969cf62c56f, type: 2}
-  - {fileID: 11400000, guid: 64c23d196e81f904da24f4b339856313, type: 2}
   requiredEquipments: 
   flavorTags: 
   ingredientConfigs:
