@@ -166,7 +166,12 @@ public class MenuSetupUI : MonoBehaviour
             currentUniqueIngredients = GetUniqueIngredientsFromSelected(); // 롤백 후 재계산
         }
 
-        UpdateUIState(currentUniqueIngredients.Count);
+        UpdateUIState(currentUniqueIngredients);
+
+        if (_selectedSlotParent != null)
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(_selectedSlotParent as RectTransform);
+        }
     }
 
     private void OnSelectedSlotRemoved(FoodData removedFood)
@@ -187,6 +192,11 @@ public class MenuSetupUI : MonoBehaviour
         
         // 3. UI 업데이트
         UpdateUIState();
+
+        if (_selectedSlotParent != null)
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(_selectedSlotParent as RectTransform);
+        }
     }
 
     private void RemoveSelectedSlotUI(FoodData food)
@@ -195,7 +205,9 @@ public class MenuSetupUI : MonoBehaviour
         {
             if (_selectedSlots[i].FoodData == food)
             {
-                Destroy(_selectedSlots[i].gameObject);
+                var go = _selectedSlots[i].gameObject;
+                go.SetActive(false); // Destroy 전 즉시 비활성화하여 레이아웃 계산에서 제외
+                Destroy(go);
                 _selectedSlots.RemoveAt(i);
                 break;
             }
@@ -220,24 +232,51 @@ public class MenuSetupUI : MonoBehaviour
         return uniqueIngredients;
     }
 
-    private void UpdateUIState(int currentUniqueCount = -1)
+    private void UpdateUIState(HashSet<int> currentUniqueIngredients = null)
     {
-        if (currentUniqueCount == -1)
+        if (currentUniqueIngredients == null)
         {
-            currentUniqueCount = GetUniqueIngredientsFromSelected().Count;
+            currentUniqueIngredients = GetUniqueIngredientsFromSelected();
         }
 
-        if (_ingredientCountText != null)
-        {
-            int remainingBoxes = _maxBoxCount - currentUniqueCount;
-            _ingredientCountText.text = $"조리대 공간: {currentUniqueCount} / {_maxBoxCount}\n(남은 칸: {remainingBoxes}개)";
-            _ingredientCountText.color = currentUniqueCount == _maxBoxCount ? Color.yellow : Color.white;
-        }
+        int currentUniqueCount = currentUniqueIngredients.Count;
+
+        int remainingBoxes = _maxBoxCount - currentUniqueCount;
+        _ingredientCountText.text = $"조리대 공간: {currentUniqueCount} / {_maxBoxCount}\n(남은 칸: {remainingBoxes}개)";
+        _ingredientCountText.color = currentUniqueCount == _maxBoxCount ? Color.yellow : Color.black;
 
         // 1개라도 메뉴가 선택되어야 장사 시작 가능
         if (_startBusinessButton != null)
         {
             _startBusinessButton.interactable = _selectedRecipes.Count > 0;
+        }
+
+        // 실시간으로 불가능해진 레시피 표시 업데이트
+        for (int i = 0; i < _slots.Count; i++)
+        {
+            MenuSetupSlotUI slot = _slots[i];
+
+            // 이미 선택된 레시피면 불가능 표시 안 함
+            if (_selectedRecipes.Contains(slot.FoodData))
+            {
+                slot.SetUnavailable(false, "");
+                slot.UpdateAdditionalCount(0, true);
+                continue;
+            }
+
+            int additionalCount = 0;
+            var uniqueIds = slot.UniqueIngredientIDs;
+            for (int j = 0; j < uniqueIds.Count; j++)
+            {
+                if (!currentUniqueIngredients.Contains(uniqueIds[j]))
+                {
+                    additionalCount++;
+                }
+            }
+
+            bool isUnavailable = (currentUniqueCount + additionalCount) > _maxBoxCount;
+            slot.SetUnavailable(isUnavailable, isUnavailable ? "공간 부족" : "");
+            slot.UpdateAdditionalCount(additionalCount, false);
         }
     }
 
@@ -255,7 +294,7 @@ public class MenuSetupUI : MonoBehaviour
         }
         _selectedSlots.Clear();
 
-        UpdateUIState(0);
+        UpdateUIState();
         Debug.Log("[MenuSetupUI] 선택된 모든 메뉴가 초기화되었습니다.");
     }
 
