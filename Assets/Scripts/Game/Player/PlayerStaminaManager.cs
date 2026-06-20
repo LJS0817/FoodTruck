@@ -71,9 +71,9 @@ public class PlayerStaminaManager : MonoBehaviour
             if (UpgradeManager.Instance.Upgrade != null)
                 currentDrainRate -= UpgradeManager.Instance.Upgrade.GetCurrentValue("DrainRate");
             
-            if (UpgradeManager.Instance.Worker != null)
+            if (WorkerManager.Instance != null)
             {
-                float saverBonus = UpgradeManager.Instance.Worker.GetAbilityTotalValue(WorkerAbility.StaminaSaver);
+                float saverBonus = WorkerManager.Instance.GetAbilityTotalValue(WorkerAbility.StaminaSaver);
                 currentDrainRate *= Mathf.Max(0.1f, 1f - saverBonus); // 최소 10% 속도는 보장
             }
 

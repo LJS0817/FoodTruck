@@ -7,7 +7,6 @@ public class UpgradeManager : MonoBehaviour
 
     [Header("Sub Managers")]
     [SerializeField] private EquipmentStoreManager equipmentStoreManager;
-    [SerializeField] private WorkerManager workerManager;
     [SerializeField] private DistrictManager districtManager;
     [SerializeField] private PlayerUpgradeManager playerUpgradeManager;
 
@@ -18,7 +17,6 @@ public class UpgradeManager : MonoBehaviour
     [SerializeField] private UpgradeUIController upgradeUIController;
 
     public EquipmentStoreManager EquipmentStore => equipmentStoreManager;
-    public WorkerManager Worker => workerManager;
     public DistrictManager District => districtManager;
     public PlayerUpgradeManager Upgrade => playerUpgradeManager;
     public UpgradeUIController UIController => upgradeUIController;
@@ -36,7 +34,6 @@ public class UpgradeManager : MonoBehaviour
     public void PopulateAllCategories()
     {
         PopulateEquipmentSlots();
-        PopulateWorkerSlots();
         PopulateDistrictSlots();
         PopulateUpgradeSlots();
     }
@@ -56,21 +53,6 @@ public class UpgradeManager : MonoBehaviour
             
             UpgradeItemSlotUI slot = upgradeUIController.GetOrCreateSlot(_slotPrefab, parent);
             slot.Setup(item, (itm) => upgradeUIController.ShowUpgradeInfo(itm));
-        }
-    }
-
-    private void PopulateWorkerSlots()
-    {
-        Transform parent = upgradeUIController.GetContentParent(2);
-        if (parent == null || workerManager == null) return;
-        upgradeUIController.ClearSlots(parent);
-
-        List<WorkerData> workers = workerManager.allWorkers;
-        if (workers == null) return;
-        for (int i = 0; i < workers.Count; i++)
-        {
-            StoreItem item = StoreItem.FromWorker(workers[i]);
-            CreateSlot(item, parent);
         }
     }
 
@@ -138,11 +120,6 @@ public class UpgradeManager : MonoBehaviour
                 equipmentStoreManager.BuyEquipment(equipmentData, false);
                 SettlementManager.Instance?.AddExpense(totalCost);
                 Debug.Log($"[UpgradeManager] {equipmentData.equipmentName} 구매 완료! ({totalCost}원)");
-            }
-            else if (item.data is WorkerData worker)
-            {
-                if (workerManager != null && workerManager.HireWorker(worker))
-                    Debug.Log($"[UpgradeManager] 알바생 {worker.workerName} 고용 성공!");
             }
             else if (item.data is DistrictData district)
             {

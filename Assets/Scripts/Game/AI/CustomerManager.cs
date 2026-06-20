@@ -63,8 +63,8 @@ public class CustomerManager : MonoBehaviour
         if (StoreManager.Instance.Marketing != null)
             multiplier *= StoreManager.Instance.Marketing.GetSpawnBoostMultiplier();
 
-        if (UpgradeManager.Instance.Worker != null)
-            multiplier += UpgradeManager.Instance.Worker.GetAbilityTotalValue(WorkerAbility.SpawnRateBoost); // 합산 방식으로 추가 배율
+        if (WorkerManager.Instance != null)
+            multiplier += WorkerManager.Instance.GetAbilityTotalValue(WorkerAbility.SpawnRateBoost); // 합산 방식으로 추가 배율
 
         // 💡 돌발 이벤트 보정
         if (RandomEventManager.Instance != null)

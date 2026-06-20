@@ -80,19 +80,6 @@ public class StoreItem
         };
     }
 
-    public static StoreItem FromWorker(WorkerData worker)
-    {
-        return new StoreItem
-        {
-            data = worker,
-            itemName = worker.workerName,
-            icon = worker.workerIcon,
-            finalCost = worker.hiringCost,
-            amount = 1,
-            maxPurchaseAmount = 1
-        };
-    }
-
     public static StoreItem FromUpgrade(PlayerUpgradeData upgrade, int cost)
     {
         return new StoreItem

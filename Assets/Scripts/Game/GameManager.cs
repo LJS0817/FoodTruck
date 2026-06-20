@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
         if (ReputationManager.Instance == null) gameObject.AddComponent<ReputationManager>();
         
         // 💡 신규 시스템들 초기화
-        if (UpgradeManager.Instance.Worker == null) gameObject.AddComponent<WorkerManager>();
+        if (WorkerManager.Instance == null) gameObject.AddComponent<WorkerManager>();
         if (UpgradeManager.Instance.District == null) gameObject.AddComponent<DistrictManager>();
         if (UpgradeManager.Instance.Upgrade == null) gameObject.AddComponent<PlayerUpgradeManager>();
         if (StoreManager.Instance.Marketing == null) gameObject.AddComponent<MarketingManager>();
@@ -75,7 +75,7 @@ public class GameManager : MonoBehaviour
         {
             dataManager.RestoreInventory();
             
-            UpgradeManager.Instance.Worker.LoadFromSaveData(dataManager.CurrentData.hiredWorkerIDs);
+            WorkerManager.Instance.LoadFromSaveData(dataManager.CurrentData.hiredWorkers, dataManager.CurrentData.recruitmentPool, dataManager.CurrentData.lastWorkerRefreshDay);
             UpgradeManager.Instance.District.LoadFromSaveData(dataManager.CurrentData.unlockedDistrictIDs, dataManager.CurrentData.currentDistrictID);
             UpgradeManager.Instance.Upgrade.LoadFromSaveData(dataManager.CurrentData.upgrades);
         }

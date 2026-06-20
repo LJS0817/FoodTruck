@@ -90,8 +90,10 @@ public class SaveData
     // 💡 일별 기록 히스토리
     public List<DailyRecord> dailyHistory = new List<DailyRecord>();
 
-    // 💡 알바생, 구역, 플레이어 업그레이드 데이터
-    public List<int> hiredWorkerIDs = new List<int>();
+    // 💡 알바생 데이터 전체 저장 (동적 생성 지원)
+    public List<WorkerData> hiredWorkers = new List<WorkerData>();
+    public List<WorkerData> recruitmentPool = new List<WorkerData>();
+    public int lastWorkerRefreshDay = 0;
     public List<int> unlockedDistrictIDs = new List<int>();
     public int currentDistrictID = 0;
     

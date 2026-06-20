@@ -9,15 +9,14 @@ public class AutoAssetInjector : Editor
     [MenuItem("Tycoon/Auto Inject All Assets to Managers")]
     public static void InjectAssets()
     {
-        // 1. WorkerManager
+        // 1. WorkerManager (WorkerAbilityData 주입)
         var workerManager = FindObjectOfType<WorkerManager>();
         if (workerManager != null)
         {
-            workerManager.allWorkers = LoadAllAssets<WorkerData>("Assets/ScriptableObjects/Worker");
+            workerManager.availableAbilities = LoadAllAssets<WorkerAbilityData>("Assets/ScriptableObjects/WorkerAbilities");
             EditorUtility.SetDirty(workerManager);
-            Debug.Log($"[Auto Inject] Injected {workerManager.allWorkers.Count} Workers.");
+            Debug.Log($"[Auto Inject] Injected {workerManager.availableAbilities.Count} Worker Abilities.");
         }
-
         // 2. PlayerUpgradeManager
         var upgradeManager = FindObjectOfType<PlayerUpgradeManager>();
         if (upgradeManager != null)

@@ -61,9 +61,9 @@ public class CustomerPatienceController : MonoBehaviour
             drainRate *= RandomEventManager.Instance.GetPatienceMultiplier();
         
         // 💡 알바생(엔터테이너 등) 인내심 감소 속도 저하 버프 적용
-        if (UpgradeManager.Instance.Worker != null)
+        if (WorkerManager.Instance != null)
         {
-            float workerBonus = UpgradeManager.Instance.Worker.GetAbilityTotalValue(WorkerAbility.PatienceBoost);
+            float workerBonus = WorkerManager.Instance.GetAbilityTotalValue(WorkerAbility.PatienceBoost);
             drainRate *= Mathf.Max(0.1f, 1f - workerBonus);
         }
 
