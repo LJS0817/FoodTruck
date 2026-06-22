@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: CustomerAppearanceDB
   m_EditorClassIdentifier: Assembly-CSharp::CustomerAppearanceDB
   maleParts:
-    headParts: []
+    headParts:
+    - {fileID: 1069114489221588412, guid: 8aacb99003e33904e82b18835fb69f85, type: 3}
     faceParts: []
     bodyParts: []
     legParts: []
