@@ -67,4 +67,17 @@ public class WorkerData
 
     [Header("Abilities (스킬)")]
     public List<WorkerAbilityNode> abilities = new List<WorkerAbilityNode>();
+
+    [Header("Runtime State (런타임 상태)")]
+    public float currentStamina;
+    public bool isResting;
+    public float restTimer;
+    public bool isPendingRest; // 하던 일을 마치고 퇴근하기 위한 대기 상태
+
+    public int GetAppearanceSeed()
+    {
+        if (string.IsNullOrEmpty(workerID))
+            return 0;
+        return workerID.GetHashCode();
+    }
 }

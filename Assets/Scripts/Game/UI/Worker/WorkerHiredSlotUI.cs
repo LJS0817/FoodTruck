@@ -13,6 +13,10 @@ public class WorkerHiredSlotUI : MonoBehaviour
     public Button incentiveButton;
     public TMP_Text incentiveText;
 
+    [Header("Resting UI")]
+    public GameObject restingIndicator;
+    public TMP_Text restingTimerText;
+
     private WorkerData _currentWorker;
     private WorkerManagementUI _parentUI;
 
@@ -86,6 +90,35 @@ public class WorkerHiredSlotUI : MonoBehaviour
             float newMult = _currentWorker.incentiveMultiplier > 1.1f ? 1.0f : 1.5f;
             WorkerManager.Instance.SetWorkerIncentive(_currentWorker, newMult);
             _parentUI.RefreshWorkers();
+        }
+    }
+
+    private void Update()
+    {
+        if (_currentWorker != null)
+        {
+            if (_currentWorker.isResting)
+            {
+                if (restingIndicator != null && !restingIndicator.activeSelf)
+                    restingIndicator.SetActive(true);
+
+                if (restingTimerText != null)
+                {
+                    if (!restingTimerText.gameObject.activeSelf)
+                        restingTimerText.gameObject.SetActive(true);
+                    
+                    int minutes = Mathf.FloorToInt(_currentWorker.restTimer / 60f);
+                    int seconds = Mathf.FloorToInt(_currentWorker.restTimer % 60f);
+                    restingTimerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+                }
+            }
+            else
+            {
+                if (restingIndicator != null && restingIndicator.activeSelf)
+                    restingIndicator.SetActive(false);
+                if (restingTimerText != null && restingTimerText.gameObject.activeSelf)
+                    restingTimerText.gameObject.SetActive(false);
+            }
         }
     }
 }

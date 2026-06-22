@@ -83,9 +83,16 @@ public class BusinessManager : MonoBehaviour
         if (IsBusinessOpen)
         {
             Debug.Log("<color=green>[BusinessManager] 셔터 개방! 장사를 시작합니다. 손님들이 오기 시작합니다.</color>");
+            if (ToastManager.Instance != null)
+                ToastManager.Instance.ShowToast("장사를 시작합니다!");
+
             // 시간 정상화 (1배속)
             if (GameTimeManager.Instance != null)
                 GameTimeManager.Instance.timeScaleMultiplier = 1f;
+
+            // 💡 직원 출근
+            if (WorkerManager.Instance != null)
+                WorkerManager.Instance.GoToWorkAllWorkers();
 
             // 💡 피로도 감소 시작
             PlayerStaminaManager.Instance?.StartDraining();
@@ -97,6 +104,8 @@ public class BusinessManager : MonoBehaviour
         else
         {
             Debug.Log("<color=orange>[BusinessManager] 셔터 닫힘! 장사를 종료합니다. 손님들이 돌아갑니다.</color>");
+            if (ToastManager.Instance != null)
+                ToastManager.Instance.ShowToast("장사를 종료합니다.");
             
             // 1. 남은 손님 모두 강제로 돌려보내기
             if (CustomerManager.Instance != null)
@@ -121,6 +130,10 @@ public class BusinessManager : MonoBehaviour
             // 5. 시간 0.5배속으로 느리게 흐르도록 설정
             if (GameTimeManager.Instance != null)
                 GameTimeManager.Instance.timeScaleMultiplier = 0.5f;
+
+            // 💡 직원 강제 퇴근
+            if (WorkerManager.Instance != null)
+                WorkerManager.Instance.LeaveWorkAllWorkers();
 
             // 💡 피로도 감소 중지
             PlayerStaminaManager.Instance?.StopDraining();

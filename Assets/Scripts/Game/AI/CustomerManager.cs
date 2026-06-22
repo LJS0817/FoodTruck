@@ -13,6 +13,8 @@ public class CustomerManager : MonoBehaviour
 
     private Queue<CustomerController> customerPool = new Queue<CustomerController>();
     private List<CustomerController> activeCustomers = new List<CustomerController>(20);
+    
+    public int ActiveCustomerCount => activeCustomers.Count;
 
     [Header("Spawn Settings")]
     public Transform spawnPoint;      // 화면 밖 스폰 지점

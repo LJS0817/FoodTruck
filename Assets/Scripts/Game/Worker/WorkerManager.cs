@@ -10,6 +10,17 @@ public class WorkerManager : MonoBehaviour
     
     public int poolSize = 3;
 
+    [Header("Stamina & Rest Settings")]
+    public float defaultRestDuration = 60f; // 현실 시간(초) 기준 휴식 시간
+    public float staminaDrainRate = 1f; // 초당 감소하는 체력량
+
+    [Header("NPC Spawn Settings")]
+    public GameObject workerNPCPrefab;
+    public CustomerAppearanceDB appearanceDB;
+    public Transform npcSpawnPoint;
+
+    private Dictionary<string, GameObject> _activeNPCs = new Dictionary<string, GameObject>();
+
     private List<WorkerData> _recruitmentPool = new List<WorkerData>();
     private List<WorkerData> _hiredWorkers = new List<WorkerData>();
 
@@ -45,17 +56,173 @@ public class WorkerManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        bool isBusinessOpen = BusinessManager.Instance != null && BusinessManager.Instance.IsBusinessOpen;
+
+        for (int i = 0; i < _hiredWorkers.Count; i++)
+        {
+            var worker = _hiredWorkers[i];
+
+            if (worker.isResting)
+            {
+                // 점진적으로 체력 회복 (지정된 휴식 시간 동안 최대 체력 도달)
+                float recoverRate = worker.stamina / defaultRestDuration;
+                worker.currentStamina += recoverRate * Time.deltaTime;
+
+                if (worker.currentStamina >= worker.stamina)
+                {
+                    worker.currentStamina = worker.stamina;
+                    worker.isResting = false;
+                    worker.isPendingRest = false;
+                    
+                    // 영업 중일 때만 즉시 복귀
+                    if (isBusinessOpen)
+                    {
+                        SpawnWorkerNPC(worker);
+                        if (ToastManager.Instance != null)
+                            ToastManager.Instance.ShowToast($"{worker.workerName} 직원이 휴식을 마치고 복귀했습니다!");
+                        else
+                            Debug.Log($"[알림] {worker.workerName} 직원이 휴식을 마치고 복귀했습니다!");
+                    }
+                }
+            }
+            else if (isBusinessOpen)
+            {
+                // 장사 중일 때 체력 감소
+                if (!worker.isPendingRest)
+                {
+                    bool isWorking = false;
+                    if (worker.specialty == WorkerSpecialty.Cook)
+                    {
+                        if (AutoCookManager.Instance != null && AutoCookManager.Instance.IsCooking)
+                            isWorking = true;
+                    }
+                    else
+                    {
+                        // 요리사 외의 직원(홀, 청소 등)은 씬에 손님이 1명이라도 있으면 일하는 것으로 간주
+                        if (CustomerManager.Instance != null && CustomerManager.Instance.ActiveCustomerCount > 0)
+                            isWorking = true;
+                    }
+
+                    if (isWorking)
+                    {
+                        worker.currentStamina -= staminaDrainRate * Time.deltaTime;
+                        if (worker.currentStamina <= 0f)
+                        {
+                            worker.currentStamina = 0f;
+                            worker.isPendingRest = true;
+
+                            bool currentlyBusy = (worker.specialty == WorkerSpecialty.Cook && AutoCookManager.Instance != null && AutoCookManager.Instance.IsCooking);
+                            if (currentlyBusy && ToastManager.Instance != null)
+                            {
+                                ToastManager.Instance.ShowToast($"{worker.workerName} 직원이 마지막 작업을 마무리하고 휴식할 예정입니다.");
+                            }
+                        }
+                    }
+                }
+
+                if (worker.isPendingRest)
+                {
+                    bool isBusy = false;
+                    if (worker.specialty == WorkerSpecialty.Cook && AutoCookManager.Instance != null && AutoCookManager.Instance.IsCooking)
+                    {
+                        isBusy = true; // 현재 자동 요리 중이라면 바쁨
+                    }
+
+                    if (!isBusy)
+                    {
+                        worker.isPendingRest = false;
+                        worker.isResting = true;
+                        
+                        DespawnWorkerNPC(worker);
+                        if (ToastManager.Instance != null)
+                            ToastManager.Instance.ShowToast($"{worker.workerName} 직원이 지쳐서 휴식하러 퇴근했습니다.");
+                        else
+                            Debug.Log($"[알림] {worker.workerName} 직원이 지쳐서 휴식하러 퇴근했습니다.");
+                    }
+                }
+            }
+        }
+    }
+
     private void OnDestroy()
     {
         if (DayCycleManager.Instance != null)
         {
             DayCycleManager.Instance.OnNewDayStarted -= OnNewDayStarted;
         }
+
+        foreach (var npc in _activeNPCs.Values)
+        {
+            if (npc != null) Destroy(npc);
+        }
+        _activeNPCs.Clear();
     }
 
     private void OnNewDayStarted()
     {
         PayDailySalaries();
+    }
+
+    public void GoToWorkAllWorkers()
+    {
+        bool spawned = false;
+        for (int i = 0; i < _hiredWorkers.Count; i++)
+        {
+            var worker = _hiredWorkers[i];
+            
+            // 회복을 중단하고 현재 스테미너 그대로 출근
+            worker.isResting = false;
+            worker.isPendingRest = false;
+            
+            SpawnWorkerNPC(worker);
+            spawned = true;
+        }
+
+        if (spawned && ToastManager.Instance != null)
+        {
+            ToastManager.Instance.ShowToast("직원들이 출근을 완료했습니다!");
+        }
+    }
+
+    public void LeaveWorkAllWorkers()
+    {
+        for (int i = 0; i < _hiredWorkers.Count; i++)
+        {
+            var worker = _hiredWorkers[i];
+            worker.isResting = true;
+            DespawnWorkerNPC(worker);
+        }
+    }
+
+    private void SpawnWorkerNPC(WorkerData worker)
+    {
+        // 요리사(Cook)는 트럭 내부에 있으므로 외부 NPC로 생성하지 않음
+        if (worker.specialty == WorkerSpecialty.Cook) return;
+        
+        if (workerNPCPrefab == null || appearanceDB == null) return;
+        if (_activeNPCs.ContainsKey(worker.workerID)) return;
+
+        Vector3 spawnPos = npcSpawnPoint != null ? npcSpawnPoint.position : Vector3.zero;
+        GameObject npcObj = Instantiate(workerNPCPrefab, spawnPos, Quaternion.identity);
+        
+        WorkerNPCController controller = npcObj.GetComponent<WorkerNPCController>();
+        if (controller != null)
+        {
+            controller.Setup(worker, appearanceDB);
+        }
+        
+        _activeNPCs[worker.workerID] = npcObj;
+    }
+
+    private void DespawnWorkerNPC(WorkerData worker)
+    {
+        if (_activeNPCs.TryGetValue(worker.workerID, out GameObject npcObj))
+        {
+            if (npcObj != null) Destroy(npcObj);
+            _activeNPCs.Remove(worker.workerID);
+        }
     }
 
     // 수동 갱신 시스템 (하루 1회 무료)
@@ -219,6 +386,7 @@ public class WorkerManager : MonoBehaviour
         worker.cookSkill = cook;
         worker.humanSkill = human;
         worker.stamina = stam;
+        worker.currentStamina = stam; // 초기 체력 설정
         worker.cleanSkill = clean;
 
         // 5. 특화 능력 무작위 배정
@@ -263,6 +431,7 @@ public class WorkerManager : MonoBehaviour
     {
         if (_hiredWorkers.Remove(worker))
         {
+            DespawnWorkerNPC(worker);
             SyncToSaveData();
             Debug.Log($"<color=orange>[알바생] {worker.workerName} 해고됨.</color>");
         }
@@ -329,6 +498,18 @@ public class WorkerManager : MonoBehaviour
         return total;
     }
 
+    public bool HasActiveCookWorker()
+    {
+        for (int i = 0; i < _hiredWorkers.Count; i++)
+        {
+            if (_hiredWorkers[i].specialty == WorkerSpecialty.Cook && !_hiredWorkers[i].isResting && !_hiredWorkers[i].isPendingRest)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // ===== 저장 연동 =====
 
     public void LoadFromSaveData(List<WorkerData> hired, List<WorkerData> pool, int lastRefreshDay)
@@ -338,6 +519,15 @@ public class WorkerManager : MonoBehaviour
 
         if (hired != null) _hiredWorkers.AddRange(hired);
         if (pool != null) _recruitmentPool.AddRange(pool);
+
+        // 초기 체력 세팅 방어 코드 (기존 세이브 대응)
+        foreach (var w in _hiredWorkers)
+        {
+            if (w.currentStamina <= 0 && !w.isResting && w.stamina > 0)
+            {
+                w.currentStamina = w.stamina;
+            }
+        }
 
         // 만약 풀이 비어있다면 새로고침
         if (_recruitmentPool.Count == 0 && DayCycleManager.Instance != null)

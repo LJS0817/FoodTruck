@@ -112,8 +112,19 @@ public class MenuSetupUI : MonoBehaviour
             MenuSetupSlotUI slot = Instantiate(_slotPrefab, _slotParent);
             _slots.Add(slot);
 
+            bool lacksIngredients = false;
+            if (recipe.ingredientConfigs != null)
+            {
+                lacksIngredients = !InventoryManager.Instance.HasIngredients(recipe.ingredientConfigs);
+            }
+
             // 단일 레시피만으로도 최대 조리대 개수를 초과하면 아예 비활성화
             if (reqIngs.Count > _maxBoxCount)
+            {
+                slot.Init(recipe, false, null); // 락 상태로 초기화
+                slot.SetInteractable(false);
+            }
+            else if (lacksIngredients)
             {
                 slot.Init(recipe, false, null); // 락 상태로 초기화
                 slot.SetInteractable(false);
@@ -261,6 +272,17 @@ public class MenuSetupUI : MonoBehaviour
             {
                 slot.SetUnavailable(false, "");
                 slot.UpdateAdditionalCount(0, true);
+                continue;
+            }
+
+            if (slot.UniqueIngredientIDs.Count > _maxBoxCount)
+            {
+                slot.SetUnavailable(true, "공간 부족");
+                continue;
+            }
+            else if (slot.FoodData.ingredientConfigs != null && !InventoryManager.Instance.HasIngredients(slot.FoodData.ingredientConfigs))
+            {
+                slot.SetUnavailable(true, "재료 부족");
                 continue;
             }
 

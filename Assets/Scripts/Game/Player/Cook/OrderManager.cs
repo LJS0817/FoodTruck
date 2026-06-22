@@ -122,6 +122,21 @@ public class OrderManager : MonoBehaviour
         }
     }
 
+    public void BlockTicketOf(CustomerController customer, bool isBlocked)
+    {
+        for (int i = 0; i < activeOrders.Count; i++)
+        {
+            if (activeOrders[i].owner == customer)
+            {
+                if (i < visualInsideTickets.Count && visualInsideTickets[i] != null)
+                {
+                    visualInsideTickets[i].SetAutoCookingBlocked(isBlocked);
+                }
+                return;
+            }
+        }
+    }
+
     // 💡 모든 주문 강제 취소 및 티켓 반환 (장사 종료 시)
     public void ClearAllOrders()
     {

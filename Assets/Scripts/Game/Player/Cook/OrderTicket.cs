@@ -64,6 +64,16 @@ public class OrderTicket : MonoBehaviour
         _patience.SetProcessingState(isProcessing);
     }
 
+    public void SetAutoCookingBlocked(bool isBlocked)
+    {
+        // 유저가 직접 서빙하지 못하도록 상호작용 차단
+        canvasGroup.interactable = !isBlocked;
+        canvasGroup.blocksRaycasts = !isBlocked;
+        
+        // 시각적으로 차별화 (어둡게/반투명)
+        canvasGroup.alpha = isBlocked ? 0.6f : 1f;
+    }
+
     /// <summary>
     /// UI 표시 애니메이션 (Fade In)
     /// </summary>

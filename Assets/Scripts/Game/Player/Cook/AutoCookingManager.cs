@@ -6,18 +6,20 @@ public class AutoCookManager : MonoBehaviour
     public static AutoCookManager Instance { get; private set; }
 
     private bool isCooking = false; // 현재 요리 중인지 체크하는 플래그
+    public bool IsCooking => isCooking;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
     }
 
-    // 주문이 들어오거나, 요리가 하나 끝났을 때 호출하여 
     // 밀린 주문이 있는지 확인하고 조리를 시작하는 트리거 함수입니다.
     public void ProcessAutoOrder()
     {
-        // 트럭 안에 있거나, 이미 조리 중이라면 무시합니다.
-        if (ViewManager.Instance.isInsideTruck || isCooking) return;
+        if (isCooking) return;
+
+        // 요리사(Cook) 직원이 고용되어 있고 일하는 중일 때만 자동 요리 작동
+        if (WorkerManager.Instance == null || !WorkerManager.Instance.HasActiveCookWorker()) return;
 
         // OrderManager에서 가장 먼저 들어온 대기 주문을 가져옵니다.
         OrderData nextOrder = OrderManager.Instance.GetFirstActiveOrder();
@@ -44,6 +46,12 @@ public class AutoCookManager : MonoBehaviour
 
         // 💡 본격적인 요리가 시작될 때 WorkOnOrder 호출 (조건 충족)
         customer.WorkOnOrder();
+        
+        // 💡 오토쿡 중인 티켓 상호작용(터치) 차단 및 반투명 처리
+        if (OrderManager.Instance != null)
+        {
+            OrderManager.Instance.BlockTicketOf(customer, true);
+        }
 
         float timer = 0f;
         float targetTime = orderedFood.autoCookTime;
@@ -57,14 +65,6 @@ public class AutoCookManager : MonoBehaviour
 
         while (timer < targetTime)
         {
-            // 유저가 도중에 트럭 안으로 들어가면 자동 요리 중지
-            if (ViewManager.Instance.isInsideTruck)
-            {
-                Debug.Log("<color=orange>유저가 트럭 안으로 들어와 자동 요리가 취소되었습니다.</color>");
-                isCooking = false;
-                yield break;
-            }
-
             // 손님이 중간에 화가 나서 나가버렸다면 중지
             if (customer.currentPatience <= 0)
             {

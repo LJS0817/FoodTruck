@@ -101,7 +101,8 @@ public class WorkerManagementUI : MonoBehaviour
             workerManagementPanel.interactable = true;
             workerManagementPanel.blocksRaycasts = true;
             
-            ChangeTab(0);
+            // 패널을 열 때 기본적으로 채용 대기 탭(1)을 보여줌 (이때 Hired 탭은 alpha 0이 됨)
+            ChangeTab(1);
         }
     }
 
@@ -123,6 +124,9 @@ public class WorkerManagementUI : MonoBehaviour
         if (WorkerManager.Instance == null) return;
 
         var workerManager = WorkerManager.Instance;
+        
+        // 새로고침 전 스크롤 위치 저장
+        float prevScrollPos = scrollRect != null ? scrollRect.verticalNormalizedPosition : 1f;
 
         // 1. 내 알바생 탭 갱신
         for (int i = 0; i < _spawnedHiredSlots.Count; i++)
@@ -162,6 +166,13 @@ public class WorkerManagementUI : MonoBehaviour
                 refreshCostText.text = "무료 갱신 (1일 1회)";
             else
                 refreshCostText.text = $"{cost:N0}원";
+        }
+
+        // 스크롤 위치 복구
+        if (scrollRect != null)
+        {
+            Canvas.ForceUpdateCanvases();
+            scrollRect.verticalNormalizedPosition = prevScrollPos;
         }
     }
 
