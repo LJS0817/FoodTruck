@@ -73,6 +73,8 @@ public class SaveData
     public int currentMoney = 0;
     public int currentDay = 1;
     public int reputation = 30; // 💡 평판 (기본값 30)
+    public float currentStamina = 100f;
+    public float currentHygiene = 100f;
 
     public List<RecipeSaveData> unlockedRecipes = new List<RecipeSaveData>();
     // 💡 유저가 새롭게 연구하여 만들어낸 커스텀 레시피 목록
@@ -145,6 +147,7 @@ public class DataManager : MonoBehaviour
     {
         // 💡 인벤토리 상태를 저장 직전에 동기화
         SyncInventoryToSaveData();
+        SyncStaminaAndHygieneToSaveData();
 
         // 💡 저장 시점 기록
         CurrentData.lastSaveTimeTicks = DateTime.UtcNow.Ticks;
@@ -216,6 +219,14 @@ public class DataManager : MonoBehaviour
         }
     }
 
+    private void SyncStaminaAndHygieneToSaveData()
+    {
+        if (PlayerStaminaManager.Instance != null)
+            CurrentData.currentStamina = PlayerStaminaManager.Instance.CurrentStamina;
+        if (HygieneManager.Instance != null)
+            CurrentData.currentHygiene = HygieneManager.Instance.currentHygiene;
+    }
+
     /// <summary>
     /// 게임 시작 시 SaveData → InventoryManager로 인벤토리를 복원합니다.
     /// GameManager.InitializeSystems() 이후에 호출해야 합니다.
@@ -238,5 +249,25 @@ public class DataManager : MonoBehaviour
         }
 
         Debug.Log($"<color=green>[DataManager] 인벤토리 {CurrentData.inventoryItems.Count}슬롯 복원 완료</color>");
+    }
+
+    // ===== 앱 라이프사이클 (안전망 저장) =====
+
+    private void OnApplicationPause(bool pauseStatus)
+    {
+        if (pauseStatus && CurrentData != null)
+        {
+            Debug.Log("<color=orange>[DataManager] 백그라운드 진입 감지: 긴급 저장 수행</color>");
+            SaveGameData();
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        if (CurrentData != null)
+        {
+            Debug.Log("<color=orange>[DataManager] 앱 종료 감지: 긴급 저장 수행</color>");
+            SaveGameData();
+        }
     }
 }

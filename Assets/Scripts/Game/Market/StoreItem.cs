@@ -1,11 +1,26 @@
 using UnityEngine;
 
 /// <summary>
+/// 상점에 진열되는 아이템 종류를 식별합니다.
+/// </summary>
+public enum StoreItemType
+{
+    Ingredient,
+    Recipe,
+    Equipment,
+    Decoration,
+    Marketing,
+    District,
+    RecipeIngredientSet
+}
+
+/// <summary>
 /// 상점에 진열되는 아이템 하나의 래퍼 클래스입니다.
 /// IngredientData, EquipmentData, FoodData 등 이종 ScriptableObject를 통합하여 다룹니다.
 /// </summary>
 public class StoreItem
 {
+    public StoreItemType itemType;  // 아이템의 종류 (구매 로직 분기용)
     public ScriptableObject data;   // 원본 SO (IngredientData / EquipmentData / FoodData)
     public string itemName;         // 표시용 이름
     public Sprite icon;             // 표시용 아이콘
@@ -19,6 +34,7 @@ public class StoreItem
     {
         return new StoreItem
         {
+            itemType = StoreItemType.Ingredient,
             data = ingredient,
             itemName = ingredient.ingredientName,
             icon = ingredient.ingredientSprite,
@@ -32,6 +48,7 @@ public class StoreItem
     {
         return new StoreItem
         {
+            itemType = StoreItemType.Equipment,
             data = equipment,
             itemName = equipment.equipmentName,
             icon = equipment.equipmentSprite,
@@ -45,6 +62,7 @@ public class StoreItem
     {
         return new StoreItem
         {
+            itemType = StoreItemType.Equipment,
             data = equipment,
             itemName = $"{equipment.equipmentName} Lv.{level}",
             icon = equipment.equipmentSprite,
@@ -58,6 +76,7 @@ public class StoreItem
     {
         return new StoreItem
         {
+            itemType = StoreItemType.Recipe,
             data = recipe,
             itemName = recipe.foodName,
             icon = recipe.iconSprite,
@@ -67,10 +86,25 @@ public class StoreItem
         };
     }
 
+    public static StoreItem FromRecipeIngredientSet(FoodData recipe, int price)
+    {
+        return new StoreItem
+        {
+            itemType = StoreItemType.RecipeIngredientSet,
+            data = recipe,
+            itemName = $"{recipe.foodName} 재료 10세트",
+            icon = recipe.iconSprite,
+            finalCost = price,
+            amount = 10,
+            maxPurchaseAmount = 99
+        };
+    }
+
     public static StoreItem FromDecoration(WaitingZoneItemData wzItem, int price)
     {
         return new StoreItem
         {
+            itemType = StoreItemType.Decoration,
             data = wzItem,
             itemName = wzItem.itemName,
             icon = wzItem.icon,
@@ -84,6 +118,7 @@ public class StoreItem
     {
         return new StoreItem
         {
+            itemType = StoreItemType.Equipment, // 업그레이드는 장비와 유사하게 취급하거나 필요시 별도 타입
             data = upgrade,
             itemName = upgrade.upgradeName,
             icon = null, // 아이콘이 없다면 임시로 null (StoreSlotUI에서 처리 필요)
@@ -97,6 +132,7 @@ public class StoreItem
     {
         return new StoreItem
         {
+            itemType = StoreItemType.Marketing,
             data = marketing,
             itemName = marketing.campaignName,
             icon = null,
@@ -110,6 +146,7 @@ public class StoreItem
     {
         return new StoreItem
         {
+            itemType = StoreItemType.District,
             data = district,
             itemName = district.districtName,
             icon = district.backgroundSprite,

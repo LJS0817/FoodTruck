@@ -82,6 +82,7 @@ public class PlayerUpgradeManager : MonoBehaviour
             // 체력 등 즉시 갱신이 필요한 이벤트를 위해 (원한다면 event 추가 가능)
             
             SyncToSaveData();
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
             return true;
         }
         return false;

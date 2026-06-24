@@ -4,6 +4,7 @@ using TMPro;
 using System;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
+using DG.Tweening;
 
 public class MenuSetupSlotUI : MonoBehaviour, IPointerClickHandler
 {
@@ -11,9 +12,15 @@ public class MenuSetupSlotUI : MonoBehaviour, IPointerClickHandler
     [SerializeField] private TMP_Text _recipePriceText;
     [SerializeField] private Image _recipeImage;
     [SerializeField] private GameObject _selectedCheckmark; // 토글 대신 선택 상태를 표시할 UI
-    [SerializeField] private GameObject _lockedOverlay; // 선택 불가/재료 부족 시 표시할 오버레이
+    [SerializeField] private CanvasGroup _lockedOverlay; // 선택 불가/재료 부족 시 표시할 오버레이
     [SerializeField] private TMP_Text _unavailableReasonText; // 선택 불가 이유를 표시할 텍스트
     [SerializeField] TMP_Text _countText;
+
+    [Header("Buy Ingredients UI")]
+    [SerializeField] private Button _buyIngredientsButton;
+    [SerializeField] private TMP_Text _buyIngredientsText;
+
+    private int _buyIngredientsPrice = 0;
 
     private bool _isOn;
     private bool _isInteractable = true;
@@ -67,6 +74,32 @@ public class MenuSetupSlotUI : MonoBehaviour, IPointerClickHandler
             _countText.text = $"재료 {_baseIngredientCount}칸";
         }
 
+        _buyIngredientsPrice = 0;
+        if (food.ingredientConfigs != null)
+        {
+            List<int> processedIds = new List<int>();
+            for (int i = 0; i < food.ingredientConfigs.Length; i++)
+            {
+                var raw = food.ingredientConfigs[i].rawIngredient;
+                if (raw != null && !processedIds.Contains(raw.ingredientID))
+                {
+                    processedIds.Add(raw.ingredientID);
+                    _buyIngredientsPrice += raw.basePrice * 10;
+                }
+            }
+        }
+        
+        if (_buyIngredientsText != null)
+        {
+            _buyIngredientsText.text = $"재료 10세트 구매 ( {_buyIngredientsPrice}원 )";
+        }
+
+        if (_buyIngredientsButton != null)
+        {
+            _buyIngredientsButton.onClick.RemoveAllListeners();
+            _buyIngredientsButton.onClick.AddListener(OnBuyIngredientsClicked);
+        }
+
         SetInteractable(true);
     }
 
@@ -118,20 +151,80 @@ public class MenuSetupSlotUI : MonoBehaviour, IPointerClickHandler
         _isInteractable = isInteractable;
         if (_lockedOverlay != null)
         {
-            _lockedOverlay.SetActive(!isInteractable);
+            _lockedOverlay.DOKill();
+            if (!isInteractable)
+            {
+                _lockedOverlay.gameObject.SetActive(true);
+                _lockedOverlay.DOFade(1f, 0.2f);
+                _lockedOverlay.blocksRaycasts = true;
+            }
+            else
+            {
+                _lockedOverlay.blocksRaycasts = false;
+                _lockedOverlay.DOFade(0f, 0.2f).OnComplete(() => _lockedOverlay.gameObject.SetActive(false));
+            }
         }
     }
 
     public void SetUnavailable(bool isUnavailable, string reason = "")
     {
+        _isInteractable = !isUnavailable;
+        
         if (_lockedOverlay != null)
         {
-            _lockedOverlay.SetActive(isUnavailable);
+            _lockedOverlay.DOKill();
+            if (isUnavailable)
+            {
+                _lockedOverlay.gameObject.SetActive(true);
+                _lockedOverlay.DOFade(1f, 0.2f);
+                _lockedOverlay.blocksRaycasts = true;
+            }
+            else
+            {
+                _lockedOverlay.blocksRaycasts = false;
+                _lockedOverlay.DOFade(0f, 0.2f).OnComplete(() => _lockedOverlay.gameObject.SetActive(false));
+            }
         }
 
         if (_unavailableReasonText != null && isUnavailable)
         {
             _unavailableReasonText.text = reason;
+        }
+
+        if (_buyIngredientsButton != null)
+        {
+            _buyIngredientsButton.gameObject.SetActive(isUnavailable && reason == "재료 부족");
+        }
+    }
+
+    private void OnBuyIngredientsClicked()
+    {
+        if (StoreManager.Instance != null)
+        {
+            if (StoreManager.Instance.ExecuteRecipeIngredientSetPurchase(_foodData, 10))
+            {
+                if (MenuSetupUI.Instance != null)
+                {
+                    MenuSetupUI.Instance.UpdateUIState();
+                }
+
+                if (ToastManager.Instance != null)
+                {
+                    ToastManager.Instance.ShowToast($"재료 10세트를 구매했습니다! (-{_buyIngredientsPrice}원)");
+                }
+            }
+            else
+            {
+                if (ToastManager.Instance != null)
+                {
+                    ToastManager.Instance.ShowToast("돈이 부족합니다!");
+                }
+                Debug.LogWarning("[MenuSetupSlotUI] 재료 구매에 필요한 돈이 부족합니다!");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[MenuSetupSlotUI] StoreManager.Instance가 존재하지 않아 구매를 진행할 수 없습니다.");
         }
     }
 }

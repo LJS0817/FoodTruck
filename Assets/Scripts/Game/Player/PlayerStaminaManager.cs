@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 사장님의 피로도(Stamina) 시스템.
@@ -18,6 +19,9 @@ public class PlayerStaminaManager : MonoBehaviour
     private float _currentStamina;
     private bool _isDraining = false;
     private bool _isRecovering = false;
+
+    [Header("UI")]
+    [SerializeField] private Button restButton;
 
     // UI 갱신용 이벤트 (현재 피로도, 최대 피로도)
     public event Action<float, float> OnStaminaChanged;
@@ -41,14 +45,30 @@ public class PlayerStaminaManager : MonoBehaviour
 
     private void Start()
     {
-        _currentStamina = MaxStamina;
+        // 1. DataManager에서 저장된 체력 로드 (오프라인 회복 로직 제거)
+        if (DataManager.Instance != null && DataManager.Instance.CurrentData != null)
+        {
+            _currentStamina = DataManager.Instance.CurrentData.currentStamina;
+        }
+        else
+        {
+            _currentStamina = MaxStamina;
+        }
+
+        _currentStamina = Mathf.Clamp(_currentStamina, 0f, MaxStamina);
         OnStaminaChanged?.Invoke(_currentStamina, MaxStamina);
 
         // DayCycle 이벤트 구독
         if (DayCycleManager.Instance != null)
         {
             DayCycleManager.Instance.OnPhaseChanged += OnPhaseChanged;
-            DayCycleManager.Instance.OnNewDayStarted += OnNewDay;
+        }
+
+        // 휴식 버튼 스크립트 연결
+        if (restButton != null)
+        {
+            restButton.onClick.RemoveAllListeners();
+            restButton.onClick.AddListener(() => RestAndRecover(3000));
         }
     }
 
@@ -57,7 +77,6 @@ public class PlayerStaminaManager : MonoBehaviour
         if (DayCycleManager.Instance != null)
         {
             DayCycleManager.Instance.OnPhaseChanged -= OnPhaseChanged;
-            DayCycleManager.Instance.OnNewDayStarted -= OnNewDay;
         }
     }
 
@@ -102,7 +121,16 @@ public class PlayerStaminaManager : MonoBehaviour
             float currentMax = MaxStamina;
             if (_currentStamina < currentMax)
             {
-                _currentStamina += recoveryRate * Time.deltaTime;
+                // 💡 인게임 6시간(21,600초) 기준 100 회복 = 인게임 1초당 100 / 21600 회복
+                float inGameSecondsPassed = Time.deltaTime * 96f; // TIME_MULTIPLIER = 96f
+                if (GameTimeManager.Instance != null)
+                {
+                    inGameSecondsPassed *= GameTimeManager.Instance.timeScaleMultiplier;
+                }
+
+                float recoveredAmount = (100f / 21600f) * inGameSecondsPassed;
+
+                _currentStamina += recoveredAmount;
                 _currentStamina = Mathf.Min(currentMax, _currentStamina);
                 OnStaminaChanged?.Invoke(_currentStamina, currentMax);
             }
@@ -135,12 +163,6 @@ public class PlayerStaminaManager : MonoBehaviour
         }
     }
 
-    private void OnNewDay()
-    {
-        // 새 날이 시작되면 피로도 완전 회복
-        _currentStamina = MaxStamina;
-        OnStaminaChanged?.Invoke(_currentStamina, MaxStamina);
-    }
 
     // ===== Public API =====
 
@@ -187,6 +209,26 @@ public class PlayerStaminaManager : MonoBehaviour
         {
             Debug.Log("<color=red>[피로도] 사장님이 지쳤습니다! 자동으로 장사를 종료합니다.</color>");
             BusinessManager.Instance.ToggleBusiness();
+        }
+    }
+    /// <summary>
+    /// 돈을 지불하고 즉시 체력을 100% 회복합니다. (휴식 버튼용)
+    /// </summary>
+    public bool RestAndRecover(int cost = 3000)
+    {
+        if (PlayerManager.Instance.SpendMoney(cost))
+        {
+            _currentStamina = MaxStamina;
+            OnStaminaChanged?.Invoke(_currentStamina, MaxStamina);
+            Debug.Log($"<color=green>[휴식] {cost}원을 지불하고 체력을 즉시 회복했습니다!</color>");
+            
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
+            return true;
+        }
+        else
+        {
+            Debug.LogWarning($"<color=red>[휴식 실패] 돈이 부족합니다. (필요 금액: {cost}원)</color>");
+            return false;
         }
     }
 }

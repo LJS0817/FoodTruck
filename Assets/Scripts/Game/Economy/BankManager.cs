@@ -40,6 +40,7 @@ public class BankManager : MonoBehaviour
         DataManager.Instance.CurrentData.bankLoan += amount;
         PlayerManager.Instance.AddMoney(amount);
         Debug.Log($"<color=orange>[은행] {amount}원을 대출받았습니다. (현재 총 대출: {DataManager.Instance.CurrentData.bankLoan}원)</color>");
+        if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
     }
 
     public bool RepayLoan(int amount)
@@ -54,6 +55,7 @@ public class BankManager : MonoBehaviour
             DataManager.Instance.CurrentData.bankLoan -= actualRepay;
             // 상환은 비용(Expenses)에 포함할지 말지는 자유지만, 보통 재무제표상 부채 상환은 비용이 아님.
             Debug.Log($"<color=green>[은행] {actualRepay}원의 대출을 상환했습니다. (남은 대출: {DataManager.Instance.CurrentData.bankLoan}원)</color>");
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
             return true;
         }
         return false;

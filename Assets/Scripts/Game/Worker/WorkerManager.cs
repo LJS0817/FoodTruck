@@ -238,6 +238,7 @@ public class WorkerManager : MonoBehaviour
                 SettlementManager.Instance?.AddExpense(cost);
             }
             RefreshRecruitmentPool();
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
             return true;
         }
         return false;
@@ -422,6 +423,7 @@ public class WorkerManager : MonoBehaviour
             Debug.Log($"<color=cyan>[알바생] {worker.workerName} 고용 완료!</color>");
 
             SyncToSaveData();
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
             return true;
         }
         return false;
@@ -433,6 +435,7 @@ public class WorkerManager : MonoBehaviour
         {
             DespawnWorkerNPC(worker);
             SyncToSaveData();
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
             Debug.Log($"<color=orange>[알바생] {worker.workerName} 해고됨.</color>");
         }
     }
@@ -448,6 +451,8 @@ public class WorkerManager : MonoBehaviour
             worker.currentLevel++;
             SettlementManager.Instance?.AddExpense(cost);
             SyncToSaveData();
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
+            Debug.Log($"<color=cyan>[알바생] {worker.workerName} Lv.{worker.currentLevel} 달성!</color>");
             return true;
         }
         return false;

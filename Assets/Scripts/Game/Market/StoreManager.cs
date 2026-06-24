@@ -43,6 +43,7 @@ public class StoreManager : MonoBehaviour
         PopulateDecorationSlots();
         PopulateMarketingSlots();
         PopulateEquipmentStoreSlots();
+        PopulateRecipeSetSlots();
     }
 
     private void PopulateMarketSlots()
@@ -118,6 +119,23 @@ public class StoreManager : MonoBehaviour
         }
     }
 
+    private void PopulateRecipeSetSlots()
+    {
+        Transform parent = storeUIController.GetContentParent(5);
+        if (parent == null) return;
+        storeUIController.ClearSlots(parent);
+
+        if (CookingManager.Instance == null || CookingManager.Instance.recipeManager == null) return;
+
+        List<FoodData> unlockedRecipes = CookingManager.Instance.recipeManager.GetAllUnlockedRecipes();
+        for (int i = 0; i < unlockedRecipes.Count; i++)
+        {
+            int price = CalculateRecipeSetPrice(unlockedRecipes[i]) * 10; // 10세트 가격
+            StoreItem item = StoreItem.FromRecipeIngredientSet(unlockedRecipes[i], price);
+            CreateSlot(item, parent);
+        }
+    }
+
     private void CreateSlot(StoreItem item, Transform parent)
     {
         if (parent == null || _slotPrefab == null) return;
@@ -143,9 +161,16 @@ public class StoreManager : MonoBehaviour
             }
             else if (item.data is FoodData recipeData)
             {
-                recipeStoreManager.BuyRecipe(recipeData, totalCost);
-                SettlementManager.Instance?.AddExpense(totalCost);
-                Debug.Log($"[StoreManager] {recipeData.foodName} 레시피 구매 완료! ({totalCost}원)");
+                if (item.itemType == StoreItemType.RecipeIngredientSet)
+                {
+                    ExecuteRecipeIngredientSetPurchase(recipeData, item.amount * quantity);
+                }
+                else
+                {
+                    recipeStoreManager.BuyRecipe(recipeData, totalCost);
+                    SettlementManager.Instance?.AddExpense(totalCost);
+                    Debug.Log($"[StoreManager] {recipeData.foodName} 레시피 구매 완료! ({totalCost}원)");
+                }
             }
             else if (item.data is WaitingZoneItemData wzItem)
             {
@@ -184,6 +209,7 @@ public class StoreManager : MonoBehaviour
             }
 
             storeUIController.RefreshUI();
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
         }
         else
         {
@@ -205,6 +231,62 @@ public class StoreManager : MonoBehaviour
             UpgradeManager.Instance.UIController.AddEquipmentSlot(newItem);
 
             storeUIController.RefreshUI();
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
         }
+    }
+
+    public bool ExecuteRecipeIngredientSetPurchase(FoodData recipe, int sets)
+    {
+        int price = CalculateRecipeSetPrice(recipe) * (sets / 10); // CalculateRecipeSetPrice returns 1 set's price
+        if (sets % 10 != 0) 
+        {
+             // Fallback if sets is not a multiple of 10
+             price = CalculateRecipeSetPrice(recipe) * sets;
+        }
+        else 
+        {
+             price = CalculateRecipeSetPrice(recipe) * sets;
+        }
+
+        if (PlayerManager.Instance.SpendMoney(price))
+        {
+            if (recipe.ingredientConfigs != null)
+            {
+                List<int> processedIds = new List<int>();
+                for (int i = 0; i < recipe.ingredientConfigs.Length; i++)
+                {
+                    var raw = recipe.ingredientConfigs[i].rawIngredient;
+                    if (raw != null && !processedIds.Contains(raw.ingredientID))
+                    {
+                        processedIds.Add(raw.ingredientID);
+                        InventoryManager.Instance.AddIngredient(raw, sets, raw.maxShelfLifeDays);
+                    }
+                }
+            }
+            SettlementManager.Instance?.AddExpense(price);
+            Debug.Log($"[StoreManager] {recipe.foodName} 재료 {sets}세트 구매 완료! ({price}원)");
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
+            return true;
+        }
+        return false;
+    }
+
+    public int CalculateRecipeSetPrice(FoodData recipe)
+    {
+        int price = 0;
+        if (recipe.ingredientConfigs != null)
+        {
+            List<int> processedIds = new List<int>();
+            for (int i = 0; i < recipe.ingredientConfigs.Length; i++)
+            {
+                var raw = recipe.ingredientConfigs[i].rawIngredient;
+                if (raw != null && !processedIds.Contains(raw.ingredientID))
+                {
+                    processedIds.Add(raw.ingredientID);
+                    price += raw.basePrice;
+                }
+            }
+        }
+        return price;
     }
 }

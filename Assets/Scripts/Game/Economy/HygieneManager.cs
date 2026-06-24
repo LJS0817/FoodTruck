@@ -18,24 +18,19 @@ public class HygieneManager : MonoBehaviour
 
     private void Start()
     {
-        if (DayCycleManager.Instance != null)
+        if (DataManager.Instance != null && DataManager.Instance.CurrentData != null)
         {
-            DayCycleManager.Instance.OnNewDayStarted += ResetHygiene;
+            currentHygiene = DataManager.Instance.CurrentData.currentHygiene;
         }
+        else
+        {
+            currentHygiene = 100f;
+        }
+        OnHygieneChanged?.Invoke(currentHygiene);
     }
 
     private void OnDestroy()
     {
-        if (DayCycleManager.Instance != null)
-        {
-            DayCycleManager.Instance.OnNewDayStarted -= ResetHygiene;
-        }
-    }
-
-    private void ResetHygiene()
-    {
-        currentHygiene = 100f;
-        OnHygieneChanged?.Invoke(currentHygiene);
     }
 
     // 손님이 음식을 받고 갈 때 호출됨
@@ -62,15 +57,10 @@ public class HygieneManager : MonoBehaviour
     {
         currentHygiene += 20f; // 한번 청소 시 20 회복
         currentHygiene = Mathf.Clamp(currentHygiene, 0f, 100f);
-        
-        // 체력 소모 로직 추가 가능
-        if (PlayerStaminaManager.Instance != null)
-        {
-            PlayerStaminaManager.Instance.DrainStamina(2f); // 청소할 때 체력 2 소모
-        }
 
         Debug.Log($"<color=#32CD32>[청소] 트럭 주변을 청소했습니다! 현재 청결도: {currentHygiene}%</color>");
         OnHygieneChanged?.Invoke(currentHygiene);
+        if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
     }
 
     // 인내심 시스템 등에서 호출하여 배율을 가져감

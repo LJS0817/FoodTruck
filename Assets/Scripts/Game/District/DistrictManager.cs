@@ -55,6 +55,7 @@ public class DistrictManager : MonoBehaviour
             Debug.Log($"<color=cyan>[구역] {district.districtName} 해금 완료!</color>");
 
             SyncToSaveData();
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
             return true;
         }
         return false;
@@ -69,6 +70,7 @@ public class DistrictManager : MonoBehaviour
         
         OnDistrictChanged?.Invoke(_currentDistrict);
         SyncToSaveData();
+        if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
     }
 
     private void PayDailyRent()

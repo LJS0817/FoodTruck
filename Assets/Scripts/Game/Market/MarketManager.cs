@@ -171,6 +171,7 @@ public class MarketManager : MonoBehaviour
             SettlementManager.Instance?.AddExpense(totalCost);
 
             Debug.Log($"<color=cyan>[구매 성공] {listing.data.ingredientName} {amount}개를 {totalCost}원에 구매! (유통기한: {listing.remainingShelfDays}일)</color>");
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
             return true;
         }
         else

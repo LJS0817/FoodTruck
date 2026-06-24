@@ -116,8 +116,8 @@ public class RandomEventManager : MonoBehaviour
                 resultMessage = $"오늘 하루 동안 [{evt.eventName}] 효과가 지속됩니다.";
                 break;
         }
-
         Debug.Log($"<color=orange>[돌발 이벤트] {evt.eventName} 발생! - {resultMessage}</color>");
+        if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
         OnEventTriggered?.Invoke(evt, resultMessage);
     }
 

@@ -11,6 +11,7 @@ public class StoreUIController : MonoBehaviour, MarketUIInterface
     private CanvasGroup _decorationGroup;
     private CanvasGroup _marketingGroup;
     private CanvasGroup _equipmentGroup; // 에디터에서 할당 필요
+    private CanvasGroup _recipeSetGroup; // 에디터에서 할당 필요
 
     [Header("Slot Content Parents (ScrollView Content)")]
     [SerializeField] private Transform _marketContent;
@@ -18,12 +19,14 @@ public class StoreUIController : MonoBehaviour, MarketUIInterface
     [SerializeField] private Transform _decorationContent;
     [SerializeField] private Transform _marketingContent;
     [SerializeField] private Transform _equipmentContent; // 에디터에서 할당 필요
+    [SerializeField] private Transform _recipeSetContent; // 에디터에서 할당 필요
 
     [SerializeField] private Button _marketTabButton;
     [SerializeField] private Button _recipeTabButton;
     [SerializeField] private Button _decorationTabButton;
     [SerializeField] private Button _marketingTabButton;
     [SerializeField] private Button _equipmentTabButton;
+    [SerializeField] private Button _recipeSetTabButton;
 
     [Header("Info Panel")]
     [SerializeField] private ItemInfoUI _itemInfoUI;
@@ -50,17 +53,18 @@ public class StoreUIController : MonoBehaviour, MarketUIInterface
 
     private void Awake()
     {
-        _marketGroup = _marketContent.GetComponent<CanvasGroup>();
-        _recipeGroup = _recipeContent.GetComponent<CanvasGroup>();
-        _decorationGroup = _decorationContent.GetComponent<CanvasGroup>();
-        _marketingGroup = _marketingContent.GetComponent<CanvasGroup>();
-        _equipmentGroup = _equipmentContent.GetComponent<CanvasGroup>();
+        _marketGroup = _marketContent != null ? _marketContent.GetComponent<CanvasGroup>() : null;
+        _recipeGroup = _recipeContent != null ? _recipeContent.GetComponent<CanvasGroup>() : null;
+        _decorationGroup = _decorationContent != null ? _decorationContent.GetComponent<CanvasGroup>() : null;
+        _marketingGroup = _marketingContent != null ? _marketingContent.GetComponent<CanvasGroup>() : null;
+        _equipmentGroup = _equipmentContent != null ? _equipmentContent.GetComponent<CanvasGroup>() : null;
+        _recipeSetGroup = _recipeSetContent != null ? _recipeSetContent.GetComponent<CanvasGroup>() : null;
 
         _categoryGroups = new CanvasGroup[] { 
-            _marketGroup, _recipeGroup, _equipmentGroup, _decorationGroup, _marketingGroup
+            _marketGroup, _recipeGroup, _equipmentGroup, _decorationGroup, _marketingGroup, _recipeSetGroup
         };
         _contentParents = new Transform[] { 
-            _marketContent, _recipeContent, _equipmentContent, _decorationContent, _marketingContent
+            _marketContent, _recipeContent, _equipmentContent, _decorationContent, _marketingContent, _recipeSetContent
         };
 
         if (_marketTabButton != null) _marketTabButton.onClick.AddListener(() => ChangeCategory(0));
@@ -68,6 +72,7 @@ public class StoreUIController : MonoBehaviour, MarketUIInterface
         if (_equipmentTabButton != null) _equipmentTabButton.onClick.AddListener(() => ChangeCategory(2));
         if (_decorationTabButton != null) _decorationTabButton.onClick.AddListener(() => ChangeCategory(3));
         if (_marketingTabButton != null) _marketingTabButton.onClick.AddListener(() => ChangeCategory(4));
+        if (_recipeSetTabButton != null) _recipeSetTabButton.onClick.AddListener(() => ChangeCategory(5));
 
         CloseUI();
     }

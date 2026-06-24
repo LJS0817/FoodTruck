@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using DG.Tweening;
 
 /// <summary>
 /// 요리를 위해 재료를 담는 냄비(조리 공간).
@@ -13,9 +15,41 @@ public class CookingPot : MonoBehaviour
     public Transform ingredientStackParent;
     public float stackOffset = 0.2f;
 
+    [Header("UI")]
+    [Tooltip("냄비에 담긴 재료를 모두 폐기하는 버튼")]
+    [SerializeField] private Button _discardButton;
+
     private List<IngredientData> contents = new List<IngredientData>(10);
     private List<GameObject> visualStack = new List<GameObject>(10);
     private int premiumCount = 0;
+
+    private CanvasGroup _discardCanvasGroup;
+
+    private void Awake()
+    {
+        if (_discardButton != null)
+        {
+            _discardButton.onClick.AddListener(OnDiscardClicked);
+            _discardCanvasGroup = _discardButton.GetComponent<CanvasGroup>();
+            if (_discardCanvasGroup == null)
+            {
+                _discardCanvasGroup = _discardButton.gameObject.AddComponent<CanvasGroup>();
+            }
+            _discardCanvasGroup.alpha = 0f;
+            _discardCanvasGroup.interactable = false;
+            _discardCanvasGroup.blocksRaycasts = false;
+            _discardButton.gameObject.SetActive(false);
+        }
+    }
+
+    private void OnDiscardClicked()
+    {
+        if (contents.Count > 0)
+        {
+            Debug.Log("[CookingPot] 냄비의 재료를 폐기했습니다.");
+            ResetPot();
+        }
+    }
 
     // ─── 재료 투입 ────────────────────────────────────────
 
@@ -41,6 +75,7 @@ public class CookingPot : MonoBehaviour
         Debug.Log($"[CookingPot] {qualityMark}{data.ingredientName} 추가됨. 현재 재료 수: {contents.Count}");
 
         CheckCurrentRecipe();
+        UpdateDiscardButtonState();
     }
 
     // ─── 리셋 ────────────────────────────────────────────
@@ -55,6 +90,29 @@ public class CookingPot : MonoBehaviour
             Destroy(visualStack[i]);
         }
         visualStack.Clear();
+
+        UpdateDiscardButtonState();
+    }
+
+    private void UpdateDiscardButtonState()
+    {
+        if (_discardButton != null && _discardCanvasGroup != null)
+        {
+            _discardCanvasGroup.DOKill();
+            if (contents.Count > 0)
+            {
+                _discardButton.gameObject.SetActive(true);
+                _discardCanvasGroup.DOFade(1f, 0.2f);
+                _discardCanvasGroup.interactable = true;
+                _discardCanvasGroup.blocksRaycasts = true;
+            }
+            else
+            {
+                _discardCanvasGroup.interactable = false;
+                _discardCanvasGroup.blocksRaycasts = false;
+                _discardCanvasGroup.DOFade(0f, 0.2f).OnComplete(() => _discardButton.gameObject.SetActive(false));
+            }
+        }
     }
 
     // ─── 비주얼 ─────────────────────────────────────────

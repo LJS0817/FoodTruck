@@ -121,12 +121,12 @@ public class MenuSetupUI : MonoBehaviour
             // 단일 레시피만으로도 최대 조리대 개수를 초과하면 아예 비활성화
             if (reqIngs.Count > _maxBoxCount)
             {
-                slot.Init(recipe, false, null); // 락 상태로 초기화
+                slot.Init(recipe, false, OnSlotToggled); // 락 상태라도 콜백은 전달
                 slot.SetInteractable(false);
             }
             else if (lacksIngredients)
             {
-                slot.Init(recipe, false, null); // 락 상태로 초기화
+                slot.Init(recipe, false, OnSlotToggled); // 락 상태라도 콜백은 전달
                 slot.SetInteractable(false);
             }
             else
@@ -243,7 +243,7 @@ public class MenuSetupUI : MonoBehaviour
         return uniqueIngredients;
     }
 
-    private void UpdateUIState(HashSet<int> currentUniqueIngredients = null)
+    public void UpdateUIState(HashSet<int> currentUniqueIngredients = null)
     {
         if (currentUniqueIngredients == null)
         {

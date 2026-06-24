@@ -221,6 +221,7 @@ public class ProcessManager : MonoBehaviour
 
             // 태스크 삭제
             activeTasks.Remove(equipType);
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
         }
     }
 
@@ -254,6 +255,7 @@ public class ProcessManager : MonoBehaviour
             }
 
             activeTasks.Remove(equipType);
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
             onCollected?.Invoke(true, resultItem);
         }
     }
@@ -276,6 +278,7 @@ public class ProcessManager : MonoBehaviour
             }
 
             activeTasks.Remove(equipType);
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
             onCollected?.Invoke(false, spoiledResult);
         }
     }
@@ -324,6 +327,7 @@ public class ProcessManager : MonoBehaviour
             InventoryManager.Instance.AddIngredient(resultItem, 1, resultItem.maxShelfLifeDays, IngredientState.Optimal, processType, finalGrade);
             Debug.Log($"<color=green>[ProcessManager] 직접 가공 완료! {resultItem.ingredientName} ({processType}) 획득!</color>");
             
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
             onCollected?.Invoke(true, resultItem);
         };
 
