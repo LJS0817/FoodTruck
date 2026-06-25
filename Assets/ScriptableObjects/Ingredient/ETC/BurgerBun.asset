@@ -27,19 +27,6 @@ MonoBehaviour:
   requiredMiniGame: 0
   flavorTags: 00000000
   processMethods:
-  - processType: 4
-    requiredMiniGame: 3
-    requiredStamina: 5
-    stateSteps:
-    - state: 0
-      timeThreshold: 0
-      stateSprite: {fileID: 0}
-    - state: 4
-      timeThreshold: 3
-      stateSprite: {fileID: 0}
-    - state: 5
-      timeThreshold: 8
-      stateSprite: {fileID: 0}
   - processType: 1
     requiredMiniGame: 4
     requiredStamina: 5

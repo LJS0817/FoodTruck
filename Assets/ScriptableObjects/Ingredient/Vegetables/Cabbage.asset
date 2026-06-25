@@ -35,9 +35,12 @@ MonoBehaviour:
     - state: 0
       timeThreshold: 0
       stateSprite: {fileID: 0}
-    - state: 4
+    - state: 1
       timeThreshold: 3
       stateSprite: {fileID: 0}
-    - state: 5
-      timeThreshold: 8
+    - state: 2
+      timeThreshold: 6
+      stateSprite: {fileID: 0}
+    - state: 3
+      timeThreshold: 9
       stateSprite: {fileID: 0}
