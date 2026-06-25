@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 10
   ingredientName: Cucumber
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: -7581034867459890332, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
   volume: 1
   description: "\uC2DC\uC6D0\uD568\uACFC \uC544\uC0AD\uD568\uC744 \uB3D9\uC2DC\uC5D0
     \uAC00\uC9C4 \uC218\uBD84 \uD3ED\uD0C4! \uD638\uBD88\uD638\uAC00 \uADF9\uBA85\uD558\uAC8C
@@ -34,10 +34,13 @@ MonoBehaviour:
     stateSteps:
     - state: 0
       timeThreshold: 0
-      stateSprite: {fileID: 0}
-    - state: 4
-      timeThreshold: 3
-      stateSprite: {fileID: 0}
-    - state: 5
-      timeThreshold: 8
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: -7581034867459890332, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 1
+      timeThreshold: 2
+      stateSprite: {fileID: 48719161223466123, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 2
+      timeThreshold: 4
+      stateSprite: {fileID: -4224434159975881483, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 3
+      timeThreshold: 6
+      stateSprite: {fileID: -2631695199865580167, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}

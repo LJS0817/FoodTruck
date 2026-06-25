@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 9
   ingredientName: Cabbage
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: -8663739424785624238, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
   volume: 1
   description: "\uB3C8\uAC00\uC2A4 \uC606\uC5D0\uC11C \uC0B0\uB354\uBBF8\uCC98\uB7FC
     \uC313\uC778 \uCC44 \uBB35\uBB35\uD788 \uC81C \uBAAB\uC744 \uB2E4\uD558\uB294
@@ -34,13 +34,13 @@ MonoBehaviour:
     stateSteps:
     - state: 0
       timeThreshold: 0
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: -8663739424785624238, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
     - state: 1
       timeThreshold: 3
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: 8515852673137835333, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
     - state: 2
       timeThreshold: 6
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: 1417505126726901776, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
     - state: 3
       timeThreshold: 9
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: 830478538347399227, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}

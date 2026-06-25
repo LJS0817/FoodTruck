@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 4
   ingredientName: Sausage
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: -4405364245664673985, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
   volume: 1
   description: "\uC785\uC220\uC744 \uD1A1 \uCE58\uACE0 \uD130\uC9C0\uB294 \uC2DD\uAC10\uC774
     \uC77C\uD488\uC778 \uC721\uC999 \uD3ED\uD0C4 \uC18C\uC2DC\uC9C0! \uCF00\uCCA9\uACFC
@@ -33,13 +33,13 @@ MonoBehaviour:
     stateSteps:
     - state: 0
       timeThreshold: 0
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: -4405364245664673985, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
     - state: 4
       timeThreshold: 3
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: 8629551067987044960, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
     - state: 5
       timeThreshold: 8
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: -4398598619618690365, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
   - processType: 4
     requiredMiniGame: 3
     requiredStamina: 5

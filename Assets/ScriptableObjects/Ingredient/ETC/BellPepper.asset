@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 15
   ingredientName: BellPepper
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: 3547176764823099337, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
   volume: 1
   description: "\uBE68\uAC1B\uACE0 \uB178\uB780 \uC0C9\uAC10\uC73C\uB85C \uC694\uB9AC\uC758
     \uBE44\uC8FC\uC5BC\uC744 \uCE90\uB9AC\uD558\uB294 \uD30C\uD504\uB9AC\uCE74! \uB9E4\uC6B4\uB9DB\uC774
@@ -26,4 +26,20 @@ MonoBehaviour:
   requiredEquipment: 0
   requiredMiniGame: 0
   flavorTags: 00000000
-  processMethods: []
+  processMethods:
+  - processType: 4
+    requiredMiniGame: 3
+    requiredStamina: 5
+    stateSteps:
+    - state: 0
+      timeThreshold: 0
+      stateSprite: {fileID: 3547176764823099337, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 1
+      timeThreshold: 3
+      stateSprite: {fileID: -3200806664676133854, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 2
+      timeThreshold: 6
+      stateSprite: {fileID: 311079789083032806, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 3
+      timeThreshold: 9
+      stateSprite: {fileID: 7439139002187793406, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}

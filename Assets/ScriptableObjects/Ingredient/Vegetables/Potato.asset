@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 13
   ingredientName: Potato
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: -1594919496789885961, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
   volume: 1
   description: "\uD280\uAE30\uAC70\uB098, \uC0B6\uAC70\uB098, \uC73C\uAE68\uAC70\uB098,
     \uAD7D\uAC70\uB098, \uC5B4\uB5BB\uAC8C \uC870\uB9AC\uD574\uB3C4 \uC644\uBCBD\uD55C
@@ -34,13 +34,16 @@ MonoBehaviour:
     stateSteps:
     - state: 0
       timeThreshold: 0
-      stateSprite: {fileID: 0}
-    - state: 4
-      timeThreshold: 3
-      stateSprite: {fileID: 0}
-    - state: 5
-      timeThreshold: 8
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: -1594919496789885961, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 1
+      timeThreshold: 2
+      stateSprite: {fileID: -8515487208303814590, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 2
+      timeThreshold: 4
+      stateSprite: {fileID: 8510041780310467770, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 3
+      timeThreshold: 6
+      stateSprite: {fileID: -5179855634019859736, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
   - processType: 2
     requiredMiniGame: 4
     requiredStamina: 5

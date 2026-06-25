@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 548
   ingredientName: Bread
-  ingredientSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
+  ingredientSprite: {fileID: 2345512019343303045, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
   volume: 1
   description: "\uC5B4\uB5A4 \uC7AC\uB8CC\uB4E0 \uB108\uADF8\uB7FD\uAC8C \uD488\uC5B4\uC8FC\uB294
     \uD3EC\uC6A9\uB825\uC758 \uC0C1\uC9D5, \uC2DD\uBE75! \uBC14\uC0AD\uD558\uAC8C
@@ -34,13 +34,16 @@ MonoBehaviour:
     stateSteps:
     - state: 0
       timeThreshold: 0
-      stateSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
-    - state: 4
-      timeThreshold: 3
-      stateSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
+      stateSprite: {fileID: 2345512019343303045, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
+    - state: 1
+      timeThreshold: 2
+      stateSprite: {fileID: -7242789830538258225, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
+    - state: 2
+      timeThreshold: 4
+      stateSprite: {fileID: 2982958147862336252, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
     - state: 5
-      timeThreshold: 8
-      stateSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
+      timeThreshold: 6
+      stateSprite: {fileID: -7793973450872603357, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
   - processType: 1
     requiredMiniGame: 4
     requiredStamina: 5

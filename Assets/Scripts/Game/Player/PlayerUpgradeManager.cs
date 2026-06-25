@@ -9,6 +9,8 @@ public class PlayerUpgradeManager : MonoBehaviour
     // Key: upgradeID, Value: current level (0부터 시작)
     private Dictionary<string, int> _upgradeLevels = new Dictionary<string, int>();
 
+    public event System.Action<string> OnUpgradePurchased;
+
     private void Awake()
     {
     }
@@ -80,6 +82,7 @@ public class PlayerUpgradeManager : MonoBehaviour
             Debug.Log($"<color=cyan>[업그레이드] {data.upgradeName} Lv.{nextLevel} 달성!</color>");
 
             // 체력 등 즉시 갱신이 필요한 이벤트를 위해 (원한다면 event 추가 가능)
+            OnUpgradePurchased?.Invoke(upgradeID);
             
             SyncToSaveData();
             if (DataManager.Instance != null) DataManager.Instance.SaveGameData();

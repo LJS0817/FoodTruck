@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 8
   ingredientName: Onion
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: -9060249988324837321, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
   volume: 1
   description: "\uC370 \uB54C\uB9C8\uB2E4 \uC694\uB9AC\uC0AC\uC758 \uB208\uBB3C\uC0D8\uC744
     \uC790\uADF9\uD558\uB294 \uB9E4\uC6B4\uB9DB\uC758 \uB300\uBA85\uC0AC. \uD558\uC9C0\uB9CC
@@ -34,13 +34,16 @@ MonoBehaviour:
     stateSteps:
     - state: 0
       timeThreshold: 0
-      stateSprite: {fileID: 0}
-    - state: 4
-      timeThreshold: 3
-      stateSprite: {fileID: 0}
-    - state: 5
-      timeThreshold: 8
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: -9060249988324837321, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 1
+      timeThreshold: 2
+      stateSprite: {fileID: 8242820234695673801, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 2
+      timeThreshold: 4
+      stateSprite: {fileID: -2679472108232806710, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 3
+      timeThreshold: 6
+      stateSprite: {fileID: 2782582680375963247, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
   - processType: 2
     requiredMiniGame: 4
     requiredStamina: 5

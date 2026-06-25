@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 11
   ingredientName: Cheese
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: 5615655498303551565, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
   volume: 1
   description: "\uC5B4\uB5A4 \uC4F0\uB808\uAE30 \uAC19\uC740 \uC694\uB9AC\uB3C4 \uC2EC\uD3D0\uC18C\uC0DD\uC220\uB85C
     \uC0B4\uB824\uB0B8\uB2E4\uB294 \uB9CC\uB2A5 \uB9C8\uBC95\uC758 \uB178\uB780 \uC7A5\uD310!
@@ -27,19 +27,16 @@ MonoBehaviour:
   requiredMiniGame: 0
   flavorTags: 03000000
   processMethods:
-  - processType: 4
-    requiredMiniGame: 3
+  - processType: 1
+    requiredMiniGame: 4
     requiredStamina: 5
     stateSteps:
     - state: 0
       timeThreshold: 0
-      stateSprite: {fileID: 0}
-    - state: 1
+      stateSprite: {fileID: 5615655498303551565, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
+    - state: 4
       timeThreshold: 3
-      stateSprite: {fileID: 0}
-    - state: 2
+      stateSprite: {fileID: 657538905645952294, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
+    - state: 5
       timeThreshold: 5
-      stateSprite: {fileID: 0}
-    - state: 3
-      timeThreshold: 7
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: 3156050460239129990, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}

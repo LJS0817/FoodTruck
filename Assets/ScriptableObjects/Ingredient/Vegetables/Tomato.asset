@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 7
   ingredientName: Tomato
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: -8109168653578979998, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
   volume: 1
   description: "\uCC44\uC18C\uC778\uC9C0 \uACFC\uC77C\uC778\uC9C0 \uC5EC\uC804\uD788
     \uC815\uCCB4\uC131 \uD63C\uB780\uC744 \uACAA\uACE0 \uC788\uC9C0\uB9CC, \uC0C1\uD07C\uD55C
@@ -33,10 +33,13 @@ MonoBehaviour:
     stateSteps:
     - state: 0
       timeThreshold: 0
-      stateSprite: {fileID: 0}
-    - state: 4
-      timeThreshold: 3
-      stateSprite: {fileID: 0}
-    - state: 5
-      timeThreshold: 8
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: -8109168653578979998, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 1
+      timeThreshold: 2
+      stateSprite: {fileID: -7689932973421394244, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 2
+      timeThreshold: 4
+      stateSprite: {fileID: 4117276200079968214, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 3
+      timeThreshold: 6
+      stateSprite: {fileID: 7025327472481859080, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}

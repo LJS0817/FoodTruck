@@ -1,16 +1,16 @@
 fileFormatVersion: 2
-guid: a19663228e4a3f34b88207667846249c
+guid: 95c5fcd2107a4a54fbedd41ceb260289
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8565388591509369863
-    second: "b_\uCCAB_\uBC88\uC9F8_\uC774\uBBF8\uC9C0\uC758_\uC544\uD2B8_\uCEE8\uC149\uC744_\uB450_\uBC88_0"
+      213: -8663739424785624238
+    second: Vegetables_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 0
-    sRGBTexture: 1
+    enableMipMap: 1
+    sRGBTexture: 0
     linearTexture: 0
     fadeOut: 0
     borderMipMap: 0
@@ -55,9 +55,9 @@ TextureImporter:
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
-  alphaIsTransparency: 1
+  alphaIsTransparency: 0
   spriteTessellationDetail: -1
-  textureType: 8
+  textureType: 0
   textureShape: 1
   singleChannelComponent: 0
   flipbookRows: 1
@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 32
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "b_\uCCAB_\uBC88\uC9F8_\uC774\uBBF8\uC9C0\uC758_\uC544\uD2B8_\uCEE8\uC149\uC744_\uB450_\uBC88_0"
+      name: Vegetables_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 2512
-        height: 960
+        width: 512
+        height: 896
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7047918ea8f5ed670800000000000000
-      internalID: 8565388591509369863
+      spriteID: 2531b1745e634c780800000000000000
+      internalID: -8663739424785624238
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "b_\uCCAB_\uBC88\uC9F8_\uC774\uBBF8\uC9C0\uC758_\uC544\uD2B8_\uCEE8\uC149\uC744_\uB450_\uBC88_0": 8565388591509369863
+      Vegetables_0: -8663739424785624238
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

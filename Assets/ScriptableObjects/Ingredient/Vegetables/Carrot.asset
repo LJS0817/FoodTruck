@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 14
   ingredientName: Carrot
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: 6010418813259896644, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
   volume: 1
   description: "\uD654\uB824\uD55C \uC8FC\uD669\uC0C9\uC73C\uB85C \uC694\uB9AC\uC758
     \uC0C9\uAC10\uC744 \uB2F4\uB2F9\uD558\uC9C0\uB9CC, \uD3B8\uC2DD\uB7EC\uB4E4\uC5D0\uAC90
@@ -33,10 +33,13 @@ MonoBehaviour:
     stateSteps:
     - state: 0
       timeThreshold: 0
-      stateSprite: {fileID: 0}
-    - state: 4
+      stateSprite: {fileID: 6010418813259896644, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 1
       timeThreshold: 3
-      stateSprite: {fileID: 0}
-    - state: 5
-      timeThreshold: 8
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: 9057263682792052942, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 2
+      timeThreshold: 5
+      stateSprite: {fileID: -6131260773143074979, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}
+    - state: 3
+      timeThreshold: 7
+      stateSprite: {fileID: 278819641860847631, guid: 543af2650a08fb548a738229fbc1af1d, type: 3}

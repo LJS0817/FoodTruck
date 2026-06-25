@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 3
   ingredientName: Chicken
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: 1195423551580152257, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
   volume: 1
   description: "\uCE58\uB290\uB2D8\uC740 \uC704\uB300\uD558\uB2E4! \uD280\uACA8\uB3C4,
     \uAD6C\uC6CC\uB3C4, \uBCF6\uC544\uB3C4 \uB9DB\uC788\uB294 \uC644\uC804\uBB34\uACB0\uD55C
@@ -33,36 +33,20 @@ MonoBehaviour:
     stateSteps:
     - state: 0
       timeThreshold: 0
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: 1195423551580152257, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
     - state: 4
       timeThreshold: 3
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: 3536327693670743142, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
     - state: 5
       timeThreshold: 8
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: -2951402492297443033, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
   - processType: 4
     requiredMiniGame: 3
     requiredStamina: 5
     stateSteps:
     - state: 0
       timeThreshold: 0
-      stateSprite: {fileID: 0}
-    - state: 4
+      stateSprite: {fileID: 1195423551580152257, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
+    - state: 1
       timeThreshold: 3
-      stateSprite: {fileID: 0}
-    - state: 5
-      timeThreshold: 8
-      stateSprite: {fileID: 0}
-  - processType: 2
-    requiredMiniGame: 4
-    requiredStamina: 5
-    stateSteps:
-    - state: 0
-      timeThreshold: 0
-      stateSprite: {fileID: 0}
-    - state: 4
-      timeThreshold: 3
-      stateSprite: {fileID: 0}
-    - state: 5
-      timeThreshold: 8
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: -427729832241511098, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}

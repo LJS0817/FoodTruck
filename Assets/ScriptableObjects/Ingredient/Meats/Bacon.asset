@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 5
   ingredientName: Bacon
-  ingredientSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
+  ingredientSprite: {fileID: -1317971224221156443, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
   volume: 1
   description: "\uC0BC\uACB9\uC0B4\uC744 \uC5F0\uAE30\uC5D0 \uADF8\uC744\uB824 \uC9E0\uB9DB\uC744
     \uADF9\uB300\uD654\uD55C, \uC790\uBCF8\uC8FC\uC758\uAC00 \uB0B3\uC740 \uCD5C\uACE0\uC758
@@ -33,23 +33,23 @@ MonoBehaviour:
     stateSteps:
     - state: 0
       timeThreshold: 0
-      stateSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
+      stateSprite: {fileID: -1317971224221156443, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
     - state: 4
       timeThreshold: 3
-      stateSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
+      stateSprite: {fileID: -480361961648691236, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
     - state: 5
       timeThreshold: 8
-      stateSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
+      stateSprite: {fileID: -8158566513758160385, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
   - processType: 4
     requiredMiniGame: 3
     requiredStamina: 5
     stateSteps:
     - state: 0
       timeThreshold: 0
-      stateSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
+      stateSprite: {fileID: -1317971224221156443, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
     - state: 4
       timeThreshold: 3
-      stateSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
+      stateSprite: {fileID: -480361961648691236, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
     - state: 5
       timeThreshold: 8
-      stateSprite: {fileID: -3907658490770162776, guid: 3eed4c040402c5b428c12246d201f646, type: 3}
+      stateSprite: {fileID: -1317971224221156443, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}

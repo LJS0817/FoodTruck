@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 12
   ingredientName: Egg
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: 6596552010695858718, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
   volume: 1
   description: "\uD504\uB77C\uC774, \uC2A4\uD06C\uB7A8\uBE14, \uC0B6\uAE30\uAE4C\uC9C0
     \uBAA8\uB4E0 \uC694\uB9AC\uC758 \uD654\uB8E1\uC810\uC815\uC744 \uB2F4\uB2F9\uD558\uB294
@@ -34,10 +34,10 @@ MonoBehaviour:
     stateSteps:
     - state: 0
       timeThreshold: 0
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: 6596552010695858718, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
     - state: 4
       timeThreshold: 3
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: 4582516751069604462, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
     - state: 5
       timeThreshold: 8
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: -7353316123552739346, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}

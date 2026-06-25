@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 2
   ingredientName: Pork
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: -4552138933076247762, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
   volume: 1
   description: "\uAE30\uB984\uAE30\uAC00 \uC894\uC894 \uD750\uB974\uB294 \uC0BC\uACB9\uC0B4\uBD80\uD130
     \uCAC4\uAE43\uD55C \uBAA9\uC0B4\uAE4C\uC9C0, \uC11C\uBBFC\uB4E4\uC758 \uC560\uD658\uC744
@@ -33,13 +33,13 @@ MonoBehaviour:
     stateSteps:
     - state: 0
       timeThreshold: 0
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: -4552138933076247762, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
     - state: 4
       timeThreshold: 3
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: 1454863883660536979, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
     - state: 5
       timeThreshold: 8
-      stateSprite: {fileID: 0}
+      stateSprite: {fileID: -3319329749765302457, guid: 37a03dc9538fe744983c0fa6dc2648e3, type: 3}
   - processType: 4
     requiredMiniGame: 3
     requiredStamina: 5

@@ -63,6 +63,12 @@ public class PlayerStaminaManager : MonoBehaviour
         {
             DayCycleManager.Instance.OnPhaseChanged += OnPhaseChanged;
         }
+        
+        // 업그레이드 이벤트 구독
+        if (UpgradeManager.Instance != null && UpgradeManager.Instance.Upgrade != null)
+        {
+            UpgradeManager.Instance.Upgrade.OnUpgradePurchased += OnUpgradePurchased;
+        }
 
         // 휴식 버튼 스크립트 연결
         if (restButton != null)
@@ -77,6 +83,11 @@ public class PlayerStaminaManager : MonoBehaviour
         if (DayCycleManager.Instance != null)
         {
             DayCycleManager.Instance.OnPhaseChanged -= OnPhaseChanged;
+        }
+        
+        if (UpgradeManager.Instance != null && UpgradeManager.Instance.Upgrade != null)
+        {
+            UpgradeManager.Instance.Upgrade.OnUpgradePurchased -= OnUpgradePurchased;
         }
     }
 
@@ -121,14 +132,14 @@ public class PlayerStaminaManager : MonoBehaviour
             float currentMax = MaxStamina;
             if (_currentStamina < currentMax)
             {
-                // 💡 인게임 6시간(21,600초) 기준 100 회복 = 인게임 1초당 100 / 21600 회복
+                // 💡 인게임 6시간(21,600초) 기준 최대 체력만큼 회복 = 인게임 1초당 currentMax / 21600 회복 (업그레이드 반영)
                 float inGameSecondsPassed = Time.deltaTime * 96f; // TIME_MULTIPLIER = 96f
                 if (GameTimeManager.Instance != null)
                 {
                     inGameSecondsPassed *= GameTimeManager.Instance.timeScaleMultiplier;
                 }
 
-                float recoveredAmount = (100f / 21600f) * inGameSecondsPassed;
+                float recoveredAmount = (currentMax / 21600f) * inGameSecondsPassed;
 
                 _currentStamina += recoveredAmount;
                 _currentStamina = Mathf.Min(currentMax, _currentStamina);
@@ -137,7 +148,17 @@ public class PlayerStaminaManager : MonoBehaviour
         }
     }
 
-    // ===== Phase Events =====
+    // ===== Phase & Upgrade Events =====
+    
+    private void OnUpgradePurchased(string upgradeID)
+    {
+        if (upgradeID == "MaxStamina")
+        {
+            // 업그레이드 전의 최대 체력을 알 수 없으므로, 현재 체력을 MaxStamina로 설정하거나, UI만 갱신할 수 있습니다.
+            // 체력을 꽉 채우지 않고 UI만 즉각 반영합니다.
+            OnStaminaChanged?.Invoke(_currentStamina, MaxStamina);
+        }
+    }
 
     private void OnPhaseChanged(DayPhase phase)
     {
