@@ -25,6 +25,12 @@ public class MenuPreviewUI : MonoBehaviour
             MenuManager.Instance.OnMenuUpdated += RefreshUI;
         }
 
+        // CookingPot 이벤트 구독 (냄비 상태에 따른 실시간 미리보기 갱신)
+        if (CookingManager.Instance != null && CookingManager.Instance.currentPot != null)
+        {
+            CookingManager.Instance.currentPot.OnPotContentsChanged += RefreshUI;
+        }
+
         // DayPhase 변경 이벤트 구독 (준비 단계에서만 보여주기 위함)
         if (DayCycleManager.Instance != null)
         {
@@ -40,6 +46,10 @@ public class MenuPreviewUI : MonoBehaviour
         if (MenuManager.Instance != null)
         {
             MenuManager.Instance.OnMenuUpdated -= RefreshUI;
+        }
+        if (CookingManager.Instance != null && CookingManager.Instance.currentPot != null)
+        {
+            CookingManager.Instance.currentPot.OnPotContentsChanged -= RefreshUI;
         }
         if (DayCycleManager.Instance != null)
         {
@@ -59,11 +69,52 @@ public class MenuPreviewUI : MonoBehaviour
         }
     }
 
+    private bool IsRecipeMatchingPot(FoodData recipe, IReadOnlyList<IngredientData> potContents)
+    {
+        if (potContents == null || potContents.Count == 0) return true;
+        if (recipe.ingredientConfigs == null || recipe.ingredientConfigs.Length < potContents.Count) return false;
+
+        for (int i = 0; i < potContents.Count; i++)
+        {
+            if (recipe.ingredientConfigs[i].rawIngredient == null) return false;
+            if (recipe.ingredientConfigs[i].rawIngredient.ingredientID != potContents[i].ingredientID)
+            {
+                return false; // 순서대로 일치하지 않으면 false
+            }
+        }
+        return true;
+    }
+
     public void RefreshUI()
     {
         if (MenuManager.Instance == null) return;
 
-        List<FoodData> recipes = MenuManager.Instance.GetAvailableRecipes();
+        List<FoodData> baseRecipes = MenuManager.Instance.GetAvailableRecipes();
+        List<FoodData> recipes = new List<FoodData>();
+
+        // 냄비에 담긴 재료 기준으로 레시피 필터링
+        if (CookingManager.Instance != null && CookingManager.Instance.currentPot != null)
+        {
+            var potContents = CookingManager.Instance.currentPot.GetContents();
+            if (potContents.Count > 0)
+            {
+                foreach (var recipe in baseRecipes)
+                {
+                    if (IsRecipeMatchingPot(recipe, potContents))
+                    {
+                        recipes.Add(recipe);
+                    }
+                }
+            }
+            else
+            {
+                recipes = baseRecipes; // 비어있으면 전체 표시
+            }
+        }
+        else
+        {
+            recipes = baseRecipes;
+        }
 
         // 1. 기존 아이템 비활성화 (풀링)
         foreach (var item in spawnedItems)

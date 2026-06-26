@@ -225,10 +225,13 @@ public class StoreManager : MonoBehaviour
         {
             SettlementManager.Instance?.AddExpense(cost);
             
-            // 구매 성공 시 Upgrade 창(인벤토리)에 실시간 슬롯 추가
-            int level = EquipmentStoreManager.Instance.GetEquipmentLevel(equipment);
-            StoreItem newItem = StoreItem.FromEquipmentLevel(equipment, level);
-            UpgradeManager.Instance.UIController.AddEquipmentSlot(newItem);
+            // 구매 성공 시 Upgrade 창(인벤토리)에 실시간 슬롯 추가 (UpgradeManager가 활성화되어 있을 때만)
+            if (UpgradeManager.Instance != null && UpgradeManager.Instance.UIController != null)
+            {
+                int level = EquipmentStoreManager.Instance.GetEquipmentLevel(equipment);
+                StoreItem newItem = StoreItem.FromEquipmentLevel(equipment, level);
+                UpgradeManager.Instance.UIController.AddEquipmentSlot(newItem);
+            }
 
             storeUIController.RefreshUI();
             if (DataManager.Instance != null) DataManager.Instance.SaveGameData();

@@ -42,7 +42,9 @@ public class PlayerManager : MonoBehaviour
     // 재화 지출 (상점 구매, 알바생 일당 등)
     public bool SpendMoney(int amount)
     {
-        if (amount <= 0 || currentMoney < amount) return false;
+        if (amount < 0 || currentMoney < amount) return false;
+
+        if (amount == 0) return true; // 0원 지출은 차감 없이 바로 성공 처리
 
         currentMoney -= amount;
         Debug.Log($"<color=orange>[지출] {amount}원 사용. 현재 잔액: {currentMoney}원</color>");

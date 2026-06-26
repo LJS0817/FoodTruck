@@ -17484,6 +17484,7 @@ MonoBehaviour:
   drainRate: 1.5
   recoveryRate: 5
   restButton: {fileID: 916915969}
+  _staminaUI: {fileID: 1656762164}
 --- !u!114 &989973670
 MonoBehaviour:
   m_ObjectHideFlags: 0

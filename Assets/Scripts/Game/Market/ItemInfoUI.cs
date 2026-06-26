@@ -71,7 +71,7 @@ public class ItemInfoUI : MonoBehaviour
         SetupDescription(item.data);
 
         // 레시피 상세 정보 처리
-        if (item.data is FoodData foodData)
+        if (item.data is FoodData foodData && item.itemType != StoreItemType.RecipeIngredientSet)
         {
             bool isOwned = StoreManager.Instance.RecipeStore.IsRecipeUnlocked(foodData.foodName);
             if (isOwned)
@@ -130,6 +130,13 @@ public class ItemInfoUI : MonoBehaviour
                     maxAmount = InventoryManager.Instance.GetTotalAmount(ing.ingredientID, false);
                     if (maxAmount < 1) maxAmount = 1;
                 }
+                _amountSetter.SetAmountInfo(baseValue, maxAmount, _isStoreMode);
+            }
+            else if (item.itemType == StoreItemType.RecipeIngredientSet)
+            {
+                _amountSetter.gameObject.SetActive(true);
+                int maxAmount = _isStoreMode ? _currentItem.maxPurchaseAmount : 99;
+                if (maxAmount <= 0) maxAmount = 99; // Set default max amount for sets
                 _amountSetter.SetAmountInfo(baseValue, maxAmount, _isStoreMode);
             }
             else
@@ -195,7 +202,14 @@ public class ItemInfoUI : MonoBehaviour
         else if (data is EquipmentData equipment) _descText.text = equipment.description;
         else if (data is FoodData food) 
         {
-            _descText.text = string.IsNullOrEmpty(food.description) ? "조리에 필요한 재료와 도구를 확인하세요." : food.description;
+            if (_currentItem != null && _currentItem.itemType == StoreItemType.RecipeIngredientSet)
+            {
+                _descText.text = $"<color=#FFD700>[레시피 재료 세트]</color>\n\n{food.foodName} 요리에 필요한 모든 재료를 한 번에 구매합니다.\n(한 세트당 10회 분량)";
+            }
+            else
+            {
+                _descText.text = string.IsNullOrEmpty(food.description) ? "조리에 필요한 재료와 도구를 확인하세요." : food.description;
+            }
         }
         else _descText.text = "";
     }
@@ -225,7 +239,7 @@ public class ItemInfoUI : MonoBehaviour
             {
                 if (eqType == EquipmentType.None) continue;
                 
-                EquipmentData eqData = UpgradeManager.Instance.EquipmentStore.GetAllEquipments().Find(x => x.type == eqType);
+                EquipmentData eqData = EquipmentStoreManager.Instance.GetAllEquipments().Find(x => x.type == eqType);
                 if (eqData != null)
                 {
                     var req = Instantiate(_requirementPrefab, _requirementsContainer);
@@ -248,13 +262,26 @@ public class ItemInfoUI : MonoBehaviour
         }
         else if (_currentItem.data is EquipmentData equipment)
         {
-            isOwned = UpgradeManager.Instance.EquipmentStore.HasEquipment(equipment);
+            isOwned = EquipmentStoreManager.Instance.HasEquipment(equipment);
             _ownedAmountText.text = isOwned ? "보유 중" : "미보유";
         }
         else if (_currentItem.data is FoodData food)
         {
             isOwned = StoreManager.Instance.RecipeStore.IsRecipeUnlocked(food.foodName);
-            _ownedAmountText.text = isOwned ? "해금됨" : "잠김";
+            if (_currentItem.itemType == StoreItemType.RecipeIngredientSet)
+                _ownedAmountText.text = "재료 세트";
+            else
+                _ownedAmountText.text = isOwned ? "해금됨" : "잠김";
+        }
+
+        // 💡 텍스트 길이 변경 시 레이아웃(ContentSizeFitter 등) 즉시 갱신
+        if (_ownedAmountText != null)
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(_ownedAmountText.rectTransform);
+            if (_ownedAmountText.transform.parent != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(_ownedAmountText.transform.parent.GetComponent<RectTransform>());
+            }
         }
 
         if (_isStoreMode)
@@ -263,7 +290,7 @@ public class ItemInfoUI : MonoBehaviour
 
             if (_submitButton != null)
             {
-                if (_currentItem.data is EquipmentData || _currentItem.data is FoodData)
+                if (_currentItem.data is EquipmentData || (_currentItem.data is FoodData && _currentItem.itemType != StoreItemType.RecipeIngredientSet))
                 {
                     _submitButton.gameObject.SetActive(true);
                     _submitButton.interactable = !isOwned;

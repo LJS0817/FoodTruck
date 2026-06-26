@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 101
   ingredientName: HotdogBun
-  ingredientSprite: {fileID: -528581925, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
+  ingredientSprite: {fileID: -9129301481833811088, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
   volume: 1
   description: "\uD06C\uACE0 \uC544\uB984\uB2E4\uC6B4 \uC18C\uC2DC\uC9C0\uB97C \uC628\uBAB8\uC73C\uB85C
     \uAC10\uC2F8 \uC548\uAE30 \uC704\uD574 \uD0DC\uC5B4\uB09C \uAE38\uCB49\uD55C

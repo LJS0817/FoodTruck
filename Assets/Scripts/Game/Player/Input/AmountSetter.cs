@@ -71,6 +71,18 @@ public class AmountSetter : MonoBehaviour
         {
             _quantityInput.value = currentAmount;
         }
+
+        // Content SizeFitter 및 부모 레이아웃이 즉시 크기를 반영하도록 강제 갱신
+        if (amountText != null)
+        {
+            // 텍스트의 크기 먼저 맞춤
+            LayoutRebuilder.ForceRebuildLayoutImmediate(amountText.rectTransform);
+            // 텍스트를 감싸고 있는 부모(Horizontal Layout Group 등)의 크기/위치도 즉시 맞춤
+            if (amountText.transform.parent != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(amountText.transform.parent.GetComponent<RectTransform>());
+            }
+        }
     }
 
     public void SetMaxAmount(int max)

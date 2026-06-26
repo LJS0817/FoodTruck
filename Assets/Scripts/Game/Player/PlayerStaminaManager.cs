@@ -22,29 +22,39 @@ public class PlayerStaminaManager : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private Button restButton;
+    [SerializeField] PlayerStaminaUI _staminaUI;
 
     // UI 갱신용 이벤트 (현재 피로도, 최대 피로도)
     public event Action<float, float> OnStaminaChanged;
     public event Action OnStaminaDepleted;
 
+    private float _cachedMaxStamina;
+
     // Properties (업그레이드 반영)
     public float CurrentStamina => _currentStamina;
-    public float MaxStamina 
+    public float MaxStamina => _cachedMaxStamina;
+
+    private void UpdateCachedMaxStamina()
     {
-        get 
+        float bonus = 0f;
+        if (UpgradeManager.Instance != null && UpgradeManager.Instance.Upgrade != null)
         {
-            float bonus = UpgradeManager.Instance.Upgrade != null ? UpgradeManager.Instance.Upgrade.GetCurrentValue("MaxStamina") : 0f;
-            return maxStamina + bonus;
+            bonus = UpgradeManager.Instance.Upgrade.GetCurrentValue("MaxStamina");
         }
+        _cachedMaxStamina = maxStamina + bonus;
     }
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
+
+        OnStaminaChanged += _staminaUI.UpdateUI;
     }
 
     private void Start()
     {
+        UpdateCachedMaxStamina();
+
         // 1. DataManager에서 저장된 체력 로드 (오프라인 회복 로직 제거)
         if (DataManager.Instance != null && DataManager.Instance.CurrentData != null)
         {
@@ -89,6 +99,7 @@ public class PlayerStaminaManager : MonoBehaviour
         {
             UpgradeManager.Instance.Upgrade.OnUpgradePurchased -= OnUpgradePurchased;
         }
+        OnStaminaChanged -= _staminaUI.UpdateUI;
     }
 
     private void Update()
@@ -154,6 +165,7 @@ public class PlayerStaminaManager : MonoBehaviour
     {
         if (upgradeID == "MaxStamina")
         {
+            UpdateCachedMaxStamina();
             // 업그레이드 전의 최대 체력을 알 수 없으므로, 현재 체력을 MaxStamina로 설정하거나, UI만 갱신할 수 있습니다.
             // 체력을 꽉 채우지 않고 UI만 즉각 반영합니다.
             OnStaminaChanged?.Invoke(_currentStamina, MaxStamina);
@@ -241,7 +253,7 @@ public class PlayerStaminaManager : MonoBehaviour
         {
             _currentStamina = MaxStamina;
             OnStaminaChanged?.Invoke(_currentStamina, MaxStamina);
-            Debug.Log($"<color=green>[휴식] {cost}원을 지불하고 체력을 즉시 회복했습니다!</color>");
+            Debug.Log($"<color=green>[휴식] {cost}원을 지불하고 {MaxStamina} 체력을 즉시 회복했습니다!</color>");
             
             if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
             return true;

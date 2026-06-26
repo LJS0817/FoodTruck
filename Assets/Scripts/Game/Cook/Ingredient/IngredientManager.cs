@@ -260,10 +260,128 @@ public class IngredientManager : MonoBehaviour
         {
             if (box.currentAmount > 0)
             {
-                box.ResetBox(); // 내부적으로 ReturnToInventory 호출
+                box.ResetBox(); // 내부적으로 환수 없이 껍데기 초기화
             }
         }
-        Debug.Log("<color=cyan>[IngredientManager] 임시 바트에 남은 재료를 모두 인벤토리로 환수하고 초기화했습니다.</color>");
+        Debug.Log("<color=cyan>[IngredientManager] 임시 바트 초기화 완료.</color>");
+    }
+
+    /// <summary>
+    /// 지정된 인벤토리 아이템이 현재 열려 있는 상자를 제외한 '다른' 상자에 배치되어 있는지 확인합니다.
+    /// </summary>
+    public bool IsPlacedInAnotherBox(InventoryItem item)
+    {
+        if (item == null || item.data == null) return false;
+
+        ItemGrade targetGrade = item.grade;
+
+        for (int i = 0; i < _boxes.Count; i++)
+        {
+            if (i == _currentBoxIndex) continue; // 현재 설정 중인 박스 통과
+
+            var box = _boxes[i];
+            if (box.GetCurrentData() != null && box.GetCurrentData().ingredientID == item.data.ingredientID)
+            {
+                ItemGrade boxGrade = box.qualityScore >= 1.15f ? ItemGrade.Premium : ItemGrade.Normal;
+                if (boxGrade == targetGrade && box.targetState == item.state && box.targetProcess == item.processType)
+                {
+                    return true;
+                }
+            }
+        }
+
+        if (_tempBoxes != null)
+        {
+            foreach (var box in _tempBoxes)
+            {
+                // tempBox는 인덱스로 비교하기 모호하지만 일반적으로 세팅 중인 박스는 고정 바트이므로 여기는 모두 체크
+                if (box.GetCurrentData() != null && box.GetCurrentData().ingredientID == item.data.ingredientID)
+                {
+                    ItemGrade boxGrade = box.qualityScore >= 1.15f ? ItemGrade.Premium : ItemGrade.Normal;
+                    if (boxGrade == targetGrade && box.targetState == item.state && box.targetProcess == item.processType)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+    
+    /// <summary>
+    /// 특정 아이템이 '어느 상자에든' 배치되어 있는지 확인 (UI 표시용)
+    /// </summary>
+    public bool IsPlacedAnywhere(InventoryItem item)
+    {
+        if (item == null || item.data == null) return false;
+
+        ItemGrade targetGrade = item.grade;
+
+        foreach (var box in _boxes)
+        {
+            if (box.GetCurrentData() != null && box.GetCurrentData().ingredientID == item.data.ingredientID)
+            {
+                ItemGrade boxGrade = box.qualityScore >= 1.15f ? ItemGrade.Premium : ItemGrade.Normal;
+                if (boxGrade == targetGrade && box.targetState == item.state && box.targetProcess == item.processType)
+                {
+                    return true;
+                }
+            }
+        }
+
+        if (_tempBoxes != null)
+        {
+            foreach (var box in _tempBoxes)
+            {
+                if (box.GetCurrentData() != null && box.GetCurrentData().ingredientID == item.data.ingredientID)
+                {
+                    ItemGrade boxGrade = box.qualityScore >= 1.15f ? ItemGrade.Premium : ItemGrade.Normal;
+                    if (boxGrade == targetGrade && box.targetState == item.state && box.targetProcess == item.processType)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 인벤토리에 남은 재고가 0인 상태의 박스들을 찾아 모두 비웁니다.
+    /// </summary>
+    public void CheckAndEmptyBoxesWithoutStock()
+    {
+        if (InventoryManager.Instance == null) return;
+
+        Action<IngredientBox> checkEmptyBox = (box) =>
+        {
+            if (box.GetCurrentData() != null)
+            {
+                ItemGrade boxGrade = box.qualityScore >= 1.15f ? ItemGrade.Premium : ItemGrade.Normal;
+                int totalAmount = InventoryManager.Instance.GetTotalSpecificAmount(box.GetCurrentData().ingredientID, box.targetState, box.targetProcess, boxGrade);
+                
+                if (totalAmount <= 0)
+                {
+                    Debug.Log($"<color=orange>[IngredientManager] 재고가 바닥나서 {box.GetCurrentData().ingredientName} 상자를 리셋합니다.</color>");
+                    box.ResetBox();
+                }
+            }
+        };
+
+        foreach (var box in _boxes)
+        {
+            checkEmptyBox(box);
+        }
+
+        if (_tempBoxes != null)
+        {
+            foreach (var box in _tempBoxes)
+            {
+                checkEmptyBox(box);
+            }
+        }
     }
 
     /// <summary>

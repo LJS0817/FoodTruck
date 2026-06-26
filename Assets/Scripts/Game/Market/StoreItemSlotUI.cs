@@ -39,13 +39,13 @@ public class StoreItemSlotUI : MonoBehaviour
         if (_ownedIcon != null)
         {
             bool isOwned = false;
-            if (item.data is FoodData food)
+            if (item.data is FoodData food && item.itemType != StoreItemType.RecipeIngredientSet)
             {
                 isOwned = StoreManager.Instance.RecipeStore.IsRecipeUnlocked(food.foodName);
             }
             else if (item.data is EquipmentData equipment)
             {
-                isOwned = UpgradeManager.Instance.EquipmentStore.HasEquipment(equipment);
+                isOwned = EquipmentStoreManager.Instance.HasEquipment(equipment);
             }
             else if (item.data is MarketingData marketing)
             {

@@ -11,6 +11,7 @@ public class InventoryUISlot : MonoBehaviour, IPointerClickHandler
     [SerializeField] GameObject _warningIcon; // 유통기한 임박 (예: 3일 이하)
     [SerializeField] GameObject _dangerIcon;  // 유통기한 매우 임박 (예: 1일 이하)
     [SerializeField] Image _focus;
+    [SerializeField] GameObject _placedObj; // 💡 다른 박스에 이미 배치된 상태 표시용
 
     private Action<InventoryUISlot> _onSlotClicked;
     public InventoryItem Item { get; private set; }
@@ -48,6 +49,15 @@ public class InventoryUISlot : MonoBehaviour, IPointerClickHandler
         else if (item.remainingDays <= 3)
         {
             if (_warningIcon != null) _warningIcon.SetActive(true);
+        }
+    }
+
+    // 💡 배치(할당) 상태 시각적 업데이트용
+    public void SetPlaced(bool isPlaced)
+    {
+        if (_placedObj != null)
+        {
+            _placedObj.SetActive(isPlaced);
         }
     }
 

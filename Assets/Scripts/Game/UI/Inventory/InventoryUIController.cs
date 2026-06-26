@@ -153,6 +153,14 @@ public class InventoryUIController : MonoBehaviour
 
     public void OnSlotClicked(InventoryUISlot slot)
     {
+        // 💡 팝업 모드(상자에 재료 할당 중)일 때만 다른 상자에 배치된 재료의 클릭을 막습니다.
+        // 일반 인벤토리 모드에서는 상세 정보를 볼 수 있도록 허용합니다.
+        if (_isPopupMode && IngredientManager.Instance != null && IngredientManager.Instance.IsPlacedInAnotherBox(slot.Item))
+        {
+            Debug.LogWarning($"[InventoryUIController] 팝업 모드 선택 불가: '{slot.Item.data.ingredientName}'은(는) 이미 다른 상자에 배치되어 있습니다.");
+            return;
+        }
+
         SetSelectedSlot(slot);
         
         if (_isPopupMode)
@@ -306,7 +314,7 @@ public class InventoryUIController : MonoBehaviour
         }
         else
         {
-            // 일반 모드: 인벤토리의 내용 + 상자에 들어간 내용을 합산해서 시각적으로만 보여줌
+            // 일반 모드: 과거와 달리 물리적 아이템이 여전히 인벤토리에 있으므로 합산(Aggregate) 로직을 제거합니다.
             foreach(var item in items) 
             {
                 currentItems.Add(new InventoryItem { 
@@ -317,48 +325,6 @@ public class InventoryUIController : MonoBehaviour
                     processType = item.processType, 
                     grade = item.grade 
                 });
-            }
-
-            if (IngredientManager.Instance != null)
-            {
-                foreach (var box in IngredientManager.Instance.GetAllBoxes())
-                {
-                    if (box.currentAmount > 0 && box.GetCurrentData() != null)
-                    {
-                        IngredientData data = box.GetCurrentData();
-                        ItemGrade grade = box.qualityScore >= 1.15f ? ItemGrade.Premium : ItemGrade.Normal; 
-                        
-                        foreach (int days in box.storedItemDays)
-                        {
-                            bool found = false;
-                            foreach (var item in currentItems)
-                            {
-                                if (item.data.ingredientID == data.ingredientID && 
-                                    item.remainingDays == days &&
-                                    item.state == IngredientState.Raw && 
-                                    item.processType == ProcessType.None &&
-                                    item.grade == grade)
-                                {
-                                    item.amount++;
-                                    found = true;
-                                    break;
-                                }
-                            }
-
-                            if (!found)
-                            {
-                                currentItems.Add(new InventoryItem {
-                                    data = data,
-                                    amount = 1,
-                                    remainingDays = days,
-                                    state = IngredientState.Raw,
-                                    processType = ProcessType.None,
-                                    grade = grade
-                                });
-                            }
-                        }
-                    }
-                }
             }
         }
 
@@ -389,6 +355,14 @@ public class InventoryUIController : MonoBehaviour
         {
             spawnedSlots[i].gameObject.SetActive(true);
             spawnedSlots[i].SetInfo(currentItems[i], OnSlotClicked);
+            
+            // 💡 배치(Placed) 상태 여부 확인하여 UI 반영
+            if (IngredientManager.Instance != null)
+            {
+                bool isPlaced = IngredientManager.Instance.IsPlacedAnywhere(currentItems[i]);
+                spawnedSlots[i].SetPlaced(isPlaced);
+            }
+            
             spawnedSlots[i].transform.SetAsLastSibling(); // LayoutGroup 정렬 동기화
         }
 

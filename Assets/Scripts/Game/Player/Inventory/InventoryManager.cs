@@ -94,10 +94,54 @@ public class InventoryManager : MonoBehaviour
                 inventoryItems.RemoveAt(targetIndex); // 개수가 0이면 슬롯 삭제
             }
             UpdateUI();
+            
+            if (IngredientManager.Instance != null)
+                IngredientManager.Instance.CheckAndEmptyBoxesWithoutStock();
+                
             return days;
         }
 
         Debug.LogWarning($"[인벤토리] 재료 ID {ingredientID}의 재고가 부족합니다!");
+        return -1;
+    }
+
+    // 💡 특정 레시피나 가공 조건을 모두 만족하는 재료 중 가장 유통기한 임박한 것을 하나 소비합니다.
+    public int UseSpecificIngredient(int ingredientID, IngredientState state, ProcessType processType, ItemGrade grade)
+    {
+        int targetIndex = -1;
+        int closestExpiration = int.MaxValue;
+
+        for (int i = 0; i < inventoryItems.Count; i++)
+        {
+            if (inventoryItems[i].data.ingredientID == ingredientID && 
+                inventoryItems[i].amount > 0 &&
+                inventoryItems[i].state == state &&
+                inventoryItems[i].processType == processType &&
+                inventoryItems[i].grade == grade)
+            {
+                if (inventoryItems[i].remainingDays < closestExpiration)
+                {
+                    closestExpiration = inventoryItems[i].remainingDays;
+                    targetIndex = i;
+                }
+            }
+        }
+
+        if (targetIndex != -1)
+        {
+            int days = inventoryItems[targetIndex].remainingDays;
+            inventoryItems[targetIndex].amount--;
+            if (inventoryItems[targetIndex].amount <= 0)
+            {
+                inventoryItems.RemoveAt(targetIndex);
+            }
+            UpdateUI();
+            
+            if (IngredientManager.Instance != null)
+                IngredientManager.Instance.CheckAndEmptyBoxesWithoutStock();
+                
+            return days;
+        }
         return -1;
     }
 
@@ -192,6 +236,10 @@ public class InventoryManager : MonoBehaviour
                     inventoryItems.RemoveAt(i);
                 }
                 UpdateUI();
+                
+                if (IngredientManager.Instance != null)
+                    IngredientManager.Instance.CheckAndEmptyBoxesWithoutStock();
+                    
                 return;
             }
         }
@@ -205,6 +253,7 @@ public class InventoryManager : MonoBehaviour
     // 💡 유통기한 차감 및 만료된 재료 자동 폐기 (하루가 바뀔 때 호출)
     public void ProcessDailyExpiry()
     {
+        bool hasExpired = false;
         for (int i = inventoryItems.Count - 1; i >= 0; i--)
         {
             inventoryItems[i].remainingDays--;
@@ -213,9 +262,15 @@ public class InventoryManager : MonoBehaviour
             {
                 Debug.Log($"<color=red>[유통기한 만료] {inventoryItems[i].data.ingredientName} {inventoryItems[i].amount}개 자동 폐기!</color>");
                 inventoryItems.RemoveAt(i);
+                hasExpired = true;
             }
         }
         UpdateUI();
+        
+        if (hasExpired && IngredientManager.Instance != null)
+        {
+            IngredientManager.Instance.CheckAndEmptyBoxesWithoutStock();
+        }
     }
 
     private void UpdateUI()
@@ -267,15 +322,29 @@ public class InventoryManager : MonoBehaviour
         
         if (includeBoxItems && IngredientManager.Instance != null)
         {
-            foreach (var box in IngredientManager.Instance.GetAllBoxes())
-            {
-                if (box.currentAmount > 0 && box.GetCurrentData() != null && box.GetCurrentData().ingredientID == ingredientID)
-                {
-                    total += box.currentAmount;
-                }
-            }
+            // 이제 IngredientBox는 가상으로만 배치되고 인벤토리에 실물이 있으므로, 
+            // includeBoxItems가 true여도 별도로 더할 필요가 없습니다. (전체 수량은 이미 inventoryItems에 포함됨)
         }
         
+        return total;
+    }
+
+    /// <summary>
+    /// 특정 상세 조건(상태, 가공, 등급)이 모두 일치하는 재료의 총 수량을 반환합니다.
+    /// </summary>
+    public int GetTotalSpecificAmount(int ingredientID, IngredientState state, ProcessType processType, ItemGrade grade)
+    {
+        int total = 0;
+        for (int i = 0; i < inventoryItems.Count; i++)
+        {
+            if (inventoryItems[i].data.ingredientID == ingredientID &&
+                inventoryItems[i].state == state &&
+                inventoryItems[i].processType == processType &&
+                inventoryItems[i].grade == grade)
+            {
+                total += inventoryItems[i].amount;
+            }
+        }
         return total;
     }
 

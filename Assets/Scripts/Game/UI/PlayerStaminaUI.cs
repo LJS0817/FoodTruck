@@ -20,59 +20,35 @@ public class PlayerStaminaUI : MonoBehaviour
 
     private void Start()
     {
-        if (staminaMask != null)
-        {
-            _initialWidth = staminaMask.rectTransform.rect.width;
-        }
-
-        if (PlayerStaminaManager.Instance != null)
-        {
-            PlayerStaminaManager.Instance.OnStaminaChanged += UpdateUI;
-        }
+        _initialWidth = staminaMask.rectTransform.rect.width;
     }
 
-    private void OnDestroy()
+    public void UpdateUI(float current, float max)
     {
-        if (PlayerStaminaManager.Instance != null)
-        {
-            PlayerStaminaManager.Instance.OnStaminaChanged -= UpdateUI;
-        }
-    }
-
-    private void UpdateUI(float current, float max)
-    {
-        if (staminaText != null)
-        {
-            staminaText.text = $"{Mathf.RoundToInt(current)} / {Mathf.RoundToInt(max)}";
-        }
-
-        if (staminaMask == null) return;
+        staminaText.text = $"{Mathf.RoundToInt(current)} / {Mathf.RoundToInt(max)}";
 
         float ratio = max > 0f ? current / max : 0f;
-        
+
         // RectMask2D Padding Z(Right) 조절
         Vector4 padding = staminaMask.padding;
         padding.z = _initialWidth * (1f - ratio);
         staminaMask.padding = padding;
 
-        if (fillImage != null)
+        // 낮을 때 빨갛게
+        if (ratio <= warningThreshold)
         {
-            // 낮을 때 빨갛게
-            if (ratio <= warningThreshold)
-            {
-                fillImage.color = Color.red;
-                if (warningIcon != null) warningIcon.SetActive(true);
-            }
-            else if (ratio <= 0.5f)
-            {
-                fillImage.color = Color.yellow;
-                if (warningIcon != null) warningIcon.SetActive(false);
-            }
-            else
-            {
-                fillImage.color = Color.green;
-                if (warningIcon != null) warningIcon.SetActive(false);
-            }
+            fillImage.color = Color.red;
+            if (warningIcon != null) warningIcon.SetActive(true);
+        }
+        else if (ratio <= 0.5f)
+        {
+            fillImage.color = Color.yellow;
+            if (warningIcon != null) warningIcon.SetActive(false);
+        }
+        else
+        {
+            fillImage.color = Color.green;
+            if (warningIcon != null) warningIcon.SetActive(false);
         }
     }
 }

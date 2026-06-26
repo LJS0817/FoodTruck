@@ -17,6 +17,7 @@ public class HygieneUI : MonoBehaviour
     [SerializeField] private float warningThreshold = 0.25f; // 25% 이하일 때 경고
 
     private float _initialWidth;
+    private float _maxHygiene = 100f; // 청결도 최대값 (기본 100)
 
     private void Start()
     {
@@ -45,13 +46,13 @@ public class HygieneUI : MonoBehaviour
     {
         if (hygieneText != null)
         {
-            hygieneText.text = $"{Mathf.RoundToInt(currentHygiene)} / 100";
+            hygieneText.text = $"{Mathf.RoundToInt(currentHygiene)} / {_maxHygiene}";
         }
 
         if (hygieneMask == null) return;
 
         // 청결도는 0 ~ 100 기준이므로, 비율(0~1)로 변환
-        float ratio = Mathf.Clamp01(currentHygiene / 100f);
+        float ratio = Mathf.Clamp01(currentHygiene / _maxHygiene);
         
         // RectMask2D Padding Z(Right) 조절
         Vector4 padding = hygieneMask.padding;

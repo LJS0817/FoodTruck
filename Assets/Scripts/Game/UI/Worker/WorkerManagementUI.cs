@@ -71,23 +71,28 @@ public class WorkerManagementUI : MonoBehaviour
 
         _currentTabIndex = tabIndex;
 
-        // 새 탭 열기
+        // 새 탭 열기 (우선 투명하게 둔 상태로 컨텐츠 교체)
         if (_currentTabIndex == 0 && hiredWorkersGroup != null)
         {
-            hiredWorkersGroup.alpha = 1f;
             hiredWorkersGroup.interactable = true;
             hiredWorkersGroup.blocksRaycasts = true;
             if (scrollRect != null) scrollRect.content = hiredWorkersContent;
         }
         else if (_currentTabIndex == 1 && recruitmentPoolGroup != null)
         {
-            recruitmentPoolGroup.alpha = 1f;
             recruitmentPoolGroup.interactable = true;
             recruitmentPoolGroup.blocksRaycasts = true;
             if (scrollRect != null) scrollRect.content = recruitmentPoolContent;
         }
 
+        // 컨텐츠 갱신 후, 크기를 먼저 맞추고 화면에 표시하기 위해 RefreshWorkers 호출
         RefreshWorkers();
+
+        // 갱신 및 크기 조절이 끝난 뒤 화면에 표시 (깜빡임/화면 밖 삐져나옴 방지)
+        if (_currentTabIndex == 0 && hiredWorkersGroup != null)
+            hiredWorkersGroup.alpha = 1f;
+        else if (_currentTabIndex == 1 && recruitmentPoolGroup != null)
+            recruitmentPoolGroup.alpha = 1f;
     }
 
     /// <summary>
@@ -129,33 +134,53 @@ public class WorkerManagementUI : MonoBehaviour
         float prevScrollPos = scrollRect != null ? scrollRect.verticalNormalizedPosition : 1f;
 
         // 1. 내 알바생 탭 갱신
-        for (int i = 0; i < _spawnedHiredSlots.Count; i++)
-        {
-            if (_spawnedHiredSlots[i] != null) Destroy(_spawnedHiredSlots[i].gameObject);
-        }
-        _spawnedHiredSlots.Clear();
-
         var hiredWorkers = workerManager.HiredWorkers;
-        for (int i = 0; i < hiredWorkers.Count; i++)
+
+        // 부족한 만큼 생성 (새로 고용되었을 때)
+        while (_spawnedHiredSlots.Count < hiredWorkers.Count)
         {
             WorkerHiredSlotUI newSlot = Instantiate(hiredSlotPrefab, hiredWorkersContent);
-            newSlot.SetupSlot(hiredWorkers[i], this);
             _spawnedHiredSlots.Add(newSlot);
         }
 
-        // 2. 알바생 채용 후보 탭 갱신
-        for (int i = 0; i < _spawnedRecruitSlots.Count; i++)
+        // 남는 만큼 파괴 (해고되었을 때)
+        while (_spawnedHiredSlots.Count > hiredWorkers.Count)
         {
-            if (_spawnedRecruitSlots[i] != null) Destroy(_spawnedRecruitSlots[i].gameObject);
+            int lastIndex = _spawnedHiredSlots.Count - 1;
+            WorkerHiredSlotUI slotToDestroy = _spawnedHiredSlots[lastIndex];
+            slotToDestroy.gameObject.SetActive(false);
+            Destroy(slotToDestroy.gameObject);
+            _spawnedHiredSlots.RemoveAt(lastIndex);
         }
-        _spawnedRecruitSlots.Clear();
 
+        // 기존 슬롯 갱신
+        for (int i = 0; i < hiredWorkers.Count; i++)
+        {
+            _spawnedHiredSlots[i].SetupSlot(hiredWorkers[i], this);
+        }
+
+        // 2. 알바생 채용 후보 탭 갱신 (오브젝트 풀링 방식 적용)
         var pool = workerManager.RecruitmentPool;
-        for (int i = 0; i < pool.Count; i++)
+
+        // 부족한 만큼 생성 (최대 개수만큼 한 번만 생성됨)
+        while (_spawnedRecruitSlots.Count < pool.Count)
         {
             WorkerRecruitmentSlotUI newSlot = Instantiate(recruitmentSlotPrefab, recruitmentPoolContent);
-            newSlot.SetupSlot(pool[i], this);
             _spawnedRecruitSlots.Add(newSlot);
+        }
+
+        // 갱신 및 오브젝트 풀링(SetActive)
+        for (int i = 0; i < _spawnedRecruitSlots.Count; i++)
+        {
+            if (i < pool.Count)
+            {
+                _spawnedRecruitSlots[i].gameObject.SetActive(true);
+                _spawnedRecruitSlots[i].SetupSlot(pool[i], this);
+            }
+            else
+            {
+                _spawnedRecruitSlots[i].gameObject.SetActive(false); // 풀링: 보이지 않게 처리
+            }
         }
 
         // 4. 수동 갱신 비용 텍스트 업데이트
@@ -168,9 +193,12 @@ public class WorkerManagementUI : MonoBehaviour
                 refreshCostText.text = $"{cost:N0}원";
         }
 
-        // 스크롤 위치 복구
+        // 스크롤 위치 복구 및 화면 밖 표시(깜빡임) 방지를 위한 레이아웃 즉시 강제 갱신
         if (scrollRect != null)
         {
+            if (hiredWorkersContent != null) LayoutRebuilder.ForceRebuildLayoutImmediate(hiredWorkersContent);
+            if (recruitmentPoolContent != null) LayoutRebuilder.ForceRebuildLayoutImmediate(recruitmentPoolContent);
+            
             Canvas.ForceUpdateCanvases();
             scrollRect.verticalNormalizedPosition = prevScrollPos;
         }

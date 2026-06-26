@@ -23,6 +23,8 @@ public class CookingPot : MonoBehaviour
     private List<GameObject> visualStack = new List<GameObject>(10);
     private int premiumCount = 0;
 
+    public System.Action OnPotContentsChanged;
+
     private CanvasGroup _discardCanvasGroup;
 
     private void Awake()
@@ -76,6 +78,7 @@ public class CookingPot : MonoBehaviour
 
         CheckCurrentRecipe();
         UpdateDiscardButtonState();
+        OnPotContentsChanged?.Invoke();
     }
 
     // ─── 리셋 ────────────────────────────────────────────
@@ -92,6 +95,7 @@ public class CookingPot : MonoBehaviour
         visualStack.Clear();
 
         UpdateDiscardButtonState();
+        OnPotContentsChanged?.Invoke();
     }
 
     private void UpdateDiscardButtonState()
