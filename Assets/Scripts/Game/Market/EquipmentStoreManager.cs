@@ -77,6 +77,7 @@ public class EquipmentStoreManager : MonoBehaviour
         Debug.Log($"<color=yellow>[EquipmentStoreManager] {equipment.equipmentName} 장착 완료!</color>");
         
         OnEquipmentChanged?.Invoke();
+        if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
         return true;
     }
 
@@ -147,14 +148,28 @@ public class EquipmentStoreManager : MonoBehaviour
     public int GetUpgradeCost(EquipmentData equipment)
     {
         int currentLevel = GetEquipmentLevel(equipment);
-        if (currentLevel == 0) return 0;
-        return equipment.price * currentLevel;
+        if (currentLevel == 0 || IsMaxLevel(equipment)) return 0;
+        
+        // 동적 비용 계산: 기본 업그레이드 비용 * (배율 ^ (현재레벨 - 1))
+        float cost = equipment.baseUpgradeCost * Mathf.Pow(equipment.upgradeCostMultiplier, currentLevel - 1);
+        return Mathf.RoundToInt(cost);
+    }
+
+    public bool IsMaxLevel(EquipmentData equipment)
+    {
+        int currentLevel = GetEquipmentLevel(equipment);
+        return currentLevel >= equipment.maxLevel;
     }
 
     public bool LevelUpEquipment(EquipmentData equipment)
     {
         int currentLevel = GetEquipmentLevel(equipment);
         if (currentLevel == 0) return false;
+        if (currentLevel >= equipment.maxLevel)
+        {
+            Debug.LogWarning($"<color=red>[장비 레벨업 실패] {equipment.equipmentName}은(는) 이미 최대 레벨({equipment.maxLevel})입니다.</color>");
+            return false;
+        }
 
         int cost = GetUpgradeCost(equipment);
         if (PlayerManager.Instance.SpendMoney(cost))
@@ -162,10 +177,53 @@ public class EquipmentStoreManager : MonoBehaviour
             equipmentLevels[equipment] = currentLevel + 1;
             Debug.Log($"<color=green>[장비 레벨업] {equipment.equipmentName} Lv.{currentLevel} -> Lv.{currentLevel + 1}</color>");
             OnEquipmentChanged?.Invoke();
+            if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
             return true;
         }
         return false;
     }
 
     public List<EquipmentData> GetAllEquipments() { return allEquipments; }
+
+    // ===== 저장 & 복구 시스템 연동 =====
+
+    public void SaveToSaveData(List<EquipmentSaveData> equipmentList)
+    {
+        equipmentList.Clear();
+        foreach (var equipment in ownedEquipmentList)
+        {
+            equipmentList.Add(new EquipmentSaveData
+            {
+                type = equipment.type,
+                level = GetEquipmentLevel(equipment),
+                isEquipped = IsEquipped(equipment)
+            });
+        }
+    }
+
+    public void RestoreFromSaveData(List<EquipmentSaveData> equipmentList)
+    {
+        ownedEquipmentList.Clear();
+        equippedEquipments.Clear();
+        equipmentLevels.Clear();
+
+        if (equipmentList == null || equipmentList.Count == 0) return;
+
+        foreach (var savedData in equipmentList)
+        {
+            EquipmentData foundEq = allEquipments.Find(x => x.type == savedData.type);
+            
+            if (foundEq != null)
+            {
+                ownedEquipmentList.Add(foundEq);
+                equipmentLevels[foundEq] = savedData.level;
+                if (savedData.isEquipped)
+                {
+                    equippedEquipments[foundEq.type] = foundEq;
+                }
+            }
+        }
+        
+        OnEquipmentChanged?.Invoke();
+    }
 }

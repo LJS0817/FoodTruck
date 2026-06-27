@@ -27,6 +27,11 @@ public class InventorySaveItem
     public int ingredientID;
     public int amount;
     public int remainingDays;
+    
+    // 상태 저장 추가
+    public IngredientState state;
+    public ProcessType processType;
+    public ItemGrade grade;
 }
 
 /// <summary>일별 정산 기록</summary>
@@ -67,11 +72,67 @@ public class SettingsData
     public bool isVibrationOn = true;
 }
 
+/// <summary>재료 상자(맵 상에 배치된) 상태 저장</summary>
+[Serializable]
+public class IngredientBoxSaveData
+{
+    public int index;
+    public bool isTempBox;
+    public int ingredientID;
+    public int amount;
+    public List<int> storedItemDays = new List<int>();
+    public IngredientState state;
+    public ProcessType processType;
+    public float qualityScore;
+}
+
+/// <summary>진행 중인 백그라운드 가공 태스크 저장</summary>
+[Serializable]
+public class ProcessTaskSaveData
+{
+    public EquipmentType equipmentType;
+    public int ingredientID;
+    public IngredientState state;
+    public ProcessType processType;
+    public ItemGrade grade;
+    public ProcessType targetProcessType;
+    public float elapsedTime;
+    public float qualityScore;
+    public ProcessState processState;
+}
+
+/// <summary>대기 중인 손님 저장</summary>
+[Serializable]
+public class CustomerSaveData
+{
+    public string customerName;
+    public float currentPatience;
+}
+
+/// <summary>보유 장비 및 레벨/장착 상태 저장</summary>
+[Serializable]
+public class EquipmentSaveData
+{
+    public EquipmentType type;
+    public int level;
+    public bool isEquipped;
+}
+
+/// <summary>활성화된 주문표 저장</summary>
+[Serializable]
+public class OrderSaveData
+{
+    public int customerIndex; // activeCustomers 리스트에서의 인덱스
+    public string orderedFoodName;
+}
+
 [Serializable]
 public class SaveData
 {
     public int currentMoney = 0;
     public int currentDay = 1;
+    public float currentTotalSeconds = 0f; // 💡 장사 진행 시간 (실시간 저장용)
+    public DayPhase currentDayPhase = DayPhase.Preparation; // 💡 장사 단계 저장
     public int reputation = 30; // 💡 평판 (기본값 30)
     public float currentStamina = 100f;
     public float currentHygiene = 100f;
@@ -83,11 +144,24 @@ public class SaveData
     // 💡 인벤토리 저장
     public List<InventorySaveItem> inventoryItems = new List<InventorySaveItem>();
 
-    // 💡 보유 장비 저장 (EquipmentType enum의 int 변환 값)
-    public List<int> ownedEquipmentIDs = new List<int>();
+    // 💡 보유 장비 저장 (레벨, 장착 여부 포함)
+    public List<EquipmentSaveData> equipmentList = new List<EquipmentSaveData>();
 
     // 💡 웨이팅존 아이템 저장 (asset 이름)
     public List<string> waitingZoneItemNames = new List<string>();
+
+    // 💡 실시간 복구(Mid-Day Save)를 위한 추가 데이터 모음
+    public List<IngredientBoxSaveData> activeBoxes = new List<IngredientBoxSaveData>();
+    public List<ProcessTaskSaveData> activeProcessTasks = new List<ProcessTaskSaveData>();
+    public List<CustomerSaveData> activeCustomers = new List<CustomerSaveData>();
+    public List<OrderSaveData> activeOrders = new List<OrderSaveData>();
+
+    // 💡 현재 영업 중인 메뉴 리스트 보존
+    public List<string> todayMenuRecipes = new List<string>();
+
+    // 💡 냄비(조리 공간) 복구용 데이터
+    public List<int> cookingPotIngredientIDs = new List<int>();
+    public int cookingPotPremiumCount = 0;
 
     // 💡 일별 기록 히스토리
     public List<DailyRecord> dailyHistory = new List<DailyRecord>();
@@ -147,7 +221,9 @@ public class DataManager : MonoBehaviour
     {
         // 💡 인벤토리 상태를 저장 직전에 동기화
         SyncInventoryToSaveData();
+        SyncEquipmentToSaveData();
         SyncStaminaAndHygieneToSaveData();
+        SyncTransientStateToSaveData();
 
         // 💡 저장 시점 기록
         CurrentData.lastSaveTimeTicks = DateTime.UtcNow.Ticks;
@@ -156,6 +232,109 @@ public class DataManager : MonoBehaviour
         PlayerPrefs.SetString(SAVE_KEY, json);
         PlayerPrefs.Save();
         Debug.Log("[DataManager] 진행 데이터가 저장되었습니다.");
+    }
+
+    private void SyncEquipmentToSaveData()
+    {
+        if (EquipmentStoreManager.Instance != null)
+        {
+            EquipmentStoreManager.Instance.SaveToSaveData(CurrentData.equipmentList);
+        }
+    }
+
+    public void RestoreEquipment()
+    {
+        if (EquipmentStoreManager.Instance != null && CurrentData.equipmentList != null)
+        {
+            EquipmentStoreManager.Instance.RestoreFromSaveData(CurrentData.equipmentList);
+            Debug.Log($"<color=green>[DataManager] 보유 장비 {CurrentData.equipmentList.Count}개 복원 완료</color>");
+        }
+    }
+
+    private void SyncTransientStateToSaveData()
+    {
+        if (GameTimeManager.Instance != null)
+        {
+            CurrentData.currentTotalSeconds = GameTimeManager.Instance.TotalSeconds;
+        }
+
+        if (DayCycleManager.Instance != null)
+        {
+            CurrentData.currentDayPhase = DayCycleManager.Instance.CurrentPhase;
+        }
+
+        if (IngredientManager.Instance != null)
+        {
+            CurrentData.activeBoxes.Clear();
+            IngredientManager.Instance.SaveBoxStates(CurrentData.activeBoxes);
+        }
+
+        if (ProcessManager.Instance != null)
+        {
+            CurrentData.activeProcessTasks.Clear();
+            ProcessManager.Instance.SaveTaskStates(CurrentData.activeProcessTasks);
+        }
+
+        if (OrderManager.Instance != null && CustomerManager.Instance != null)
+        {
+            CurrentData.activeCustomers.Clear();
+            CurrentData.activeOrders.Clear();
+            OrderManager.Instance.SaveOrderStates(CurrentData.activeOrders, CurrentData.activeCustomers);
+        }
+
+        if (CookingManager.Instance != null)
+        {
+            CookingManager.Instance.SavePotState(CurrentData.cookingPotIngredientIDs, out CurrentData.cookingPotPremiumCount);
+        }
+
+        if (MenuManager.Instance != null)
+        {
+            CurrentData.todayMenuRecipes.Clear();
+            foreach (var recipe in MenuManager.Instance.GetAvailableRecipes())
+            {
+                if (recipe != null) CurrentData.todayMenuRecipes.Add(recipe.foodName);
+            }
+        }
+    }
+
+    public void RestoreTransientState()
+    {
+        if (CurrentData == null) return;
+
+        // IngredientBox 복원
+        if (IngredientManager.Instance != null && CurrentData.activeBoxes != null)
+        {
+            IngredientManager.Instance.RestoreBoxStates(CurrentData.activeBoxes);
+        }
+
+        // ProcessTask 복원
+        if (ProcessManager.Instance != null && CurrentData.activeProcessTasks != null)
+        {
+            ProcessManager.Instance.RestoreTaskStates(CurrentData.activeProcessTasks);
+        }
+
+        // 냄비 복원
+        if (CookingManager.Instance != null && CurrentData.cookingPotIngredientIDs != null)
+        {
+            CookingManager.Instance.RestorePotState(CurrentData.cookingPotIngredientIDs, CurrentData.cookingPotPremiumCount);
+        }
+
+        // 메뉴 복원
+        if (MenuManager.Instance != null && CurrentData.todayMenuRecipes != null && CurrentData.todayMenuRecipes.Count > 0)
+        {
+            List<FoodData> restoredRecipes = new List<FoodData>();
+            foreach (var recipeName in CurrentData.todayMenuRecipes)
+            {
+                FoodData recipe = GameManager.Instance.recipeManager.GetRecipeByName(recipeName);
+                if (recipe != null) restoredRecipes.Add(recipe);
+            }
+            if (restoredRecipes.Count > 0)
+            {
+                MenuManager.Instance.SetTodayMenu(restoredRecipes);
+            }
+        }
+
+        // (선택) 손님/주문 복원 등 추후 확장 가능
     }
 
     public void SaveSettingsData()
@@ -214,7 +393,10 @@ public class DataManager : MonoBehaviour
             {
                 ingredientID = items[i].data.ingredientID,
                 amount = items[i].amount,
-                remainingDays = items[i].remainingDays
+                remainingDays = items[i].remainingDays,
+                state = items[i].state,
+                processType = items[i].processType,
+                grade = items[i].grade
             });
         }
     }
@@ -244,7 +426,7 @@ public class DataManager : MonoBehaviour
             IngredientData data = recipeManager.GetIngredientById(saved.ingredientID);
             if (data != null)
             {
-                InventoryManager.Instance.AddIngredient(data, saved.amount, saved.remainingDays);
+                InventoryManager.Instance.AddIngredient(data, saved.amount, saved.remainingDays, saved.state, saved.processType, saved.grade);
             }
         }
 

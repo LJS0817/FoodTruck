@@ -91,7 +91,7 @@ public class ProcessManager : MonoBehaviour
 
     // ─── 가공 실행 (백그라운드 등록) ──────────────────────────
 
-    public bool StartProcess(EquipmentType equipType, IngredientData input, ProcessType processType, bool consumeInventory = true)
+    public bool StartProcess(EquipmentType equipType, IngredientData input, ProcessType processType)
     {
         if (activeTasks.ContainsKey(equipType))
         {
@@ -109,21 +109,11 @@ public class ProcessManager : MonoBehaviour
         ProcessTypeEntry equipmentEntry = GetEquipmentEntry(processType);
         float finalStamina = method.requiredStamina * equipmentEntry.staminaMultiplier;
 
-        if (consumeInventory)
-        {
-            if (InventoryManager.Instance.UseIngredient(input.ingredientID) == -1)
-            {
-                Debug.LogWarning("[가공 실패] 재고가 부족합니다.");
-                return false;
-            }
-        }
-
         if (PlayerStaminaManager.Instance != null)
         {
             if (PlayerStaminaManager.Instance.CurrentStamina < finalStamina)
             {
                 Debug.LogWarning("[가공 실패] 체력이 부족합니다.");
-                if (consumeInventory) InventoryManager.Instance.AddIngredient(input, 1, input.maxShelfLifeDays);
                 return false;
             }
             // 미니게임 참여 여부와 무관하게 시작 시 체력 소모
@@ -286,8 +276,9 @@ public class ProcessManager : MonoBehaviour
     /// <summary>
     /// 인벤토리 UI 등에서 장비 없이 즉시 가공을 시도할 때 사용되는 메서드입니다.
     /// </summary>
-    public void ExecuteProcess(IngredientData input, ProcessType processType, Action<bool, IngredientData> onCollected)
+    public void ExecuteProcess(InventoryItem inputItem, ProcessType processType, Action<bool, IngredientData> onCollected)
     {
+        IngredientData input = inputItem.data;
         ProcessMethodData method = input.GetProcessMethod(processType);
         if (method == null)
         {
@@ -299,9 +290,10 @@ public class ProcessManager : MonoBehaviour
         ProcessTypeEntry equipmentEntry = GetEquipmentEntry(processType);
         float finalStamina = method.requiredStamina * equipmentEntry.staminaMultiplier;
 
-        if (InventoryManager.Instance.UseIngredient(input.ingredientID) == -1)
+        int consumedDays = InventoryManager.Instance.ConsumeExactItem(inputItem);
+        if (consumedDays == -1)
         {
-            Debug.LogWarning("[가공 실패] 재고가 부족합니다.");
+            Debug.LogWarning("[가공 실패] 선택된 재고를 찾을 수 없습니다.");
             onCollected?.Invoke(false, null);
             return;
         }
@@ -311,7 +303,7 @@ public class ProcessManager : MonoBehaviour
             if (PlayerStaminaManager.Instance.CurrentStamina < finalStamina)
             {
                 Debug.LogWarning("[가공 실패] 체력이 부족합니다.");
-                InventoryManager.Instance.AddIngredient(input, 1, input.maxShelfLifeDays);
+                InventoryManager.Instance.AddIngredient(input, 1, consumedDays, inputItem.state, inputItem.processType, inputItem.grade);
                 onCollected?.Invoke(false, null);
                 return;
             }
@@ -385,6 +377,71 @@ public class ProcessManager : MonoBehaviour
             qualityBonus       = 0f,
             miniGameEaseBonus  = 0f
         };
+    }
+
+    // 💡 Mid-Day Save: 진행 중인 가공 태스크 저장
+    public void SaveTaskStates(List<ProcessTaskSaveData> targetList)
+    {
+        foreach (var kvp in activeTasks)
+        {
+            ProcessTask task = kvp.Value;
+            
+            // 미니게임 중단(Processing 중이면서 미니게임이 필요한 경우)은 저장하지 않고 환불 처리할 수도 있지만,
+            // 일단 상태를 모두 저장하고 로드 시 처리할 수도 있습니다. 여기서는 모두 저장.
+            targetList.Add(new ProcessTaskSaveData
+            {
+                equipmentType = task.equipmentType,
+                ingredientID = task.inputIngredient.ingredientID,
+                targetProcessType = task.method.processType,
+                elapsedTime = task.elapsedTime,
+                qualityScore = task.qualityScore,
+                processState = task.state
+            });
+        }
+    }
+
+    // 💡 Mid-Day Load: 가공 태스크 복원
+    public void RestoreTaskStates(List<ProcessTaskSaveData> savedData)
+    {
+        if (GameManager.Instance == null || GameManager.Instance.recipeManager == null) return;
+        RecipeManager recipeManager = GameManager.Instance.recipeManager;
+
+        activeTasks.Clear();
+
+        foreach (var data in savedData)
+        {
+            IngredientData ingData = recipeManager.GetIngredientById(data.ingredientID);
+            if (ingData == null) continue;
+
+            ProcessMethodData method = ingData.GetProcessMethod(data.targetProcessType);
+            if (method == null) continue;
+
+            ProcessTypeEntry equipmentEntry = GetEquipmentEntry(data.targetProcessType);
+
+            // 미니게임 플레이 중 강제 종료(취소) 조건 체크: Processing 상태이고 미니게임이 필요한 장비
+            if (data.processState == ProcessState.Processing && method.requiredMiniGame != MiniGameType.None)
+            {
+                Debug.Log($"<color=orange>[ProcessManager] 미니게임 중단 감지: {ingData.ingredientName} 가공이 취소되어 인벤토리로 반환됩니다.</color>");
+                // 인벤토리로 원상 복구 (기본 Raw 상태라고 가정)
+                InventoryManager.Instance.AddIngredient(ingData, 1, ingData.maxShelfLifeDays);
+                continue;
+            }
+
+            ProcessTask newTask = new ProcessTask
+            {
+                equipmentType = data.equipmentType,
+                inputIngredient = ingData,
+                method = method,
+                equipmentEntry = equipmentEntry,
+                state = data.processState,
+                elapsedTime = data.elapsedTime,
+                qualityScore = data.qualityScore
+            };
+
+            activeTasks[data.equipmentType] = newTask;
+        }
+        
+        Debug.Log($"<color=cyan>[ProcessManager] 가공 태스크({activeTasks.Count}개) 복원 완료.</color>");
     }
 }
 

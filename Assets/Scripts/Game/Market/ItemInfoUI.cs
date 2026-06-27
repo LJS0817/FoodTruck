@@ -54,18 +54,32 @@ public class ItemInfoUI : MonoBehaviour
     /// 아이템 정보를 받아 UI를 엽니다.
     /// </summary>
     public System.Action<StoreItem, int> onBuyAction;
+    private InventoryItem _currentInventoryItem;
 
-    public void OpenInfo(StoreItem item, bool isStoreMode = true, System.Action<StoreItem, int> onBuy = null)
+    public void OpenInfo(StoreItem item, bool isStoreMode = true, System.Action<StoreItem, int> onBuy = null, InventoryItem inventoryItem = null)
     {
         if (item == null || item.data == null) return;
 
         _currentItem = item;
+        _currentInventoryItem = inventoryItem;
         _isStoreMode = isStoreMode;
         onBuyAction = onBuy;
 
         // 기본 정보 설정
         _nameText.text = item.itemName;
-        _iconImage.sprite = item.icon;
+        
+        Sprite displaySprite = item.icon;
+        if (!_isStoreMode && _currentInventoryItem != null && _currentInventoryItem.processType != ProcessType.None && _currentInventoryItem.data != null)
+        {
+            ProcessMethodData method = _currentInventoryItem.data.GetProcessMethod(_currentInventoryItem.processType);
+            if (method != null)
+            {
+                var stateEntry = method.stateSteps.Find(s => s.state == _currentInventoryItem.state);
+                if (stateEntry != null && stateEntry.stateSprite != null)
+                    displaySprite = stateEntry.stateSprite;
+            }
+        }
+        _iconImage.sprite = displaySprite;
 
         // 설명 및 영역 활성화 처리
         SetupDescription(item.data);
@@ -95,7 +109,14 @@ public class ItemInfoUI : MonoBehaviour
             if (item.data is IngredientData ingredient)
             {
                 _expirationText.transform.parent.gameObject.SetActive(true);
-                _expirationText.text = $"유통기한: {ingredient.maxShelfLifeDays}일";
+                if (!_isStoreMode && _currentInventoryItem != null)
+                {
+                    _expirationText.text = $"남은 유통기한: {_currentInventoryItem.remainingDays}일";
+                }
+                else
+                {
+                    _expirationText.text = $"유통기한: {ingredient.maxShelfLifeDays}일";
+                }
             }
             else
             {
@@ -106,7 +127,13 @@ public class ItemInfoUI : MonoBehaviour
         int baseValue = item.finalCost;
         if (item.data is IngredientData ingredientData) baseValue = ingredientData.basePrice;
         else if (item.data is EquipmentData equipmentData) baseValue = equipmentData.price;
-        else if (item.data is FoodData foodDataContent) baseValue = foodDataContent.basePrice;
+        else if (item.data is FoodData foodDataContent)
+        {
+            if (item.itemType == StoreItemType.RecipeIngredientSet)
+                baseValue = item.finalCost; // 세트 가격은 finalCost에 이미 설정되어 있음
+            else
+                baseValue = foodDataContent.basePrice;
+        }
 
         if (_valueText != null)
         {
@@ -130,6 +157,16 @@ public class ItemInfoUI : MonoBehaviour
                     maxAmount = InventoryManager.Instance.GetTotalAmount(ing.ingredientID, false);
                     if (maxAmount < 1) maxAmount = 1;
                 }
+                else
+                {
+                    // 💡 유저 피드백 반영: 상점 모드일 때 현재 돈으로 살 수 있는 최대 수량으로 Max 설정
+                    if (baseValue > 0)
+                    {
+                        int affordable = PlayerManager.Instance.CurrentMoney / baseValue;
+                        if (affordable < 1) affordable = 1;
+                        if (maxAmount > affordable) maxAmount = affordable;
+                    }
+                }
                 _amountSetter.SetAmountInfo(baseValue, maxAmount, _isStoreMode);
             }
             else if (item.itemType == StoreItemType.RecipeIngredientSet)
@@ -137,6 +174,14 @@ public class ItemInfoUI : MonoBehaviour
                 _amountSetter.gameObject.SetActive(true);
                 int maxAmount = _isStoreMode ? _currentItem.maxPurchaseAmount : 99;
                 if (maxAmount <= 0) maxAmount = 99; // Set default max amount for sets
+                
+                if (_isStoreMode && baseValue > 0)
+                {
+                    int affordable = PlayerManager.Instance.CurrentMoney / baseValue;
+                    if (affordable < 1) affordable = 1;
+                    if (maxAmount > affordable) maxAmount = affordable;
+                }
+
                 _amountSetter.SetAmountInfo(baseValue, maxAmount, _isStoreMode);
             }
             else
@@ -185,7 +230,20 @@ public class ItemInfoUI : MonoBehaviour
                 {
                     if (box.currentAmount > 0 && box.GetCurrentData() != null && box.GetCurrentData().ingredientID == ingredient.ingredientID)
                     {
-                        boxAmount += box.currentAmount;
+                        if (!_isStoreMode && _currentInventoryItem != null)
+                        {
+                            ItemGrade boxGrade = box.qualityScore >= 1.15f ? ItemGrade.Premium : ItemGrade.Normal;
+                            if (box.targetState == _currentInventoryItem.state && 
+                                box.targetProcess == _currentInventoryItem.processType &&
+                                boxGrade == _currentInventoryItem.grade)
+                            {
+                                boxAmount += box.currentAmount;
+                            }
+                        }
+                        else
+                        {
+                            boxAmount += box.currentAmount;
+                        }
                     }
                 }
             }
@@ -229,7 +287,13 @@ public class ItemInfoUI : MonoBehaviour
             {
                 if (config.rawIngredient == null) continue;
                 var req = Instantiate(_requirementPrefab, _requirementsContainer);
-                req.Setup(config.rawIngredient.ingredientSprite, config.rawIngredient.ingredientName);
+                
+                // 💡 유저 피드백 반영: 가공해야 하는 재료면 앞에 [ 상태 ] 를 붙여서 표기
+                string reqName = config.processType != ProcessType.None 
+                                ? $"[ {config.processType} ] {config.rawIngredient.ingredientName}" 
+                                : config.rawIngredient.ingredientName;
+                
+                req.Setup(config.rawIngredient.ingredientSprite, reqName);
             }
         }
 
@@ -257,7 +321,26 @@ public class ItemInfoUI : MonoBehaviour
 
         if (_currentItem.data is IngredientData ingredient)
         {
-            int amount = InventoryManager.Instance.GetTotalAmount(ingredient.ingredientID, !_isStoreMode);
+            int amount = 0;
+            if (!_isStoreMode && _currentInventoryItem != null)
+            {
+                // 인벤토리 모드에서는 상태, 가공방식, 품질, 남은 유통기한이 모두 동일한 항목만 계산
+                foreach (var invItem in InventoryManager.Instance.inventoryItems)
+                {
+                    if (invItem.data.ingredientID == ingredient.ingredientID &&
+                        invItem.state == _currentInventoryItem.state &&
+                        invItem.processType == _currentInventoryItem.processType &&
+                        invItem.grade == _currentInventoryItem.grade &&
+                        invItem.remainingDays == _currentInventoryItem.remainingDays)
+                    {
+                        amount += invItem.amount;
+                    }
+                }
+            }
+            else
+            {
+                amount = InventoryManager.Instance.GetTotalAmount(ingredient.ingredientID, false);
+            }
             _ownedAmountText.text = $"X {amount}";
         }
         else if (_currentItem.data is EquipmentData equipment)
@@ -384,23 +467,24 @@ public class ItemInfoUI : MonoBehaviour
         {
             if (_currentItem.data is IngredientData ingredient)
             {
-                int currentTotal = InventoryManager.Instance.GetTotalAmount(ingredient.ingredientID, false);
                 int amountToDiscard = _amountSetter.CurrentAmount;
-                if (amountToDiscard > currentTotal) amountToDiscard = currentTotal;
 
-                InventoryManager.Instance.DiscardIngredients(ingredient.ingredientID, amountToDiscard);
-                Debug.Log($"[ItemInfoUI] {ingredient.ingredientName} {amountToDiscard}개 폐기 완료.");
-                
-                int remainingToDiscard = InventoryManager.Instance.GetTotalAmount(ingredient.ingredientID, false);
-                // 수량이 0이 되면 닫기
-                if (remainingToDiscard <= 0)
+                if (!_isStoreMode && _currentInventoryItem != null)
                 {
-                    CloseUI();
-                }
-                else
-                {
-                    UpdateOwnedAmount();
-                    _amountSetter.SetAmountInfo(ingredient.basePrice, remainingToDiscard, _isStoreMode);
+                    if (amountToDiscard > _currentInventoryItem.amount) amountToDiscard = _currentInventoryItem.amount;
+                    
+                    InventoryManager.Instance.DiscardItem(_currentInventoryItem, amountToDiscard);
+                    Debug.Log($"[ItemInfoUI] {_currentInventoryItem.data.ingredientName} {amountToDiscard}개 폐기 완료.");
+                    
+                    if (_currentInventoryItem.amount <= 0)
+                    {
+                        CloseUI();
+                    }
+                    else
+                    {
+                        UpdateOwnedAmount();
+                        _amountSetter.SetAmountInfo(ingredient.basePrice, _currentInventoryItem.amount, _isStoreMode);
+                    }
                 }
             }
         }

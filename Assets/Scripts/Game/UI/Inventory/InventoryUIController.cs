@@ -190,7 +190,7 @@ public class InventoryUIController : MonoBehaviour
                     dummyStoreItem.itemName = $"{gradeText}{dummyStoreItem.itemName}";
                 }
 
-                _itemInfoUI.OpenInfo(dummyStoreItem, false);
+                _itemInfoUI.OpenInfo(dummyStoreItem, false, null, slot.Item);
             }
         }
     }
@@ -294,7 +294,7 @@ public class InventoryUIController : MonoBehaviour
             return;
         }
 
-        ProcessManager.Instance.ExecuteProcess(_selectedSlot.Item.data, type, (success, resultData) => {
+        ProcessManager.Instance.ExecuteProcess(_selectedSlot.Item, type, (success, resultData) => {
             if (success)
             {
                 // 가공 성공 시, UI 새로고침 또는 이펙트 처리

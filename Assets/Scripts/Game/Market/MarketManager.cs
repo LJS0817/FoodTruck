@@ -58,6 +58,10 @@ public class MarketManager : MonoBehaviour
 
     public void GenerateAllListings()
     {
+        // 💡 재접속(Mid-Day Load) 시에도 동일한 할인 품목이 나오도록 날짜 기반으로 시드를 고정합니다. (어뷰징 방지)
+        int currentDay = DataManager.Instance != null && DataManager.Instance.CurrentData != null ? DataManager.Instance.CurrentData.currentDay : 1;
+        UnityEngine.Random.InitState(currentDay);
+
         GenerateGeneralListings();
         GenerateDawnListings();
         OnListingsUpdated?.Invoke();

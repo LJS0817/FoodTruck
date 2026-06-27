@@ -22,6 +22,7 @@ public class RecipeStoreManager : MonoBehaviour
         if (IsRecipeUnlocked(recipe.foodName))
         {
             Debug.LogWarning($"[RecipeStoreManager] 이미 {recipe.foodName} 레시피를 보유 중입니다.");
+            if (ToastManager.Instance != null) ToastManager.Instance.ShowToast("이미 보유 중인 레시피입니다!");
             return false;
         }
 
@@ -34,6 +35,7 @@ public class RecipeStoreManager : MonoBehaviour
         }
         
         Debug.LogWarning($"<color=red>[레시피 구매 실패] 잔액이 부족합니다! ({price}원)</color>");
+        if (ToastManager.Instance != null) ToastManager.Instance.ShowToast("잔액이 부족합니다!");
         return false;
     }
 

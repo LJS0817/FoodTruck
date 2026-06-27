@@ -128,6 +128,40 @@ public class RecipeManager : MonoBehaviour
         // 기본 및 커스텀 레시피 모두 해당 없음
         return null;
     }
+    public FoodData GetRecipeByName(string foodName)
+    {
+        // 1. 기본 레시피 검색
+        foreach (var food in allFoodDatabase)
+        {
+            if (food.foodName == foodName) return food;
+        }
+
+        // 2. 커스텀 레시피 검색
+        foreach (var kvp in customRecipeBook)
+        {
+            if (kvp.Value.customFoodName == foodName)
+            {
+                // 즉석에서 FoodData 생성 (CheckRecipe와 동일한 방식)
+                CustomRecipeData resultCustom = kvp.Value;
+                FoodData rst = ScriptableObject.CreateInstance<FoodData>();
+                rst.isCustomRecipe = true;
+                rst.foodName = resultCustom.customFoodName;
+                rst.basePrice = resultCustom.basePrice;
+                rst.ingredientConfigs = new FoodIngredientConfig[resultCustom.ingredientIDs.Count];
+                for(int i = 0; i < resultCustom.ingredientIDs.Count; i++)
+                {
+                    rst.ingredientConfigs[i] = new FoodIngredientConfig { 
+                        rawIngredient = GetIngredientById(resultCustom.ingredientIDs[i]), 
+                        processType = ProcessType.None 
+                    };
+                }
+                return rst;
+            }
+        }
+
+        return null;
+    }
+
     public List<FoodData> GetRecipesByIngredients(List<int> availableIDs)
     {
         List<FoodData> results = new List<FoodData>();

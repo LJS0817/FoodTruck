@@ -155,4 +155,27 @@ public class OrderManager : MonoBehaviour
         visualOutsideTickets.Clear();
         Debug.Log("<color=orange>[주문 전체 폐기] 모든 주문이 폐기되었습니다.</color>");
     }
+
+    // 💡 Mid-Day Save: 활성화된 주문 및 해당 손님 데이터 저장
+    public void SaveOrderStates(List<OrderSaveData> orders, List<CustomerSaveData> customers)
+    {
+        for (int i = 0; i < activeOrders.Count; i++)
+        {
+            OrderData order = activeOrders[i];
+            if (order.owner != null && order.orderedFood != null)
+            {
+                customers.Add(new CustomerSaveData
+                {
+                    customerName = order.owner.currentData.customerName,
+                    currentPatience = order.owner.currentPatience
+                });
+
+                orders.Add(new OrderSaveData
+                {
+                    customerIndex = customers.Count - 1,
+                    orderedFoodName = order.orderedFood.foodName
+                });
+            }
+        }
+    }
 }

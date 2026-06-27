@@ -59,6 +59,8 @@ public class GameManager : MonoBehaviour
         if (dataManager != null && dataManager.CurrentData != null)
         {
             dataManager.RestoreInventory();
+            dataManager.RestoreEquipment(); // 💡 보유 장비 상태(레벨 포함) 복구
+            dataManager.RestoreTransientState(); // 💡 실시간 상자/가공 상태 등 복구
             
             WorkerManager.Instance.LoadFromSaveData(dataManager.CurrentData.hiredWorkers, dataManager.CurrentData.recruitmentPool, dataManager.CurrentData.lastWorkerRefreshDay);
             UpgradeManager.Instance.District.LoadFromSaveData(dataManager.CurrentData.unlockedDistrictIDs, dataManager.CurrentData.currentDistrictID);

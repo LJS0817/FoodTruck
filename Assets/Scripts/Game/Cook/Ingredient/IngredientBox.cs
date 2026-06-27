@@ -10,7 +10,7 @@ public class IngredientBoxSetter
     public IngredientObject prefabToSpawn;
 
     public IngredientData boxData
-    { 
+    {
         get
         {
             if (prefabToSpawn != null)
@@ -23,7 +23,8 @@ public class IngredientBoxSetter
                 return null;
             }
         }
-        set {
+        set
+        {
             if (prefabToSpawn != null)
             {
                 prefabToSpawn.SetupIngredient(value);
@@ -65,9 +66,9 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private IngredientObject _spawnedIngredient;
     private ScrollRect _parentScrollRect;
     private int _draggedItemDays = -1; // 드래그 실패 시 복구용
-    
+
     // 드래그 중 박스가 리셋될 것에 대비한 캐시
-    private IngredientBoxSetter _draggedSetter; 
+    private IngredientBoxSetter _draggedSetter;
     private IngredientState _draggedState;
     private ProcessType _draggedProcess;
     private float _draggedQuality;
@@ -106,18 +107,18 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             _draggedState = targetState;
             _draggedProcess = targetProcess;
             _draggedQuality = qualityScore;
-            
+
             IngredientObject prefab = _setter.prefabToSpawn;
             IngredientData data = _setter.boxData;
-            
+
             // 인벤토리에서 실시간으로 재고 1개를 소비합니다. (가장 유통기한이 임박한 것 기준)
             ItemGrade targetGrade = qualityScore >= 1.15f ? ItemGrade.Premium : ItemGrade.Normal;
             _draggedItemDays = InventoryManager.Instance.UseSpecificIngredient(data.ingredientID, targetState, targetProcess, targetGrade);
-            
+
             if (_draggedItemDays == -1) return; // 재고 부족
 
             _isDraggingItem = true;
-            
+
             // UseSpecificIngredient 내부에서 마지막 재고 소진 시 
             // CheckAndEmptyBoxesWithoutStock()에 의해 _setter가 null이 될 수 있음
             if (_setter != null)
@@ -125,7 +126,7 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                 currentAmount--;
                 UpdateUI();
             }
-            
+
             // 화면 좌표를 월드 좌표로 변환
             Vector3 worldPos = Camera.main.ScreenToWorldPoint(eventData.position);
             worldPos.z = 0f;
@@ -167,12 +168,12 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if (_isDraggingItem && _spawnedIngredient != null)
         {
             _spawnedIngredient.OnTouchEnd();
-            
+
             // 허공에 떨어졌거나 유효하지 않은 곳에 놓였을 때
             if (!_spawnedIngredient.wasDroppedSuccessfully)
             {
                 _spawnedIngredient.OnDespawn(); // 사라지게 만듦
-                
+
                 // 만약 드래그 도중 마지막 재료여서 상자가 빈 상자로 초기화되었다면 원상 복구합니다.
                 if (_setter == null && _draggedSetter != null)
                 {
@@ -182,18 +183,18 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                     qualityScore = _draggedQuality;
                     currentAmount = 0; // 아래에서 1 더해짐
                 }
-                
+
                 if (_setter != null)
                 {
                     currentAmount++;
                 }
-                
+
                 if (_draggedItemDays != -1 && _draggedSetter != null)
                 {
                     ItemGrade targetGrade = _draggedQuality >= 1.15f ? ItemGrade.Premium : ItemGrade.Normal;
                     InventoryManager.Instance.AddIngredient(_draggedSetter.boxData, 1, _draggedItemDays, _draggedState, _draggedProcess, targetGrade); // 유통기한 및 상세 정보 복구
                 }
-                
+
                 if (_setter != null)
                 {
                     UpdateUI(); // 상자에 다시 들어간 것을 UI에 반영
@@ -207,7 +208,7 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                     ResetBox();
                 }
             }
-            
+
             _spawnedIngredient = null;
             _draggedItemDays = -1;
         }
@@ -216,18 +217,18 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             if (_parentScrollRect != null)
                 _parentScrollRect.OnEndDrag(eventData);
         }
-        
+
         _isDraggingItem = false;
     }
 
-    public void SetupIngredient(IngredientBoxSetter data, float quality = 1.0f, int amount = -1) 
+    public void SetupIngredient(IngredientBoxSetter data, float quality = 1.0f, int amount = -1)
     {
         // 💡 물리적 아이템 이동 없음 (인벤토리에 그대로 둠)
         // 기존에 할당되어 있었다면 초기화 (환수할 게 없음)
         _setter = data;
         this.qualityScore = quality;
         this.storedItemDays.Clear(); // 사용하지 않음
-        
+
         if (amount > 0)
         {
             this.currentAmount = amount;
@@ -261,7 +262,7 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         this.targetProcess = processType;
         this.qualityScore = quality;
         this.currentAmount += amount;
-        
+
         UpdateUI();
     }
 
@@ -286,14 +287,14 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         UpdateUI();
     }
 
-    public void Refill() 
+    public void Refill()
     {
         // 이젠 물리적 이동이 없으므로, 현재 인벤토리에 남은 수량을 기반으로 표시 수량만 갱신
         if (_setter != null && _setter.boxData != null)
         {
             ItemGrade grade = qualityScore >= 1.15f ? ItemGrade.Premium : ItemGrade.Normal;
             int availableAmount = InventoryManager.Instance.GetTotalSpecificAmount(_setter.boxData.ingredientID, targetState, targetProcess, grade);
-            
+
             // capacity 제한만큼 할당
             int targetAmount = (int)Math.Floor(capacity / _setter.boxData.volume);
             currentAmount = Math.Min(targetAmount, availableAmount);
@@ -315,7 +316,7 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             if (!isEmpty)
             {
                 Sprite displaySprite = _setter.boxData.ingredientSprite;
-                
+
                 if (targetProcess != ProcessType.None)
                 {
                     ProcessMethodData method = _setter.boxData.GetProcessMethod(targetProcess);
@@ -340,7 +341,7 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                 iconImage.enabled = false;
             }
         }
-        
+
         if (amountText != null)
         {
             if (!isEmpty)
@@ -349,12 +350,13 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                 int availableStock = InventoryManager.Instance != null ? InventoryManager.Instance.GetTotalSpecificAmount(_setter.boxData.ingredientID, targetState, targetProcess, grade) : 0;
                 // 할당된 수량과 실제 남은 재고 중 작은 값을 표시
                 int displayAmount = Math.Min(currentAmount, availableStock);
-                
+
                 // 만약 현재 할당량보다 재고가 적어지면 할당량을 실제 재고로 맞춤
-                if (currentAmount > availableStock) {
+                if (currentAmount > availableStock)
+                {
                     currentAmount = availableStock;
                 }
-                
+
                 amountText.text = displayAmount.ToString();
             }
             else
@@ -362,5 +364,27 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                 amountText.text = "";
             }
         }
+    }
+
+    public void ForceClearBox()
+    {
+        _setter = null;
+        currentAmount = 0;
+        storedItemDays.Clear();
+        targetState = IngredientState.Raw;
+        targetProcess = ProcessType.None;
+        qualityScore = 1.0f;
+        UpdateUI();
+    }
+
+    public void RestoreBoxState(IngredientBoxSetter setter, IngredientState state, ProcessType pt, float quality, int amount, List<int> days)
+    {
+        _setter = setter;
+        targetState = state;
+        targetProcess = pt;
+        qualityScore = quality;
+        currentAmount = amount;
+        storedItemDays = new List<int>(days);
+        UpdateUI();
     }
 }

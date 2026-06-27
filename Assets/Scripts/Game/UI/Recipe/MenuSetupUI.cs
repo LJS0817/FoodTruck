@@ -115,7 +115,7 @@ public class MenuSetupUI : MonoBehaviour
             bool lacksIngredients = false;
             if (recipe.ingredientConfigs != null)
             {
-                lacksIngredients = !InventoryManager.Instance.HasIngredients(recipe.ingredientConfigs);
+                lacksIngredients = !InventoryManager.Instance.HasIngredients(recipe.ingredientConfigs, false);
             }
 
             // 단일 레시피만으로도 최대 조리대 개수를 초과하면 아예 비활성화
@@ -280,7 +280,7 @@ public class MenuSetupUI : MonoBehaviour
                 slot.SetUnavailable(true, "공간 부족");
                 continue;
             }
-            else if (slot.FoodData.ingredientConfigs != null && !InventoryManager.Instance.HasIngredients(slot.FoodData.ingredientConfigs))
+            else if (slot.FoodData.ingredientConfigs != null && !InventoryManager.Instance.HasIngredients(slot.FoodData.ingredientConfigs, false))
             {
                 slot.SetUnavailable(true, "재료 부족");
                 continue;

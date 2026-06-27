@@ -212,7 +212,7 @@ public class Equipment : MonoBehaviour, IInteractable
         }
 
         // 백그라운드 가공 시작
-        bool started = ProcessManager.Instance.StartProcess(equipmentData.type, inputData, matchedType, consumeInventory: false);
+        bool started = ProcessManager.Instance.StartProcess(equipmentData.type, inputData, matchedType);
 
         if (started)
         {

@@ -66,45 +66,6 @@ public class InventoryManager : MonoBehaviour
         UpdateUI();
     }
 
-    // 요리를 위해 재료통에서 재료를 하나 꺼낼 때 호출 (유통기한 임박한 것부터 차감)
-    public int UseIngredient(int ingredientID)
-    {
-        int targetIndex = -1;
-        int closestExpiration = int.MaxValue;
-
-        // 가장 유통기한이 임박한(남은 일수가 적은) 재고 탐색
-        for (int i = 0; i < inventoryItems.Count; i++)
-        {
-            if (inventoryItems[i].data.ingredientID == ingredientID && inventoryItems[i].amount > 0)
-            {
-                if (inventoryItems[i].remainingDays < closestExpiration)
-                {
-                    closestExpiration = inventoryItems[i].remainingDays;
-                    targetIndex = i;
-                }
-            }
-        }
-
-        if (targetIndex != -1)
-        {
-            int days = inventoryItems[targetIndex].remainingDays;
-            inventoryItems[targetIndex].amount--;
-            if (inventoryItems[targetIndex].amount <= 0)
-            {
-                inventoryItems.RemoveAt(targetIndex); // 개수가 0이면 슬롯 삭제
-            }
-            UpdateUI();
-            
-            if (IngredientManager.Instance != null)
-                IngredientManager.Instance.CheckAndEmptyBoxesWithoutStock();
-                
-            return days;
-        }
-
-        Debug.LogWarning($"[인벤토리] 재료 ID {ingredientID}의 재고가 부족합니다!");
-        return -1;
-    }
-
     // 💡 특정 레시피나 가공 조건을 모두 만족하는 재료 중 가장 유통기한 임박한 것을 하나 소비합니다.
     public int UseSpecificIngredient(int ingredientID, IngredientState state, ProcessType processType, ItemGrade grade)
     {
@@ -146,59 +107,55 @@ public class InventoryManager : MonoBehaviour
     }
 
     // 요리를 위해 재료통에 재료를 채울 때 호출 (최대 보유량 확인)
-    public List<int> FillIngredient(int ingredientID, int amount)
-    {
-        List<int> filledDays = new List<int>();
-        
-        // 💡 UseIngredient를 호출하여 실제로 인벤토리에서 차감 (유통기한 임박한 것부터 자동 차감됨)
-        for (int i = 0; i < amount; i++)
-        {
-            int days = UseIngredient(ingredientID);
-            if (days != -1)
-            {
-                filledDays.Add(days);
-            }
-            else
-            {
-                break;
-            }
-        }
 
-        if (filledDays.Count == 0)
-        {
-            Debug.LogWarning($"[인벤토리] 재료 ID {ingredientID}의 재고가 부족하여 채울 수 없습니다!");
-        }
-        else
-        {
-            Debug.Log($"[인벤토리] 재료 ID {ingredientID}를 {filledDays.Count}개 상자에 채웠습니다.");
-        }
-        
-        return filledDays;
-    }
 
-    // 💡 특정 레시피에 필요한 원재료들을 모두 보유하고 있는지 확인 (상태 무관)
-    public bool HasIngredients(FoodIngredientConfig[] configs)
+    // 💡 특정 레시피에 필요한 원재료들을 모두 보유하고 있는지 확인 (상태 엄격히 검사)
+    public bool HasIngredients(FoodIngredientConfig[] configs, bool checkStateAndProcess = true)
     {
-        Dictionary<int, int> requiredCounts = new Dictionary<int, int>();
+        Dictionary<string, int> requiredCounts = new Dictionary<string, int>();
         for (int i = 0; i < configs.Length; i++)
         {
             if (configs[i].rawIngredient == null) continue;
-            int id = configs[i].rawIngredient.ingredientID;
-            if (requiredCounts.ContainsKey(id)) requiredCounts[id]++;
-            else requiredCounts[id] = 1;
+            
+            string key;
+            if (checkStateAndProcess)
+            {
+                key = $"{configs[i].rawIngredient.ingredientID}_{(int)configs[i].processType}";
+            }
+            else
+            {
+                key = $"{configs[i].rawIngredient.ingredientID}";
+            }
+
+            if (requiredCounts.ContainsKey(key)) requiredCounts[key]++;
+            else requiredCounts[key] = 1;
         }
 
         foreach (var kvp in requiredCounts)
         {
+            string[] parts = kvp.Key.Split('_');
+            int reqID = int.Parse(parts[0]);
+            
+            ProcessType reqProcess = ProcessType.None;
+            IngredientState reqState = IngredientState.Raw;
+            
+            if (checkStateAndProcess)
+            {
+                reqProcess = (ProcessType)int.Parse(parts[1]);
+                reqState = (reqProcess == ProcessType.None) ? IngredientState.Raw : IngredientState.Optimal;
+            }
+
             int requiredAmount = kvp.Value;
             int currentAmount = 0;
             
             for (int i = 0; i < inventoryItems.Count; i++)
             {
-                // 유저의 요청: State와 무관하게 Base Ingredient ID만 같으면 사용할 수 있도록 허용
-                if (inventoryItems[i].data.ingredientID == kvp.Key)
+                if (inventoryItems[i].data.ingredientID == reqID)
                 {
-                    currentAmount += inventoryItems[i].amount;
+                    if (!checkStateAndProcess || (inventoryItems[i].processType == reqProcess && inventoryItems[i].state == reqState))
+                    {
+                        currentAmount += inventoryItems[i].amount;
+                    }
                 }
             }
 
@@ -209,14 +166,80 @@ public class InventoryManager : MonoBehaviour
         return true;
     }
 
-    // 💡 특정 레시피에 필요한 재료들을 한 번에 소비 (유통기한 임박한 것부터 차감)
+    // 💡 특정 레시피에 필요한 재료들을 한 번에 소비 (상태가 정확히 일치하는 재료 중 유통기한 임박한 것부터 차감)
     public void ConsumeIngredients(FoodIngredientConfig[] configs)
     {
         for (int i = 0; i < configs.Length; i++)
         {
             if (configs[i].rawIngredient == null) continue;
-            UseIngredient(configs[i].rawIngredient.ingredientID);
+            IngredientState reqState = (configs[i].processType == ProcessType.None) ? IngredientState.Raw : IngredientState.Optimal;
+            UseSpecificIngredientForRecipe(configs[i].rawIngredient.ingredientID, reqState, configs[i].processType);
         }
+    }
+
+    // 레시피용 소비 메서드: 등급(Grade)은 무시하고, 상태와 프로세스만 일치하면 유통기한이 가장 짧은 것을 사용
+    public int UseSpecificIngredientForRecipe(int ingredientID, IngredientState state, ProcessType processType)
+    {
+        int targetIndex = -1;
+        int closestExpiration = int.MaxValue;
+
+        for (int i = 0; i < inventoryItems.Count; i++)
+        {
+            if (inventoryItems[i].data.ingredientID == ingredientID && 
+                inventoryItems[i].amount > 0 &&
+                inventoryItems[i].state == state &&
+                inventoryItems[i].processType == processType)
+            {
+                if (inventoryItems[i].remainingDays < closestExpiration)
+                {
+                    closestExpiration = inventoryItems[i].remainingDays;
+                    targetIndex = i;
+                }
+            }
+        }
+
+        if (targetIndex != -1)
+        {
+            int days = inventoryItems[targetIndex].remainingDays;
+            inventoryItems[targetIndex].amount--;
+            if (inventoryItems[targetIndex].amount <= 0)
+            {
+                inventoryItems.RemoveAt(targetIndex);
+            }
+            UpdateUI();
+            
+            if (IngredientManager.Instance != null)
+                IngredientManager.Instance.CheckAndEmptyBoxesWithoutStock();
+                
+            return days;
+        }
+
+        Debug.LogWarning($"[인벤토리] 조리에 필요한 특정 상태의 재료(ID:{ingredientID}, State:{state}, Process:{processType})가 부족합니다!");
+        return -1;
+    }
+
+    // 특정 인벤토리 아이템 1개를 정확히 소비 (UI에서 특정 슬롯을 클릭하여 가공할 때 사용)
+    public int ConsumeExactItem(InventoryItem item)
+    {
+        for (int i = 0; i < inventoryItems.Count; i++)
+        {
+            if (inventoryItems[i] == item && inventoryItems[i].amount > 0)
+            {
+                int days = inventoryItems[i].remainingDays;
+                inventoryItems[i].amount--;
+                if (inventoryItems[i].amount <= 0)
+                {
+                    inventoryItems.RemoveAt(i);
+                }
+                UpdateUI();
+                
+                if (IngredientManager.Instance != null)
+                    IngredientManager.Instance.CheckAndEmptyBoxesWithoutStock();
+                    
+                return days;
+            }
+        }
+        return -1;
     }
 
     // 💡 재료 폐기: 재화 반환 없이 인벤토리에서 영구 삭제
@@ -348,16 +371,7 @@ public class InventoryManager : MonoBehaviour
         return total;
     }
 
-    /// <summary>
-    /// 특정 재료 ID를 지정된 수량만큼 인벤토리에서 제거(폐기)합니다.
-    /// </summary>
-    public void DiscardIngredients(int ingredientID, int amount)
-    {
-        for (int i = 0; i < amount; i++)
-        {
-            if (UseIngredient(ingredientID) == -1) break;
-        }
-    }
+
 
     public void ClearAllIngredients()
     {

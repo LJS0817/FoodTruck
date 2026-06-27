@@ -14,6 +14,7 @@ public class StoreManager : MonoBehaviour
     [SerializeField] private RecipeStoreManager recipeStoreManager;
     [SerializeField] private MarketingManager marketingManager;
     [SerializeField] private WaitingZoneManager waitingZoneManager;
+    [SerializeField] private EquipmentStoreManager equipmentStoreManager;
 
     [SerializeField] StoreItemSlotUI _slotPrefab;
 
@@ -24,6 +25,7 @@ public class StoreManager : MonoBehaviour
     public RecipeStoreManager RecipeStore => recipeStoreManager;
     public MarketingManager Marketing => marketingManager;
     public WaitingZoneManager WaitingZone => waitingZoneManager;
+    public EquipmentStoreManager EquipmentStore => equipmentStoreManager;
     public StoreUIController UIController => storeUIController;
 
     private void Awake()
@@ -74,7 +76,7 @@ public class StoreManager : MonoBehaviour
 
     private void PopulateDecorationSlots()
     {
-        Transform parent = storeUIController.GetContentParent(2);
+        Transform parent = storeUIController.GetContentParent(3);
         if (parent == null || waitingZoneManager == null) return;
         storeUIController.ClearSlots(parent);
 
@@ -91,7 +93,7 @@ public class StoreManager : MonoBehaviour
 
     private void PopulateMarketingSlots()
     {
-        Transform parent = storeUIController.GetContentParent(3);
+        Transform parent = storeUIController.GetContentParent(4);
         if (parent == null || marketingManager == null) return; 
         storeUIController.ClearSlots(parent);
         
@@ -107,11 +109,11 @@ public class StoreManager : MonoBehaviour
 
     private void PopulateEquipmentStoreSlots()
     {
-        Transform parent = storeUIController.GetContentParent(4);
-        if (parent == null || EquipmentStoreManager.Instance == null) return;
+        Transform parent = storeUIController.GetContentParent(2);
+        if (parent == null || equipmentStoreManager == null) return;
         storeUIController.ClearSlots(parent);
 
-        List<EquipmentData> equipments = EquipmentStoreManager.Instance.GetAllEquipments();
+        List<EquipmentData> equipments = equipmentStoreManager.GetAllEquipments();
         for (int i = 0; i < equipments.Count; i++)
         {
             StoreItem item = StoreItem.FromEquipment(equipments[i], equipments[i].price);
@@ -157,7 +159,9 @@ public class StoreManager : MonoBehaviour
                 int totalAmount = item.amount * quantity;
                 InventoryManager.Instance.AddIngredient(ingredient, totalAmount, ingredient.maxShelfLifeDays);
                 SettlementManager.Instance?.AddExpense(totalCost);
-                Debug.Log($"[StoreManager] {ingredient.ingredientName} x{totalAmount} 구매 완료! ({totalCost}원)");
+                string msg = $"{ingredient.ingredientName} x{totalAmount} 구매 완료! (-{totalCost}원)";
+                Debug.Log($"[StoreManager] {msg}");
+                if (ToastManager.Instance != null) ToastManager.Instance.ShowToast(msg);
             }
             else if (item.data is FoodData recipeData)
             {
@@ -169,7 +173,9 @@ public class StoreManager : MonoBehaviour
                 {
                     recipeStoreManager.BuyRecipe(recipeData, totalCost);
                     SettlementManager.Instance?.AddExpense(totalCost);
-                    Debug.Log($"[StoreManager] {recipeData.foodName} 레시피 구매 완료! ({totalCost}원)");
+                    string msg = $"{recipeData.foodName} 레시피 구매 완료! (-{totalCost}원)";
+                    Debug.Log($"[StoreManager] {msg}");
+                    if (ToastManager.Instance != null) ToastManager.Instance.ShowToast(msg);
                 }
             }
             else if (item.data is WaitingZoneItemData wzItem)
@@ -177,27 +183,33 @@ public class StoreManager : MonoBehaviour
                 PlayerManager.Instance.SpendMoney(totalCost);
                 waitingZoneManager?.InstallItem(wzItem);
                 SettlementManager.Instance?.AddExpense(totalCost);
-                Debug.Log($"[StoreManager] {wzItem.itemName} 설치 완료! ({totalCost}원)");
+                string msg = $"{wzItem.itemName} 설치 완료! (-{totalCost}원)";
+                Debug.Log($"[StoreManager] {msg}");
+                if (ToastManager.Instance != null) ToastManager.Instance.ShowToast(msg);
             }
             else if (item.data is MarketingData marketing)
             {
                 if (marketingManager != null && marketingManager.StartCampaign(marketing))
-                    Debug.Log($"[StoreManager] {marketing.campaignName} 마케팅 캠페인 시작!");
+                {
+                    string msg = $"{marketing.campaignName} 캠페인 시작!";
+                    Debug.Log($"[StoreManager] {msg}");
+                    if (ToastManager.Instance != null) ToastManager.Instance.ShowToast(msg);
+                }
             }
             else if (item.data is EquipmentData equipment)
             {
-                if (EquipmentStoreManager.Instance.HasEquipment(equipment))
+                if (equipmentStoreManager.HasEquipment(equipment))
                 {
                     Debug.LogWarning($"[StoreManager] 이미 {equipment.equipmentName}을 보유 중입니다.");
                     return; // 이미 있으면 무시
                 }
 
-                EquipmentData currentEq = EquipmentStoreManager.Instance.GetEquippedEquipment(equipment.type);
+                EquipmentData currentEq = equipmentStoreManager.GetEquippedEquipment(equipment.type);
                 if (currentEq != null)
                 {
                     // 장착 중인 동일 타입 장비가 있으면 팝업을 띄웁니다.
                     int normalCost = equipment.price;
-                    int tradeInCost = EquipmentStoreManager.Instance.CalculateTradeInCost(equipment);
+                    int tradeInCost = equipmentStoreManager.CalculateTradeInCost(equipment);
                     storeUIController.OpenTradeInPopup(equipment, normalCost, tradeInCost);
                 }
                 else
@@ -213,22 +225,24 @@ public class StoreManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"[StoreManager] 잔액이 부족합니다! ({totalCost}원 필요)");
+            string msg = $"잔액이 부족합니다! ({totalCost}원 필요)";
+            Debug.LogWarning($"[StoreManager] {msg}");
+            if (ToastManager.Instance != null) ToastManager.Instance.ShowToast(msg);
         }
     }
 
     public void ExecuteEquipmentPurchase(EquipmentData equipment, bool isTradeIn)
     {
-        int cost = isTradeIn ? EquipmentStoreManager.Instance.CalculateTradeInCost(equipment) : equipment.price;
+        int cost = isTradeIn ? equipmentStoreManager.CalculateTradeInCost(equipment) : equipment.price;
 
-        if (EquipmentStoreManager.Instance.BuyEquipment(equipment, isTradeIn))
+        if (equipmentStoreManager.BuyEquipment(equipment, isTradeIn))
         {
             SettlementManager.Instance?.AddExpense(cost);
             
             // 구매 성공 시 Upgrade 창(인벤토리)에 실시간 슬롯 추가 (UpgradeManager가 활성화되어 있을 때만)
             if (UpgradeManager.Instance != null && UpgradeManager.Instance.UIController != null)
             {
-                int level = EquipmentStoreManager.Instance.GetEquipmentLevel(equipment);
+                int level = equipmentStoreManager.GetEquipmentLevel(equipment);
                 StoreItem newItem = StoreItem.FromEquipmentLevel(equipment, level);
                 UpgradeManager.Instance.UIController.AddEquipmentSlot(newItem);
             }
@@ -240,16 +254,10 @@ public class StoreManager : MonoBehaviour
 
     public bool ExecuteRecipeIngredientSetPurchase(FoodData recipe, int sets)
     {
-        int price = CalculateRecipeSetPrice(recipe) * (sets / 10); // CalculateRecipeSetPrice returns 1 set's price
-        if (sets % 10 != 0) 
-        {
-             // Fallback if sets is not a multiple of 10
-             price = CalculateRecipeSetPrice(recipe) * sets;
-        }
-        else 
-        {
-             price = CalculateRecipeSetPrice(recipe) * sets;
-        }
+        // 💡 CalculateRecipeSetPrice는 1인분(1세트) 기준 단가입니다.
+        // sets는 실제 지급할 1인분 단위 횟수입니다. (예: 10인분 구매 시 sets = 10)
+        // StoreItem에서는 amount=10으로 되어 있어서 quantity가 1이면 sets=10이 들어옵니다.
+        int price = CalculateRecipeSetPrice(recipe) * sets;
 
         if (PlayerManager.Instance.SpendMoney(price))
         {
@@ -267,9 +275,16 @@ public class StoreManager : MonoBehaviour
                 }
             }
             SettlementManager.Instance?.AddExpense(price);
-            Debug.Log($"[StoreManager] {recipe.foodName} 재료 {sets}세트 구매 완료! ({price}원)");
+            string msg = $"{recipe.foodName} 재료 {sets}세트 구매 완료! (-{price}원)";
+            Debug.Log($"[StoreManager] {msg}");
+            if (ToastManager.Instance != null) ToastManager.Instance.ShowToast(msg);
+            
             if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
             return true;
+        }
+        else
+        {
+            if (ToastManager.Instance != null) ToastManager.Instance.ShowToast("잔액이 부족합니다!");
         }
         return false;
     }

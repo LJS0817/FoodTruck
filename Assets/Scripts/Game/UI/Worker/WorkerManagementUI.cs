@@ -55,14 +55,14 @@ public class WorkerManagementUI : MonoBehaviour
     {
         if (_currentTabIndex == tabIndex) return;
 
-        // 기존 탭 닫기
-        if (_currentTabIndex == 0 && hiredWorkersGroup != null)
+        // 💡 모든 기존 탭 확실하게 닫기 (초기 시작 시 Editor에서 켜져 있던 탭이 겹치는 현상 방지)
+        if (hiredWorkersGroup != null)
         {
             hiredWorkersGroup.alpha = 0f;
             hiredWorkersGroup.interactable = false;
             hiredWorkersGroup.blocksRaycasts = false;
         }
-        else if (_currentTabIndex == 1 && recruitmentPoolGroup != null)
+        if (recruitmentPoolGroup != null)
         {
             recruitmentPoolGroup.alpha = 0f;
             recruitmentPoolGroup.interactable = false;

@@ -65,7 +65,15 @@ public class ItemSimpleInfoUI : MonoBehaviour
         // if (_amountText != null) _amountText.text = $"보유량: {item.amount}개";
         if (_expirationText != null) _expirationText.text = $"유통기한\n{item.remainingDays}일";
 
-        if (_applyButton != null) _applyButton.gameObject.SetActive(true);
+        if (_applyButton != null) 
+        {
+            _applyButton.gameObject.SetActive(true);
+            TMP_Text btnText = _applyButton.GetComponentInChildren<TMP_Text>();
+            if (btnText != null)
+            {
+                btnText.text = IsSameAsCurrentBox(item) ? "비우기" : "채우기";
+            }
+        }
 
         _canvasGroup.alpha = 1f;
         _canvasGroup.interactable = true;
@@ -81,11 +89,34 @@ public class ItemSimpleInfoUI : MonoBehaviour
         _currentItem = null;
     }
 
+    private bool IsSameAsCurrentBox(InventoryItem item)
+    {
+        if (item == null || IngredientManager.Instance == null) return false;
+        
+        IngredientBox currentBox = IngredientManager.Instance.GetCurrentBox();
+        if (currentBox == null || currentBox.GetCurrentData() == null) return false;
+
+        ItemGrade boxGrade = currentBox.qualityScore >= 1.15f ? ItemGrade.Premium : ItemGrade.Normal;
+        
+        return currentBox.GetCurrentData().ingredientID == item.data.ingredientID &&
+               currentBox.targetState == item.state &&
+               currentBox.targetProcess == item.processType &&
+               boxGrade == item.grade;
+    }
+
     private void OnClickApply()
     {
         if (_currentItem != null)
         {
-            IngredientManager.Instance.SetupBox(_currentItem.data, -1);
+            if (IsSameAsCurrentBox(_currentItem))
+            {
+                IngredientManager.Instance.EmptyCurrentBox();
+            }
+            else
+            {
+                IngredientManager.Instance.SetupBox(_currentItem.data, -1);
+            }
+            
             InventoryManager.Instance.CloseUI();
             CloseUI();
         }

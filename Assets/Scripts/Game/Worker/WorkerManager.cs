@@ -534,11 +534,9 @@ public class WorkerManager : MonoBehaviour
             }
         }
 
-        // 만약 풀이 비어있다면 새로고침
-        if (_recruitmentPool.Count == 0 && DayCycleManager.Instance != null)
-        {
-            RefreshRecruitmentPool();
-        }
+        // 💡 유저 피드백 반영: 고용 탭에서 새로고침을 했거나 풀을 다 비운 상태라면,
+        // 재접속 시 강제로 새로고침(재생성)하지 않고 그대로 비워둡니다.
+        // 유저는 언제든 일일 1회 무료 갱신 또는 비용을 지불하여 갱신할 수 있습니다.
     }
 
     private void SyncToSaveData()

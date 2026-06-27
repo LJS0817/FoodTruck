@@ -83,20 +83,21 @@ public class UpgradeInfoUI : MonoBehaviour
             if (_descText != null) _descText.text = _currentEquipmentData.description;
 
             int currentLevel = EquipmentStoreManager.Instance.GetEquipmentLevel(_currentEquipmentData);
-            int upgradeCost = EquipmentStoreManager.Instance.GetUpgradeCost(_currentEquipmentData);
+            bool isMax = EquipmentStoreManager.Instance.IsMaxLevel(_currentEquipmentData);
+            int upgradeCost = isMax ? 0 : EquipmentStoreManager.Instance.GetUpgradeCost(_currentEquipmentData);
 
             if(_currentTitleText != null) _currentTitleText.text = $"현재 (Lv.{currentLevel})";
-            if(_nextTitleText != null) _nextTitleText.text = $"다음 (Lv.{currentLevel + 1})";
+            if(_nextTitleText != null) _nextTitleText.text = isMax ? "최대 레벨" : $"다음 (Lv.{currentLevel + 1})";
 
             if (_currentStatsText != null) _currentStatsText.text = BuildStatsString(_currentEquipmentData, currentLevel);
-            if (_nextStatsText != null) _nextStatsText.text = BuildStatsString(_currentEquipmentData, currentLevel + 1);
+            if (_nextStatsText != null) _nextStatsText.text = isMax ? "-" : BuildStatsString(_currentEquipmentData, currentLevel + 1);
 
-            if (_costText != null) _costText.text = upgradeCost.ToString("N0");
+            if (_costText != null) _costText.text = isMax ? "MAX" : upgradeCost.ToString("N0");
 
             if (_upgradeButton != null)
             {
-                _upgradeButton.interactable = PlayerManager.Instance.CurrentMoney >= upgradeCost;
-                if (_upgradeButtonText != null) _upgradeButtonText.text = "레벨업";
+                _upgradeButton.interactable = !isMax && PlayerManager.Instance.CurrentMoney >= upgradeCost;
+                if (_upgradeButtonText != null) _upgradeButtonText.text = isMax ? "최대 레벨" : "레벨업";
             }
 
             UpdateEquipState();

@@ -45,6 +45,11 @@ public class EquipmentData : ScriptableObject
     public int price;           // 구매 가격
     public int tradeInValue;    // 보상 판매 가격 (교환 시 돌려받는 가치)
     public int maxPurchaseAmount = 1;
+    public int maxLevel = 5;    // 장비 업그레이드 최대 레벨
+
+    [Header("업그레이드 비용 설정")]
+    public int baseUpgradeCost = 1000;          // 기본 업그레이드 비용 (Lv.1 -> Lv.2)
+    public float upgradeCostMultiplier = 1.5f;  // 레벨업 당 비용 증가 배율
 
     [TextArea]
     public string description;

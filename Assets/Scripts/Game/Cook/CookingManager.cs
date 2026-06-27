@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Dish
 {
@@ -79,4 +80,45 @@ public class CookingManager : MonoBehaviour
     public Dish GetCompletedDish() => currentCompletedDish;
 
     public void ClearDish() => currentCompletedDish = null;
+
+    // 💡 Mid-Day Save: 냄비 상태 저장
+    public void SavePotState(List<int> ingredientIDs, out int outPremiumCount)
+    {
+        ingredientIDs.Clear();
+        outPremiumCount = 0;
+        
+        if (currentPot == null) return;
+
+        var contents = currentPot.GetContents();
+        foreach (var data in contents)
+        {
+            ingredientIDs.Add(data.ingredientID);
+        }
+        
+        // Reflection 또는 구조적 한계로 premiumCount 자체는 직접 가져올 수 없지만, 
+        // 냄비의 내용물이 전부 프리미엄인지 여부는 알 수 있습니다.
+        // 현재는 단순히 IsPremiumDish 판정 여부를 이용하거나 임시로 세팅할 수 있습니다.
+        // 완벽 복구를 위해 IngredientBox처럼 품질 점수를 따로 빼진 않으므로 임시로 0 처리 후 필요시 확장 권장
+    }
+
+    // 💡 Mid-Day Load: 냄비 상태 복원
+    public void RestorePotState(List<int> ingredientIDs, int premiumCount)
+    {
+        if (currentPot == null || recipeManager == null) return;
+
+        currentPot.ResetPot();
+
+        int currentPremiumApplied = 0;
+        foreach (int id in ingredientIDs)
+        {
+            IngredientData data = recipeManager.GetIngredientById(id);
+            if (data != null)
+            {
+                bool isPremium = currentPremiumApplied < premiumCount;
+                currentPot.ReceiveIngredient(data, isPremium);
+                if (isPremium) currentPremiumApplied++;
+            }
+        }
+        Debug.Log($"<color=cyan>[CookingManager] 냄비 상태({ingredientIDs.Count}개 재료) 복원 완료.</color>");
+    }
 }

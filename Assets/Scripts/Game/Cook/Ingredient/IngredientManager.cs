@@ -29,10 +29,7 @@ public class IngredientManager : MonoBehaviour
     private void Awake()
     {
         if (Instance == null) Instance = this;
-    }
-
-    private void Start()
-    {
+        
         _currentBoxIndex = -1;
         _boxes = new List<IngredientBox>();
         _tempBoxes = new List<IngredientBox>();
@@ -53,9 +50,13 @@ public class IngredientManager : MonoBehaviour
 
         UpdateBoxCount(maxBoxCount);
         InitTempBoxes();
-        
+    }
+
+    private void Start()
+    {
         if (_boxSetters != null && _boxSetters.Count > 0 && _boxSetters[0].boxData != null)
         {
+            // 초기 더미 재료 추가 (필요시 제거 가능)
             _inventoryMng.AddIngredient(_boxSetters[0].boxData, 100, _boxSetters[0].boxData.maxShelfLifeDays);
         }
     }
@@ -130,6 +131,15 @@ public class IngredientManager : MonoBehaviour
         {
             _boxes[_currentBoxIndex].ResetBox();
         }
+    }
+
+    public IngredientBox GetCurrentBox()
+    {
+        if (_currentBoxIndex >= 0 && _currentBoxIndex < _boxes.Count)
+        {
+            return _boxes[_currentBoxIndex];
+        }
+        return null;
     }
 
     public void SetupBox(IngredientData data, int amount = -1)
@@ -421,5 +431,84 @@ public class IngredientManager : MonoBehaviour
         }
         
         Debug.Log($"<color=cyan>[IngredientManager] {uniqueIngredients.Count}개의 재료를 조리대에 자동 세팅 완료!</color>");
+    }
+    
+    // 💡 Mid-Day Save: 현재 상자 상태 저장
+    public void SaveBoxStates(List<IngredientBoxSaveData> targetList)
+    {
+        for (int i = 0; i < _boxes.Count; i++)
+        {
+            if (_boxes[i].currentAmount > 0 && _boxes[i].GetCurrentData() != null)
+            {
+                targetList.Add(new IngredientBoxSaveData
+                {
+                    index = i,
+                    isTempBox = false,
+                    ingredientID = _boxes[i].GetCurrentData().ingredientID,
+                    amount = _boxes[i].currentAmount,
+                    storedItemDays = new List<int>(_boxes[i].storedItemDays),
+                    state = _boxes[i].targetState,
+                    processType = _boxes[i].targetProcess,
+                    qualityScore = _boxes[i].qualityScore
+                });
+            }
+        }
+        
+        if (_tempBoxes != null)
+        {
+            for (int i = 0; i < _tempBoxes.Count; i++)
+            {
+                if (_tempBoxes[i].currentAmount > 0 && _tempBoxes[i].GetCurrentData() != null)
+                {
+                    targetList.Add(new IngredientBoxSaveData
+                    {
+                        index = i,
+                        isTempBox = true,
+                        ingredientID = _tempBoxes[i].GetCurrentData().ingredientID,
+                        amount = _tempBoxes[i].currentAmount,
+                        storedItemDays = new List<int>(_tempBoxes[i].storedItemDays),
+                        state = _tempBoxes[i].targetState,
+                        processType = _tempBoxes[i].targetProcess,
+                        qualityScore = _tempBoxes[i].qualityScore
+                    });
+                }
+            }
+        }
+    }
+
+    // 💡 Mid-Day Load: 상자 상태 복원
+    public void RestoreBoxStates(List<IngredientBoxSaveData> savedData)
+    {
+        if (GameManager.Instance == null || GameManager.Instance.recipeManager == null) return;
+        RecipeManager recipeManager = GameManager.Instance.recipeManager;
+
+        // 기존 상자들 모두 초기화 (인벤토리 반환 안 함 - DataManager에서 통으로 로드되므로)
+        foreach (var box in _boxes) box.ForceClearBox();
+        if (_tempBoxes != null) foreach (var box in _tempBoxes) box.ForceClearBox();
+
+        foreach (var data in savedData)
+        {
+            IngredientData ingData = recipeManager.GetIngredientById(data.ingredientID);
+            if (ingData == null) continue;
+
+            IngredientBoxSetter setter = GetSetterFor(ingData);
+            if (setter == null) continue;
+
+            IngredientBox targetBox = null;
+            if (!data.isTempBox && data.index >= 0 && data.index < _boxes.Count)
+            {
+                targetBox = _boxes[data.index];
+            }
+            else if (data.isTempBox && _tempBoxes != null && data.index >= 0 && data.index < _tempBoxes.Count)
+            {
+                targetBox = _tempBoxes[data.index];
+            }
+
+            if (targetBox != null)
+            {
+                targetBox.RestoreBoxState(setter, data.state, data.processType, data.qualityScore, data.amount, data.storedItemDays);
+            }
+        }
+        Debug.Log($"<color=cyan>[IngredientManager] 상자 상태({savedData.Count}개) 복원 완료.</color>");
     }
 }

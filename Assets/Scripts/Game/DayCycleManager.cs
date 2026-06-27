@@ -24,8 +24,15 @@ public class DayCycleManager : MonoBehaviour
 
     private void Start()
     {
-        // 처음 시작 시 준비 단계로 설정
-        ChangePhase(DayPhase.Preparation);
+        // 처음 시작 시 저장된 페이즈를 불러오거나 기본값(Preparation)으로 시작
+        if (DataManager.Instance != null && DataManager.Instance.CurrentData != null)
+        {
+            ChangePhase(DataManager.Instance.CurrentData.currentDayPhase);
+        }
+        else
+        {
+            ChangePhase(DayPhase.Preparation);
+        }
     }
 
     public void ChangePhase(DayPhase newPhase)

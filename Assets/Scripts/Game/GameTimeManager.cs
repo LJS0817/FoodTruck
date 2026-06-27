@@ -11,6 +11,7 @@ public class GameTimeManager : MonoBehaviour
     private const float TIME_MULTIPLIER = 96f;
     public float timeScaleMultiplier = 1f; // 💡 장사 시작/종료 시 시간 배속을 조절하기 위한 변수
     private float totalSeconds = 0f;
+    public float TotalSeconds => totalSeconds;
     private int currentDay;
 
     // 💡 최적화: 이전 프레임의 '분(Minute)'을 기억하여 바뀔 때만 텍스트를 갱신합니다.
@@ -25,9 +26,13 @@ public class GameTimeManager : MonoBehaviour
     {
         // 1. DataManager에서 저장된 날짜를 가져옵니다.
         currentDay = DataManager.Instance.CurrentData.currentDay;
+        totalSeconds = DataManager.Instance.CurrentData.currentTotalSeconds;
 
-        // 2. 게임 시작 시간 세팅 (예: 아침 8시 시작)
-        SetTime(6, 0);
+        // 2. 게임 시작 시간 세팅 (예: 아침 6시 시작)
+        if (totalSeconds == 0f)
+        {
+            SetTime(6, 0);
+        }
 
         // 3. 시작하자마자 UI 한번 갱신
         ForceUpdateUI();
