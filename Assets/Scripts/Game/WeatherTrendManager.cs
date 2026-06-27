@@ -11,7 +11,23 @@ public enum WeatherType
 
 public class WeatherTrendManager : MonoBehaviour
 {
-    public static WeatherTrendManager Instance { get; private set; }
+    private static WeatherTrendManager _instance;
+    public static WeatherTrendManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<WeatherTrendManager>();
+                if (_instance == null)
+                {
+                    GameObject go = new GameObject("WeatherTrendManager");
+                    _instance = go.AddComponent<WeatherTrendManager>();
+                }
+            }
+            return _instance;
+        }
+    }
 
     [Header("Current State")]
     public WeatherType currentWeather;
@@ -21,7 +37,14 @@ public class WeatherTrendManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
+        if (_instance == null)
+        {
+            _instance = this;
+        }
+        else if (_instance != this)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void Start()

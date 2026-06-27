@@ -17,7 +17,7 @@ public class WeatherTrendUI : MonoBehaviour
     [SerializeField] private Sprite hotSprite;
     [SerializeField] private Sprite coldSprite;
 
-    private void Start()
+    private void OnEnable()
     {
         if (WeatherTrendManager.Instance != null)
         {
@@ -26,7 +26,7 @@ public class WeatherTrendUI : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (WeatherTrendManager.Instance != null)
         {
