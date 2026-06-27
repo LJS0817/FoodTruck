@@ -353,6 +353,21 @@ public class InventoryManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 특정 재료 ID를 가진 인벤토리 아이템 중 수량이 남아있는 첫 번째 아이템을 반환합니다. (AutoFillBoxes용)
+    /// </summary>
+    public InventoryItem GetFirstAvailableItem(int ingredientID)
+    {
+        for (int i = 0; i < inventoryItems.Count; i++)
+        {
+            if (inventoryItems[i].data.ingredientID == ingredientID && inventoryItems[i].amount > 0)
+            {
+                return inventoryItems[i];
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
     /// 특정 상세 조건(상태, 가공, 등급)이 모두 일치하는 재료의 총 수량을 반환합니다.
     /// </summary>
     public int GetTotalSpecificAmount(int ingredientID, IngredientState state, ProcessType processType, ItemGrade grade)

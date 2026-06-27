@@ -133,7 +133,8 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
             // 2D 재료 생성
             _spawnedIngredient = Instantiate(prefab, worldPos, Quaternion.identity);
-            _spawnedIngredient.SetupIngredient(data, _draggedState, _draggedProcess);
+            ItemGrade spawnGrade = _draggedQuality >= 1.15f ? ItemGrade.Premium : ItemGrade.Normal;
+            _spawnedIngredient.SetupIngredient(data, _draggedState, _draggedProcess, spawnGrade);
             _spawnedIngredient.OnTouchBegin(worldPos);
 
             // 스크롤 이벤트 차단 (옵션)
@@ -221,11 +222,13 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         _isDraggingItem = false;
     }
 
-    public void SetupIngredient(IngredientBoxSetter data, float quality = 1.0f, int amount = -1)
+    public void SetupIngredient(IngredientBoxSetter data, IngredientState state, ProcessType pt, float quality = 1.0f, int amount = -1)
     {
         // 💡 물리적 아이템 이동 없음 (인벤토리에 그대로 둠)
         // 기존에 할당되어 있었다면 초기화 (환수할 게 없음)
         _setter = data;
+        this.targetState = state;
+        this.targetProcess = pt;
         this.qualityScore = quality;
         this.storedItemDays.Clear(); // 사용하지 않음
 

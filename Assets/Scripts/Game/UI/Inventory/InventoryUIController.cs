@@ -229,7 +229,7 @@ public class InventoryUIController : MonoBehaviour
         if (_selectedSlot != null)
         {
             // 선택된 아이템의 데이터를 가지고 IngredientManager에 상자 세팅 요청
-            IngredientManager.Instance.SetupBox(_selectedSlot.Item.data, amount);
+            IngredientManager.Instance.SetupBox(_selectedSlot.Item, amount);
             // 세팅 완료 후 인벤토리 닫기
             InventoryManager.Instance.CloseUI();
         }

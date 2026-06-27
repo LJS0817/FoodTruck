@@ -21,6 +21,7 @@ public class ProcessTask
     
     public float elapsedTime;
     public float qualityScore;
+    public ItemGrade originalGrade;
 }
 
 /// <summary>
@@ -91,7 +92,7 @@ public class ProcessManager : MonoBehaviour
 
     // ─── 가공 실행 (백그라운드 등록) ──────────────────────────
 
-    public bool StartProcess(EquipmentType equipType, IngredientData input, ProcessType processType)
+    public bool StartProcess(EquipmentType equipType, IngredientData input, ProcessType processType, ItemGrade originalGrade = ItemGrade.Normal)
     {
         if (activeTasks.ContainsKey(equipType))
         {
@@ -127,7 +128,8 @@ public class ProcessManager : MonoBehaviour
             method = method,
             equipmentEntry = equipmentEntry,
             state = ProcessState.Processing,
-            elapsedTime = 0f
+            elapsedTime = 0f,
+            originalGrade = originalGrade
         };
 
         activeTasks[equipType] = newTask;
@@ -193,7 +195,8 @@ public class ProcessManager : MonoBehaviour
         if (activeTasks.TryGetValue(equipType, out ProcessTask task))
         {
             float finalQuality = Mathf.Min(1f, task.qualityScore + task.equipmentEntry.qualityBonus);
-            ItemGrade finalGrade = GetGrade(finalQuality);
+            ItemGrade computedGrade = GetGrade(finalQuality);
+            ItemGrade finalGrade = (ItemGrade)Mathf.Max((int)task.originalGrade, (int)computedGrade);
             string mark = finalGrade == ItemGrade.Perfect ? "🌟" : (finalGrade == ItemGrade.Premium ? "✨" : "");
 
             IngredientData resultItem = task.inputIngredient;
@@ -229,7 +232,8 @@ public class ProcessManager : MonoBehaviour
             // 품질은 진행도에 비례해서 계산 (취소 시 최대 절반 품질까지만 허용 등)
             float progress = Mathf.Clamp01(task.elapsedTime / task.method.GetOptimalTime());
             float quality = Mathf.Lerp(0f, 0.5f, progress); // 미완성이므로 기본 품질(0.5)을 넘지 못함
-            ItemGrade grade = GetGrade(quality);
+            ItemGrade computedGrade = GetGrade(quality);
+            ItemGrade grade = (ItemGrade)Mathf.Max((int)task.originalGrade, (int)computedGrade);
 
             IngredientData resultItem = task.inputIngredient;
             Debug.Log($"<color=cyan>[ProcessManager] {equipType} 강제 회수! {resultItem.ingredientName} ({task.method.processType}, {currentState}) 획득!</color>");
@@ -314,7 +318,8 @@ public class ProcessManager : MonoBehaviour
         {
             IngredientData resultItem = input;
             float finalQuality = Mathf.Min(1f, quality + equipmentEntry.qualityBonus);
-            ItemGrade finalGrade = GetGrade(finalQuality);
+            ItemGrade computedGrade = GetGrade(finalQuality);
+            ItemGrade finalGrade = (ItemGrade)Mathf.Max((int)inputItem.grade, (int)computedGrade);
             
             InventoryManager.Instance.AddIngredient(resultItem, 1, resultItem.maxShelfLifeDays, IngredientState.Optimal, processType, finalGrade);
             Debug.Log($"<color=green>[ProcessManager] 직접 가공 완료! {resultItem.ingredientName} ({processType}) 획득!</color>");
@@ -395,7 +400,8 @@ public class ProcessManager : MonoBehaviour
                 targetProcessType = task.method.processType,
                 elapsedTime = task.elapsedTime,
                 qualityScore = task.qualityScore,
-                processState = task.state
+                processState = task.state,
+                grade = task.originalGrade
             });
         }
     }
@@ -435,7 +441,8 @@ public class ProcessManager : MonoBehaviour
                 equipmentEntry = equipmentEntry,
                 state = data.processState,
                 elapsedTime = data.elapsedTime,
-                qualityScore = data.qualityScore
+                qualityScore = data.qualityScore,
+                originalGrade = data.grade
             };
 
             activeTasks[data.equipmentType] = newTask;

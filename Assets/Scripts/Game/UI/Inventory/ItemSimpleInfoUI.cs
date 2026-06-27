@@ -114,7 +114,7 @@ public class ItemSimpleInfoUI : MonoBehaviour
             }
             else
             {
-                IngredientManager.Instance.SetupBox(_currentItem.data, -1);
+                IngredientManager.Instance.SetupBox(_currentItem, -1);
             }
             
             InventoryManager.Instance.CloseUI();

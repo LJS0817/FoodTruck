@@ -122,7 +122,7 @@ public class IngredientManager : MonoBehaviour
 
     public void SetupBox(int idx, float quality = 1.0f)
     {
-        _boxes[_currentBoxIndex].SetupIngredient(_boxSetters[idx], quality);
+        _boxes[_currentBoxIndex].SetupIngredient(_boxSetters[idx], IngredientState.Raw, ProcessType.None, quality);
     }
 
     public void EmptyCurrentBox()
@@ -142,8 +142,9 @@ public class IngredientManager : MonoBehaviour
         return null;
     }
 
-    public void SetupBox(IngredientData data, int amount = -1)
+    public void SetupBox(InventoryItem item, int amount = -1)
     {
+        IngredientData data = item.data;
         // 💡 미니게임 체크 로직 추가
         if (data.requiredMiniGame != MiniGameType.None && MiniGameManager.Instance != null)
         {
@@ -159,12 +160,12 @@ public class IngredientManager : MonoBehaviour
                 {
                     // 점수 계산 (예: 1.0~1.2 프리미엄 보너스)
                     float finalQuality = 1.0f + (result.qualityScore * 0.2f);
-                    CompleteSetup(data, finalQuality, amount);
+                    CompleteSetup(item, finalQuality, amount);
                 }
                 else
                 {
                     Debug.Log("[IngredientManager] 가공 실패! 일반 품질로 세팅됩니다.");
-                    CompleteSetup(data, 1.0f, amount);
+                    CompleteSetup(item, 1.0f, amount);
                 }
             };
 
@@ -173,17 +174,20 @@ public class IngredientManager : MonoBehaviour
         }
         else
         {
-            CompleteSetup(data, 1.0f, amount);
+            float baseQuality = 1.0f;
+            if (item.grade == ItemGrade.Premium) baseQuality = 1.2f;
+            else if (item.grade == ItemGrade.Perfect) baseQuality = 1.4f;
+            CompleteSetup(item, baseQuality, amount);
         }
     }
 
-    private void CompleteSetup(IngredientData data, float quality, int amount)
+    private void CompleteSetup(InventoryItem item, float quality, int amount)
     {
         for (int i = 0; i < _boxSetters.Count; i++)
         {
-            if (_boxSetters[i].boxData.ingredientID == data.ingredientID)
+            if (_boxSetters[i].boxData.ingredientID == item.data.ingredientID)
             {
-                _boxes[_currentBoxIndex].SetupIngredient(_boxSetters[i], quality, amount);
+                _boxes[_currentBoxIndex].SetupIngredient(_boxSetters[i], item.state, item.processType, quality, amount);
                 return;
             }
         }
@@ -419,13 +423,14 @@ public class IngredientManager : MonoBehaviour
             
             if (setter != null)
             {
-                // 보유한 재고 확인
-                int stock = InventoryManager.Instance.GetTotalAmount(data.ingredientID);
-                if (stock > 0)
+                // 💡 보유한 재고 중 첫 번째 아이템의 정보(등급, 상태)를 기준으로 상자를 자동 세팅합니다.
+                InventoryItem availableItem = InventoryManager.Instance.GetFirstAvailableItem(data.ingredientID);
+                if (availableItem != null)
                 {
-                    // 최대 수량만큼 세팅 (예: 10개) -> Inventory에서 실제로 차감
-                    int amountToPut = Mathf.Min(stock, 10); // 임의로 10개씩 올린다고 가정
-                    _boxes[i].SetupIngredient(setter, 1.0f, amountToPut);
+                    // 최대 수량만큼 세팅 (예: 10개) -> Inventory에서 드래그 시점에 차감됨
+                    int amountToPut = Mathf.Min(InventoryManager.Instance.GetTotalAmount(data.ingredientID), 10); 
+                    float quality = availableItem.grade == ItemGrade.Premium ? 1.2f : (availableItem.grade == ItemGrade.Perfect ? 1.4f : 1.0f);
+                    _boxes[i].SetupIngredient(setter, availableItem.state, availableItem.processType, quality, amountToPut);
                 }
             }
         }

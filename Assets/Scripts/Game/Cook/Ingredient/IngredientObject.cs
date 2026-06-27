@@ -5,6 +5,7 @@ public class IngredientObject : PoolableObject, IInteractable
 {
     [Header("Ingredient Info")]
     public IngredientData currentData; // 재료의 고유 데이터 (SO)
+    public ItemGrade grade = ItemGrade.Normal; // 💡 재료의 품질 저장
 
     private SpriteRenderer spriteRenderer;
     private Vector3 originalPosition; // 터치 전 원래 위치
@@ -22,9 +23,10 @@ public class IngredientObject : PoolableObject, IInteractable
     }
 
     // 오브젝트 풀에서 꺼내질 때 데이터와 스프라이트 세팅
-    public void SetupIngredient(IngredientData data, IngredientState state = IngredientState.Raw, ProcessType processType = ProcessType.None)
+    public void SetupIngredient(IngredientData data, IngredientState state = IngredientState.Raw, ProcessType processType = ProcessType.None, ItemGrade itemGrade = ItemGrade.Normal)
     {
         currentData = data;
+        grade = itemGrade;
         
         Sprite displaySprite = data.ingredientSprite;
         if (processType != ProcessType.None)
@@ -109,7 +111,7 @@ public class IngredientObject : PoolableObject, IInteractable
         // 1. 냄비(CookingPot) 위에 놓인 경우
         if (overlap.TryGetComponent<CookingPot>(out CookingPot pot))
         {
-            pot.ReceiveIngredient(this.currentData);
+            pot.ReceiveIngredient(this.currentData, this.grade >= ItemGrade.Premium);
             OnDespawn();
             return true;
         }
