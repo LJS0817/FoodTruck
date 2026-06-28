@@ -36,11 +36,11 @@ public class WorkerSlotBaseUI : MonoBehaviour
             StatGroup.blocksRaycasts = true;
         }
 
-        if (nameText != null) nameText.text = $"{worker.workerName}";
+        if (nameText != null) nameText.text = $"[{GetSpecialtyName(worker.specialty)}] {worker.workerName}";
         
         if (gradeText != null) 
         {
-            gradeText.text = worker.grade.ToString() + "급";
+            gradeText.text = worker.grade.ToString();
             gradeText.color = GetGradeColor(worker.grade);
         }
 
@@ -107,10 +107,19 @@ public class WorkerSlotBaseUI : MonoBehaviour
             case WorkerGrade.A: return new Color(0.8f, 0.2f, 1f); // Purple
             case WorkerGrade.B: return new Color(0.2f, 0.6f, 1f); // Blue
             case WorkerGrade.C: return new Color(0.2f, 0.8f, 0.2f); // Green
-            case WorkerGrade.D: return Color.white;
-            case WorkerGrade.E: return Color.gray;
-            case WorkerGrade.F: return new Color(0.3f, 0.3f, 0.3f); // Dark Gray
             default: return Color.white;
+        }
+    }
+
+    private string GetSpecialtyName(WorkerSpecialty specialty)
+    {
+        switch (specialty)
+        {
+            case WorkerSpecialty.Cook: return "주방";
+            case WorkerSpecialty.Service: return "홀";
+            case WorkerSpecialty.Maintenance: return "청소";
+            case WorkerSpecialty.Balanced: return "올라운더";
+            default: return "알바생";
         }
     }
 

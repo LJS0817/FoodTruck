@@ -291,15 +291,12 @@ public class WorkerManager : MonoBehaviour
         worker.workerName = first + last;
 
         // 2. 등급(Grade) 결정 RNG (가챠형 확률)
-        // S: 1%, A: 4%, B: 10%, C: 15%, D: 20%, E: 20%, F: 30%
+        // S: 3%, A: 12%, B: 35%, C: 50%
         float r = Random.value;
-        if (r < 0.01f) worker.grade = WorkerGrade.S;
-        else if (r < 0.05f) worker.grade = WorkerGrade.A;
-        else if (r < 0.15f) worker.grade = WorkerGrade.B;
-        else if (r < 0.30f) worker.grade = WorkerGrade.C;
-        else if (r < 0.50f) worker.grade = WorkerGrade.D;
-        else if (r < 0.70f) worker.grade = WorkerGrade.E;
-        else worker.grade = WorkerGrade.F;
+        if (r < 0.03f) worker.grade = WorkerGrade.S;
+        else if (r < 0.15f) worker.grade = WorkerGrade.A;
+        else if (r < 0.50f) worker.grade = WorkerGrade.B;
+        else worker.grade = WorkerGrade.C;
 
         // 3. 등급별 보정치 설정 (타이쿤 후반부 경제를 고려한 기하급수적 밸런스)
         int abilityCount = 0;
@@ -322,15 +319,6 @@ public class WorkerManager : MonoBehaviour
             case WorkerGrade.C:
                 abilityCount = 1; valueMultiplier = 1.0f; maxLevel = 4;
                 baseHire = 3000; baseSalary = 200; break;
-            case WorkerGrade.D:
-                abilityCount = 1; valueMultiplier = 0.8f; maxLevel = 3;
-                baseHire = 1000; baseSalary = 80; break;
-            case WorkerGrade.E:
-                abilityCount = 1; valueMultiplier = 0.5f; maxLevel = 2;
-                baseHire = 300; baseSalary = 30; break;
-            case WorkerGrade.F:
-                abilityCount = 0; valueMultiplier = 0.0f; maxLevel = 1;
-                baseHire = 50; baseSalary = 10; break;
         }
 
         worker.maxLevel = maxLevel;
@@ -343,16 +331,13 @@ public class WorkerManager : MonoBehaviour
         worker.specialty = (WorkerSpecialty)Random.Range(0, 4);
         
         // 등급별 기준 스탯
-        int baseStat = 10;
+        int baseStat = 30;
         switch (worker.grade)
         {
             case WorkerGrade.S: baseStat = 90; break;
             case WorkerGrade.A: baseStat = 70; break;
             case WorkerGrade.B: baseStat = 50; break;
-            case WorkerGrade.C: baseStat = 40; break;
-            case WorkerGrade.D: baseStat = 30; break;
-            case WorkerGrade.E: baseStat = 20; break;
-            case WorkerGrade.F: baseStat = 10; break;
+            case WorkerGrade.C: baseStat = 30; break;
         }
 
         int cook = Mathf.Max(1, baseStat + Random.Range(-5, 6));

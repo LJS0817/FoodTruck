@@ -24,7 +24,7 @@ public enum WorkerAbility
 
 public enum WorkerGrade
 {
-    F, E, D, C, B, A, S
+    C, B, A, S
 }
 
 public enum WorkerSpecialty
