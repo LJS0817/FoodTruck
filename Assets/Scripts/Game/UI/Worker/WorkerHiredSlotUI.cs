@@ -36,7 +36,13 @@ public class WorkerHiredSlotUI : MonoBehaviour
         if (dailySalaryText != null) dailySalaryText.text = $"일급: {actualSalary:N0}원";
 
         if (upgradeCostText != null) upgradeCostText.text = $"{GetUpgradeCost():N0}원";
-        if (incentiveText != null) incentiveText.text = worker.incentiveMultiplier > 1.1f ? "인센티브 종료" : "인센티브 1.5배";
+        if (incentiveText != null) 
+        {
+            if (worker.incentiveMultiplier >= 1.95f)
+                incentiveText.text = "인센티브 초기화";
+            else
+                incentiveText.text = "인센티브 +20%";
+        }
 
         if (fireButton != null)
         {
@@ -87,7 +93,12 @@ public class WorkerHiredSlotUI : MonoBehaviour
     {
         if (_currentWorker != null)
         {
-            float newMult = _currentWorker.incentiveMultiplier > 1.1f ? 1.0f : 1.5f;
+            float currentRounded = Mathf.Round(_currentWorker.incentiveMultiplier * 10f) / 10f;
+            float newMult = currentRounded + 0.2f;
+            if (newMult > 2.05f)
+            {
+                newMult = 1.0f;
+            }
             WorkerManager.Instance.SetWorkerIncentive(_currentWorker, newMult);
             _parentUI.RefreshWorkers();
         }

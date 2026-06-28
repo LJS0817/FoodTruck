@@ -7,8 +7,10 @@ public class WorkerSlotBaseUI : MonoBehaviour
     [Header("Base UI Elements")]
     public Image iconImage;
     public TMP_Text nameText;
+    public TMP_Text descNameText;
     public TMP_Text gradeText;
     public TMP_Text statText;           // 4대 기본 스탯 표시용
+    public TMP_Text insentiveText;      // 인센티브 표시용
 
     public WorkerAbilityDescUI[] abilityIcons; // Array to hold ability icons
     public bool showAbilityDescriptions = false; // Toggle to show/hide ability descriptions
@@ -36,7 +38,8 @@ public class WorkerSlotBaseUI : MonoBehaviour
             StatGroup.blocksRaycasts = true;
         }
 
-        if (nameText != null) nameText.text = $"[{GetSpecialtyName(worker.specialty)}] {worker.workerName}";
+        nameText.text = $"[{GetSpecialtyName(worker.specialty)}] {worker.workerName}";
+        descNameText.text = worker.workerName;
         
         if (gradeText != null) 
         {
@@ -51,6 +54,14 @@ public class WorkerSlotBaseUI : MonoBehaviour
                             $"손님 응대 : {worker.humanSkill}\n" +
                             $"체력 : {worker.stamina}\n" +
                             $"청소 : {worker.cleanSkill}";
+        }
+
+        // 인센티브 텍스트 세팅
+        if (insentiveText != null)
+        {
+            int incentive = Mathf.RoundToInt(worker.baseDailySalary * worker.incentiveMultiplier) - worker.baseDailySalary;
+            int incentivePercent = Mathf.RoundToInt((worker.incentiveMultiplier - 1.0f) * 100f);
+            insentiveText.text = $"일급 : {worker.baseDailySalary} | 인센티브 : {incentive} ( {incentivePercent}% )";
         }
 
         // 패시브 스킬(능력) 아이콘 및 텍스트 세팅
@@ -127,18 +138,12 @@ public class WorkerSlotBaseUI : MonoBehaviour
     {
         showAbilityDescriptions = !showAbilityDescriptions;
 
-        if (AbilityDescriptionGroup != null)
-        {
-            AbilityDescriptionGroup.alpha = showAbilityDescriptions ? 1f : 0f;
-            AbilityDescriptionGroup.interactable = showAbilityDescriptions;
-            AbilityDescriptionGroup.blocksRaycasts = showAbilityDescriptions;
-        }
+        AbilityDescriptionGroup.alpha = showAbilityDescriptions ? 1f : 0f;
+        AbilityDescriptionGroup.interactable = showAbilityDescriptions;
+        AbilityDescriptionGroup.blocksRaycasts = showAbilityDescriptions;
 
-        if (StatGroup != null)
-        {
-            StatGroup.alpha = showAbilityDescriptions ? 0f : 1f;
-            StatGroup.interactable = !showAbilityDescriptions;
-            StatGroup.blocksRaycasts = !showAbilityDescriptions;
-        }
+        StatGroup.alpha = showAbilityDescriptions ? 0f : 1f;
+        StatGroup.interactable = !showAbilityDescriptions;
+        StatGroup.blocksRaycasts = !showAbilityDescriptions;
     }
 }

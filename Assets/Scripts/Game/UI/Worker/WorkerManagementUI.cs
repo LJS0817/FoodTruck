@@ -56,43 +56,36 @@ public class WorkerManagementUI : MonoBehaviour
     {
         if (_currentTabIndex == tabIndex) return;
 
-        // 💡 모든 기존 탭 확실하게 닫기 (초기 시작 시 Editor에서 켜져 있던 탭이 겹치는 현상 방지)
-        if (hiredWorkersGroup != null)
-        {
-            hiredWorkersGroup.alpha = 0f;
-            hiredWorkersGroup.interactable = false;
-            hiredWorkersGroup.blocksRaycasts = false;
-        }
-        if (recruitmentPoolGroup != null)
-        {
-            recruitmentPoolGroup.alpha = 0f;
-            recruitmentPoolGroup.interactable = false;
-            recruitmentPoolGroup.blocksRaycasts = false;
-        }
-
         _currentTabIndex = tabIndex;
 
+        // 💡 모든 기존 탭 확실하게 닫기 (초기 시작 시 Editor에서 켜져 있던 탭이 겹치는 현상 방지)
+        hiredWorkersGroup.alpha = 0f;
+        hiredWorkersGroup.interactable = _currentTabIndex == 0;
+        hiredWorkersGroup.blocksRaycasts = _currentTabIndex == 0;
+
+        recruitmentPoolGroup.alpha = 0f;
+        recruitmentPoolGroup.interactable = _currentTabIndex == 1;
+        recruitmentPoolGroup.blocksRaycasts = _currentTabIndex == 1;
+
+
+
         // 새 탭 열기 (우선 투명하게 둔 상태로 컨텐츠 교체)
-        if (_currentTabIndex == 0 && hiredWorkersGroup != null)
+        if (_currentTabIndex == 0)
         {
-            hiredWorkersGroup.interactable = true;
-            hiredWorkersGroup.blocksRaycasts = true;
-            if (scrollRect != null) scrollRect.content = hiredWorkersContent;
+            scrollRect.content = hiredWorkersContent;
         }
-        else if (_currentTabIndex == 1 && recruitmentPoolGroup != null)
+        else if (_currentTabIndex == 1)
         {
-            recruitmentPoolGroup.interactable = true;
-            recruitmentPoolGroup.blocksRaycasts = true;
-            if (scrollRect != null) scrollRect.content = recruitmentPoolContent;
+            scrollRect.content = recruitmentPoolContent;
         }
 
         // 컨텐츠 갱신 후, 크기를 먼저 맞추고 화면에 표시하기 위해 RefreshWorkers 호출
         RefreshWorkers();
 
         // 갱신 및 크기 조절이 끝난 뒤 화면에 표시 (깜빡임/화면 밖 삐져나옴 방지)
-        if (_currentTabIndex == 0 && hiredWorkersGroup != null)
+        if (_currentTabIndex == 0)
             hiredWorkersGroup.alpha = 1f;
-        else if (_currentTabIndex == 1 && recruitmentPoolGroup != null)
+        else if (_currentTabIndex == 1)
             recruitmentPoolGroup.alpha = 1f;
     }
 
@@ -108,7 +101,7 @@ public class WorkerManagementUI : MonoBehaviour
             workerManagementPanel.blocksRaycasts = true;
             
             // 패널을 열 때 기본적으로 채용 대기 탭(1)을 보여줌 (이때 Hired 탭은 alpha 0이 됨)
-            ChangeTab(1);
+            ChangeTab(0);
         }
     }
 

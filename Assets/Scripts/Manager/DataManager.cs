@@ -209,7 +209,6 @@ public class DataManager : MonoBehaviour
         // 💡 GameManager가 통제하도록 여기서 LoadGameData()를 부르지 않고 대기합니다.
     }
 
-    // 💡 GameManager에서 호출할 수 있도록 명시적 초기화 함수를 부활시켰습니다.
     public void Initialize()
     {
         LoadSettingsData();
@@ -217,7 +216,37 @@ public class DataManager : MonoBehaviour
         Debug.Log("[DataManager] 초기화 및 데이터 로드 완료");
     }
 
+    public bool isDirty { get; private set; }
+    private float autoSaveTimer = 0f;
+    private const float AUTO_SAVE_INTERVAL = 3f; // 3초마다 변경사항이 있으면 모아서 저장
+
+    private void Update()
+    {
+        if (isDirty)
+        {
+            autoSaveTimer += Time.deltaTime;
+            if (autoSaveTimer >= AUTO_SAVE_INTERVAL)
+            {
+                ForceSaveGameData();
+                autoSaveTimer = 0f;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 데이터를 변경했을 때 즉시 저장하지 않고 플래그만 켭니다. 
+    /// 이후 AUTO_SAVE_INTERVAL이 지나면 한 번에 모아서 디스크에 씁니다.
+    /// </summary>
     public void SaveGameData()
+    {
+        isDirty = true;
+    }
+
+    /// <summary>
+    /// 디스크에 실제로 데이터를 쓰는 무거운 작업을 수행합니다. 
+    /// 강제 저장이 필요한 시점(앱 종료, 백그라운드 전환 등)에 직접 호출합니다.
+    /// </summary>
+    public void ForceSaveGameData()
     {
         // 💡 인벤토리 상태를 저장 직전에 동기화
         SyncInventoryToSaveData();
@@ -231,7 +260,11 @@ public class DataManager : MonoBehaviour
         string json = JsonUtility.ToJson(CurrentData);
         PlayerPrefs.SetString(SAVE_KEY, json);
         PlayerPrefs.Save();
-        Debug.Log("[DataManager] 진행 데이터가 저장되었습니다.");
+        
+        isDirty = false;
+        autoSaveTimer = 0f;
+        
+        Debug.Log("[DataManager] 진행 데이터가 실제 디스크에 저장되었습니다. (I/O 발생)");
     }
 
     private void SyncEquipmentToSaveData()
@@ -440,7 +473,7 @@ public class DataManager : MonoBehaviour
         if (pauseStatus && CurrentData != null)
         {
             Debug.Log("<color=orange>[DataManager] 백그라운드 진입 감지: 긴급 저장 수행</color>");
-            SaveGameData();
+            ForceSaveGameData();
         }
     }
 
@@ -449,7 +482,7 @@ public class DataManager : MonoBehaviour
         if (CurrentData != null)
         {
             Debug.Log("<color=orange>[DataManager] 앱 종료 감지: 긴급 저장 수행</color>");
-            SaveGameData();
+            ForceSaveGameData();
         }
     }
 }
