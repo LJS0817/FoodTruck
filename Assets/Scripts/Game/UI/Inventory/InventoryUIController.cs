@@ -182,8 +182,17 @@ public class InventoryUIController : MonoBehaviour
                 
                 if (slot.Item.processType != ProcessType.None)
                 {
-                    string stateText = slot.Item.state == IngredientState.Optimal ? "완벽" : (slot.Item.state == IngredientState.Ruined ? "망친" : "준비중");
-                    dummyStoreItem.itemName = $"[{stateText} {slot.Item.processType}] {gradeText}{dummyStoreItem.itemName}";
+                    string stateText = "";
+                    switch (slot.Item.state)
+                    {
+                        case IngredientState.Optimal: stateText = "완벽"; break;
+                        case IngredientState.Ruined: stateText = "망친"; break;
+                        case IngredientState.Prep1: stateText = "Ver.1"; break;
+                        case IngredientState.Prep2: stateText = "Ver.2"; break;
+                        case IngredientState.Prep3: stateText = "Ver.3"; break;
+                        case IngredientState.Raw: stateText = "미가공"; break;
+                    }
+                    dummyStoreItem.itemName = $"[{slot.Item.processType} {stateText}] {gradeText}{dummyStoreItem.itemName}";
                 }
                 else if (slot.Item.grade != ItemGrade.Normal)
                 {

@@ -16,14 +16,17 @@ public class HygieneUI : MonoBehaviour
     [Header("Warning Threshold")]
     [SerializeField] private float warningThreshold = 0.25f; // 25% 이하일 때 경고
 
-    private float _initialWidth;
+    [Header("Settings")]
+    public RectTransform canvas; // 캔버스 참조 (없으면 자동 탐색)
+
     private float _maxHygiene = 100f; // 청결도 최대값 (기본 100)
 
     private void Start()
     {
-        if (hygieneMask != null)
+        if (canvas == null)
         {
-            _initialWidth = hygieneMask.rectTransform.rect.width;
+            Canvas parentCanvas = GetComponentInParent<Canvas>();
+            if (parentCanvas != null) canvas = parentCanvas.GetComponent<RectTransform>();
         }
 
         if (HygieneManager.Instance != null)
@@ -54,9 +57,20 @@ public class HygieneUI : MonoBehaviour
         // 청결도는 0 ~ 100 기준이므로, 비율(0~1)로 변환
         float ratio = Mathf.Clamp01(currentHygiene / _maxHygiene);
         
+        // CustomSlicedSlider 방식의 스케일 보정 패딩 계산 적용
+        if (canvas == null)
+        {
+            Canvas parentCanvas = GetComponentInParent<Canvas>();
+            if (parentCanvas != null) canvas = parentCanvas.GetComponent<RectTransform>();
+        }
+
+        float scaleX = canvas == null ? (Screen.width / 1080.0f) : canvas.lossyScale.x;
+        float fullWidth = hygieneMask.rectTransform.rect.width;
+        float currentScaleX = hygieneMask.rectTransform.lossyScale.x / scaleX;
+
         // RectMask2D Padding Z(Right) 조절
         Vector4 padding = hygieneMask.padding;
-        padding.z = _initialWidth * (1f - ratio);
+        padding.z = (fullWidth * currentScaleX) * (1f - ratio);
         hygieneMask.padding = padding;
 
         if (fillImage != null)

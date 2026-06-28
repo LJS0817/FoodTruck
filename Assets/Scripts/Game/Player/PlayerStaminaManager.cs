@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 /// <summary>
 /// 사장님의 피로도(Stamina) 시스템.
@@ -23,6 +24,8 @@ public class PlayerStaminaManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Button restButton;
     [SerializeField] PlayerStaminaUI _staminaUI;
+
+    private TMP_Text _restButtonText;
 
     // UI 갱신용 이벤트 (현재 피로도, 최대 피로도)
     public event Action<float, float> OnStaminaChanged;
@@ -48,7 +51,13 @@ public class PlayerStaminaManager : MonoBehaviour
     {
         if (Instance == null) Instance = this;
 
+        if (restButton != null && restButton.transform.childCount > 0)
+        {
+            _restButtonText = restButton.transform.GetChild(0).GetComponent<TMP_Text>();
+        }
+
         OnStaminaChanged += _staminaUI.UpdateUI;
+        OnStaminaChanged += UpdateRestButtonText;
     }
 
     private void Start()
@@ -84,7 +93,7 @@ public class PlayerStaminaManager : MonoBehaviour
         if (restButton != null)
         {
             restButton.onClick.RemoveAllListeners();
-            restButton.onClick.AddListener(() => RestAndRecover(3000));
+            restButton.onClick.AddListener(() => RestAndRecover());
         }
     }
 
@@ -100,6 +109,7 @@ public class PlayerStaminaManager : MonoBehaviour
             UpgradeManager.Instance.Upgrade.OnUpgradePurchased -= OnUpgradePurchased;
         }
         OnStaminaChanged -= _staminaUI.UpdateUI;
+        OnStaminaChanged -= UpdateRestButtonText;
     }
 
     private void Update()
@@ -244,16 +254,47 @@ public class PlayerStaminaManager : MonoBehaviour
             BusinessManager.Instance.ToggleBusiness();
         }
     }
-    /// <summary>
-    /// 돈을 지불하고 즉시 체력을 100% 회복합니다. (휴식 버튼용)
-    /// </summary>
-    public bool RestAndRecover(int cost = 3000)
+    private int _lastRestCost = -1;
+
+    private void UpdateRestButtonText(float current, float max)
     {
+        if (restButton != null && _restButtonText != null)
+        {
+            float missingRatio = (max - current) / max;
+            int cost = Mathf.CeilToInt(3000f * missingRatio);
+            
+            if (cost != _lastRestCost)
+            {
+                _lastRestCost = cost;
+                if (cost <= 0)
+                {
+                    _restButtonText.text = "휴식 (가득참)";
+                    restButton.interactable = false;
+                }
+                else
+                {
+                    _restButtonText.text = $"휴식\n(-{cost}원)";
+                    restButton.interactable = true;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 돈을 지불하고 즉시 체력을 100% 회복합니다. (부족한 비율만큼 비용 발생)
+    /// </summary>
+    public bool RestAndRecover()
+    {
+        float missingRatio = (MaxStamina - _currentStamina) / MaxStamina;
+        int cost = Mathf.CeilToInt(3000f * missingRatio);
+
+        if (cost <= 0) return false;
+
         if (PlayerManager.Instance.SpendMoney(cost))
         {
             _currentStamina = MaxStamina;
             OnStaminaChanged?.Invoke(_currentStamina, MaxStamina);
-            Debug.Log($"<color=green>[휴식] {cost}원을 지불하고 {MaxStamina} 체력을 즉시 회복했습니다!</color>");
+            Debug.Log($"<color=green>[휴식] {cost}원을 지불하고 체력을 완전히 회복했습니다!</color>");
             
             if (DataManager.Instance != null) DataManager.Instance.SaveGameData();
             return true;
@@ -261,6 +302,7 @@ public class PlayerStaminaManager : MonoBehaviour
         else
         {
             Debug.LogWarning($"<color=red>[휴식 실패] 돈이 부족합니다. (필요 금액: {cost}원)</color>");
+            if (ToastManager.Instance != null) ToastManager.Instance.ShowToast("돈이 부족합니다!");
             return false;
         }
     }

@@ -114,7 +114,9 @@ public class ProcessManager : MonoBehaviour
         {
             if (PlayerStaminaManager.Instance.CurrentStamina < finalStamina)
             {
-                Debug.LogWarning("[가공 실패] 체력이 부족합니다.");
+                string msg = "체력이 부족합니다! (휴식 버튼으로 회복)";
+                Debug.LogWarning($"[가공 실패] {msg}");
+                if (ToastManager.Instance != null) ToastManager.Instance.ShowToast(msg);
                 return false;
             }
             // 미니게임 참여 여부와 무관하게 시작 시 체력 소모
@@ -306,7 +308,9 @@ public class ProcessManager : MonoBehaviour
         {
             if (PlayerStaminaManager.Instance.CurrentStamina < finalStamina)
             {
-                Debug.LogWarning("[가공 실패] 체력이 부족합니다.");
+                string msg = "체력이 부족합니다! (휴식 버튼으로 회복)";
+                Debug.LogWarning($"[가공 실패] {msg}");
+                if (ToastManager.Instance != null) ToastManager.Instance.ShowToast(msg);
                 InventoryManager.Instance.AddIngredient(input, 1, consumedDays, inputItem.state, inputItem.processType, inputItem.grade);
                 onCollected?.Invoke(false, null);
                 return;

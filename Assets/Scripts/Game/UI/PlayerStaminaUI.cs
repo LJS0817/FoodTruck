@@ -16,11 +16,16 @@ public class PlayerStaminaUI : MonoBehaviour
     [Header("Warning Threshold")]
     [SerializeField] private float warningThreshold = 0.25f; // 25% 이하일 때 경고
 
-    private float _initialWidth;
+    [Header("Settings")]
+    public RectTransform canvas; // 캔버스 참조 (없으면 자동 탐색)
 
     private void Start()
     {
-        _initialWidth = staminaMask.rectTransform.rect.width;
+        if (canvas == null)
+        {
+            Canvas parentCanvas = GetComponentInParent<Canvas>();
+            if (parentCanvas != null) canvas = parentCanvas.GetComponent<RectTransform>();
+        }
     }
 
     public void UpdateUI(float current, float max)
@@ -29,9 +34,20 @@ public class PlayerStaminaUI : MonoBehaviour
 
         float ratio = max > 0f ? current / max : 0f;
 
+        // CustomSlicedSlider 방식의 스케일 보정 패딩 계산 적용
+        if (canvas == null)
+        {
+            Canvas parentCanvas = GetComponentInParent<Canvas>();
+            if (parentCanvas != null) canvas = parentCanvas.GetComponent<RectTransform>();
+        }
+
+        float scaleX = canvas == null ? (Screen.width / 1080.0f) : canvas.lossyScale.x;
+        float fullWidth = staminaMask.rectTransform.rect.width;
+        float currentScaleX = staminaMask.rectTransform.lossyScale.x / scaleX;
+
         // RectMask2D Padding Z(Right) 조절
         Vector4 padding = staminaMask.padding;
-        padding.z = _initialWidth * (1f - ratio);
+        padding.z = (fullWidth * currentScaleX) * (1f - ratio);
         staminaMask.padding = padding;
 
         // 낮을 때 빨갛게

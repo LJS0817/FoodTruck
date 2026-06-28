@@ -125,14 +125,17 @@ public class ItemInfoUI : MonoBehaviour
         }
 
         int baseValue = item.finalCost;
-        if (item.data is IngredientData ingredientData) baseValue = ingredientData.basePrice;
-        else if (item.data is EquipmentData equipmentData) baseValue = equipmentData.price;
-        else if (item.data is FoodData foodDataContent)
+        if (!_isStoreMode)
         {
-            if (item.itemType == StoreItemType.RecipeIngredientSet)
-                baseValue = item.finalCost; // 세트 가격은 finalCost에 이미 설정되어 있음
-            else
-                baseValue = foodDataContent.basePrice;
+            if (item.data is IngredientData ingredientData) baseValue = ingredientData.basePrice;
+            else if (item.data is EquipmentData equipmentData) baseValue = equipmentData.price;
+            else if (item.data is FoodData foodDataContent)
+            {
+                if (item.itemType == StoreItemType.RecipeIngredientSet)
+                    baseValue = item.finalCost; // 세트 가격은 finalCost에 이미 설정되어 있음
+                else
+                    baseValue = foodDataContent.basePrice;
+            }
         }
 
         if (_valueText != null)

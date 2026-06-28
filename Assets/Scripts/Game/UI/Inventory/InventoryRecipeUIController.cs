@@ -51,6 +51,8 @@ public class InventoryRecipeUIController : MonoBehaviour
         inventoryRecipeUIRoot.alpha = 0f;
         inventoryRecipeUIRoot.interactable = false;
         inventoryRecipeUIRoot.blocksRaycasts = false;
+
+        scrollRect.content = inventoryUI.GetContent();
     }
 
     /// <summary>

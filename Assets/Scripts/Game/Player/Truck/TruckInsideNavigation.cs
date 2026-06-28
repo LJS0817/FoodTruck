@@ -102,7 +102,18 @@ public class TruckInsideNavigation : MonoBehaviour
                 
                 // 스프라이트 교체
                 SpriteRenderer sr = equipmentObject.GetComponent<SpriteRenderer>();
-                if (sr != null) sr.sprite = currentEq.equipmentSprite;
+                if (sr != null) 
+                {
+                    sr.sprite = currentEq.equipmentSprite;
+                    
+                    // 스프라이트 크기에 맞춰 콜라이더 재조정 (드래그 앤 드롭 판정용)
+                    BoxCollider2D col = equipmentObject.GetComponent<BoxCollider2D>();
+                    if (col != null && sr.sprite != null)
+                    {
+                        col.size = sr.sprite.bounds.size;
+                        col.offset = sr.sprite.bounds.center;
+                    }
+                }
                 
                 // 백그라운드 매니저와 연동하여 현재 장비의 시각적 진행 상태(이펙트/UI) 갱신
                 equipmentObject.SyncState();

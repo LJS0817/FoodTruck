@@ -185,7 +185,9 @@ public class Equipment : MonoBehaviour, IInteractable
         ProcessTask existingTask = ProcessManager.Instance.GetActiveTask(equipmentData.type);
         if (existingTask != null)
         {
-            Debug.LogWarning($"<color=yellow>[Equipment] {equipmentData.type}은(는) 이미 작업 중입니다. 수거 후 사용하세요.</color>");
+            string msg = $"{equipmentData.equipmentName}은(는) 이미 작업 중입니다. 수거 후 사용하세요.";
+            Debug.LogWarning($"<color=yellow>[Equipment] {msg}</color>");
+            if (ToastManager.Instance != null) ToastManager.Instance.ShowToast(msg);
             return false;
         }
 
@@ -207,7 +209,9 @@ public class Equipment : MonoBehaviour, IInteractable
 
         if (matchedMethod == null)
         {
-            Debug.LogWarning($"<color=red>[Equipment] {inputData.ingredientName}은(는) {equipmentData.equipmentName}(으)로 가공할 수 없습니다.</color>");
+            string msg = $"{inputData.ingredientName}은(는) {equipmentData.equipmentName}(으)로 가공할 수 없습니다.";
+            Debug.LogWarning($"<color=red>[Equipment] {msg}</color>");
+            if (ToastManager.Instance != null) ToastManager.Instance.ShowToast(msg);
             return false;
         }
 

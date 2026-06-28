@@ -47,6 +47,7 @@ public class WorkerManagementUI : MonoBehaviour
         if (hiredTabButton != null) hiredTabButton.onClick.AddListener(() => ChangeTab(0));
         if (recruitmentTabButton != null) recruitmentTabButton.onClick.AddListener(() => ChangeTab(1));
 
+        ChangeTab(0); // 기본적으로 Hired 탭을 먼저 보여줌
         RefreshWorkers();
         ClosePanel();
     }
