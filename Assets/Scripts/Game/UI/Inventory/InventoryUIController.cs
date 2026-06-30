@@ -317,25 +317,7 @@ public class InventoryUIController : MonoBehaviour
     public void UpdateUI(List<InventoryItem> items)
     {
         currentItems = new List<InventoryItem>();
-        if (_isPopupMode)
-        {
-            currentItems.AddRange(items);
-        }
-        else
-        {
-            // 일반 모드: 과거와 달리 물리적 아이템이 여전히 인벤토리에 있으므로 합산(Aggregate) 로직을 제거합니다.
-            foreach(var item in items) 
-            {
-                currentItems.Add(new InventoryItem { 
-                    data = item.data, 
-                    amount = item.amount, 
-                    remainingDays = item.remainingDays, 
-                    state = item.state, 
-                    processType = item.processType, 
-                    grade = item.grade 
-                });
-            }
-        }
+        currentItems.AddRange(items);
 
         _selectedSlot = null; // UI 갱신 시 선택 해제
         

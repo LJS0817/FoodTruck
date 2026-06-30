@@ -39,6 +39,7 @@ public class ItemInfoUI : MonoBehaviour
         else
             Debug.LogError("[ItemInfoUI] _submitButton이 할당되지 않았습니다! 인스펙터에서 버튼을 연결해주세요.");
 
+
         // 인벤토리 업데이트 시 보유량 UI 갱신을 위해 이벤트 구독
         if (InventoryManager.Instance != null)
             InventoryManager.Instance.OnInventoryUpdated += UpdateOwnedAmount;
@@ -157,7 +158,7 @@ public class ItemInfoUI : MonoBehaviour
                 
                 if (!isStoreMode)
                 {
-                    maxAmount = InventoryManager.Instance.GetTotalAmount(ing.ingredientID, false);
+                    maxAmount = _currentInventoryItem != null ? _currentInventoryItem.amount : InventoryManager.Instance.GetTotalAmount(ing.ingredientID, false);
                     if (maxAmount < 1) maxAmount = 1;
                 }
                 else
