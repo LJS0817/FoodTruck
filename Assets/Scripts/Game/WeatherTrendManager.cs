@@ -12,10 +12,17 @@ public enum WeatherType
 public class WeatherTrendManager : MonoBehaviour
 {
     private static WeatherTrendManager _instance;
+    private static bool _applicationIsQuitting = false;
+
     public static WeatherTrendManager Instance
     {
         get
         {
+            if (_applicationIsQuitting)
+            {
+                return null;
+            }
+
             if (_instance == null)
             {
                 _instance = FindObjectOfType<WeatherTrendManager>();
@@ -60,10 +67,20 @@ public class WeatherTrendManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (_instance == this)
+        {
+            _instance = null;
+        }
+
         if (DayCycleManager.Instance != null)
         {
             DayCycleManager.Instance.OnNewDayStarted -= RandomizeWeatherAndTrend;
         }
+    }
+
+    private void OnApplicationQuit()
+    {
+        _applicationIsQuitting = true;
     }
 
     public void RandomizeWeatherAndTrend()

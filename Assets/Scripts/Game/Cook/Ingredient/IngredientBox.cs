@@ -3,6 +3,15 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using DG.Tweening;
+
+[Serializable]
+public struct BoxTheme
+{
+    public Color bgColor;
+    public Color frameColor;
+    public Color textColor;
+}
 
 [Serializable]
 public class IngredientBoxSetter
@@ -52,8 +61,17 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     [Header("UI Elements")]
     public Image iconImage;
     public TMPro.TMP_Text amountText;
+    public TMPro.TMP_Text indexText;
     [Tooltip("상자가 비어있을 때 활성화할 게임오브젝트 (예: '+' 버튼이나 빈 박스 이미지)")]
     public GameObject emptyIndicator;
+
+    [Header("Theme Settings")]
+    public float duration = 0.15f; // 페이드 인/아웃 지속 시간
+    public Image bgImage;
+    public Image frameImage;
+    public Image frame2Image;
+    public BoxTheme normalTheme = new BoxTheme { bgColor = Color.white, frameColor = Color.white, textColor = Color.black };
+    public BoxTheme emptyTheme = new BoxTheme { bgColor = Color.gray, frameColor = Color.gray, textColor = Color.gray };
 
     IngredientBoxSetter _setter;
 
@@ -73,11 +91,25 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private ProcessType _draggedProcess;
     private float _draggedQuality;
 
-    public void Init(Action onRefill, Action onSetup = null, ScrollRect scrollRect = null)
+    public void Init(int index, Action onRefill, Action onSetup = null, ScrollRect scrollRect = null)
     {
         RefillEvent = onRefill;
         SetupEvent = onSetup;
         _parentScrollRect = scrollRect;
+
+        if (indexText != null)
+        {
+            if (isTemporary)
+            {
+                indexText.text = "임시";
+            }
+            else
+            {
+                indexText.text = (index + 1).ToString();
+            }
+        }
+
+        UpdateUI();
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -305,44 +337,52 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
     }
 
+    private void ApplyTheme(BoxTheme theme)
+    {
+        if (bgImage != null) bgImage.DOColor(theme.bgColor, duration);
+        if (frameImage != null) frameImage.DOColor(theme.frameColor, duration);
+        if (frame2Image != null) frame2Image.DOColor(theme.frameColor, duration);
+        if (amountText != null) amountText.DOColor(theme.textColor, duration);
+        if (indexText != null) indexText.DOColor(theme.textColor, duration);
+    }
+
     private void UpdateUI()
     {
         bool isEmpty = (_setter == null || _setter.boxData == null || currentAmount <= 0);
+
+        ApplyTheme(isEmpty ? emptyTheme : normalTheme);
 
         if (emptyIndicator != null)
         {
             emptyIndicator.SetActive(isEmpty);
         }
-
-        if (iconImage != null)
+        
+        if (!isEmpty)
         {
-            if (!isEmpty)
+            Sprite displaySprite = _setter.boxData.ingredientSprite;
+            
+            if (targetProcess != ProcessType.None)
             {
-                Sprite displaySprite = _setter.boxData.ingredientSprite;
-
-                if (targetProcess != ProcessType.None)
+                ProcessMethodData method = _setter.boxData.GetProcessMethod(targetProcess);
+                if (method != null && method.stateSteps != null)
                 {
-                    ProcessMethodData method = _setter.boxData.GetProcessMethod(targetProcess);
-                    if (method != null && method.stateSteps != null)
+                    foreach (var step in method.stateSteps)
                     {
-                        foreach (var step in method.stateSteps)
+                        if (step.state == targetState)
                         {
-                            if (step.state == targetState)
-                            {
-                                displaySprite = step.stateSprite;
-                                break;
-                            }
+                            displaySprite = step.stateSprite;
+                            break;
                         }
                     }
                 }
+            }
 
-                iconImage.sprite = displaySprite;
-                iconImage.enabled = true;
-            }
-            else
-            {
-                iconImage.enabled = false;
-            }
+            iconImage.sprite = displaySprite;
+            iconImage.enabled = true;
+        }
+        else
+        {
+            iconImage.enabled = false;
         }
 
         if (amountText != null)
@@ -364,9 +404,13 @@ public class IngredientBox : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             }
             else
             {
-                amountText.text = "";
+                amountText.text = "0";
             }
         }
+
+        // 텍스트 등의 변경으로 인해 ContentSizeFitter가 있는 Frame들의 레이아웃을 다시 계산합니다.
+        if (frameImage != null) LayoutRebuilder.ForceRebuildLayoutImmediate(frameImage.rectTransform);
+        if (frame2Image != null) LayoutRebuilder.ForceRebuildLayoutImmediate(frame2Image.rectTransform);
     }
 
     public void ForceClearBox()

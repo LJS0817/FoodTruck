@@ -77,6 +77,7 @@ public class IngredientManager : MonoBehaviour
             _boxes.Add(newBox);
             
             newBox.Init(
+                index,
                 onRefill: () => {
                     _currentBoxIndex = index; 
                     OpenInventoryForRefill();  
@@ -102,7 +103,7 @@ public class IngredientManager : MonoBehaviour
             newBox.isTemporary = true;
             _tempBoxes.Add(newBox);
             
-            newBox.Init(null, null, parentScrollRect);
+            newBox.Init(i, null, null, parentScrollRect);
         }
     }
 
