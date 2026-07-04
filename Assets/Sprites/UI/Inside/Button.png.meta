@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 146d8cbe0fcec42459f9c6dbb7401052
+guid: 459a50f0a41d77749b4854ecce0efa0b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8894378161134838276
-    second: Bg_0
+      213: -3574204033564225750
+    second: MiniButton_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -48,17 +48,15 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 1
+  spriteGenerateFallbackPhysicsShape: 0
   alphaUsage: 1
   alphaIsTransparency: 1
-  spriteTessellationMethod: 0
   spriteTessellationDetail: -1
-  spriteGeometrySubdivision: -1
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
@@ -115,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Bg_0
+      name: MiniButton_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 768
-        height: 1154
+        width: 109
+        height: 113
       alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 26, y: 26, z: 26, w: 26}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cfdd097df22d09480800000000000000
-      internalID: -8894378161134838276
+      spriteID: a2fc2a05e50e56ec0800000000000000
+      internalID: -3574204033564225750
       vertices: []
       indices: 
       edges: []
@@ -140,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: a7ee5997e4095334e9e24819bf67b2b0
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Bg_0: -8894378161134838276
+      MiniButton_0: -3574204033564225750
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using DG.Tweening;
 
 /// <summary>
 /// 상점, 인벤토리, 레시피북 등에서 아이템이나 레시피의 상세 정보를 표시하는 범용 UI 클래스입니다.
@@ -194,7 +195,8 @@ public class ItemInfoUI : MonoBehaviour
             }
         }
 
-        _canvasGroup.alpha = 1f;
+        _canvasGroup.DOKill();
+        _canvasGroup.DOFade(1f, 0.2f).SetUpdate(true);
         _canvasGroup.interactable = true;
         _canvasGroup.blocksRaycasts = true;
     
@@ -423,8 +425,13 @@ public class ItemInfoUI : MonoBehaviour
     public void CloseUI()
     {
         if(_canvasGroup == null) _canvasGroup = GetComponent<CanvasGroup>();
+        
+        // 여는 중이거나 닫는 중일 때 중복 닫기 요청 무시
+        if (DOTween.IsTweening(_canvasGroup)) return;
+
         _currentItem = null;
-        _canvasGroup.alpha = 0f;
+        _canvasGroup.DOKill();
+        _canvasGroup.DOFade(0f, 0.2f).SetUpdate(true);
         _canvasGroup.interactable = false;
         _canvasGroup.blocksRaycasts = false;
     }

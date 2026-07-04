@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class ViewManager : MonoBehaviour
 {
@@ -17,8 +18,7 @@ public class ViewManager : MonoBehaviour
     [SerializeField] private CanvasGroup insideUIPanel;
 
     [Header("Transition Settings")]
-    [SerializeField] private Image transition; // 화면 전환 효과를 위한 매테리얼
-    Color _transitionDefaultColor;
+    [SerializeField] private CanvasGroup transition; // 화면 전환 효과를 위한 CanvasGroup
     [SerializeField] private float transitionDuration = 0.5f;
 
     private bool isTransitioning = false;
@@ -30,7 +30,10 @@ public class ViewManager : MonoBehaviour
 
         if (mainCamera == null)
             mainCamera = Camera.main;
-        _transitionDefaultColor = transition.color;
+            
+        transition.gameObject.SetActive(false);
+        transition.alpha = 0f;
+
         SwitchUI(false);
     }
 
@@ -55,15 +58,18 @@ public class ViewManager : MonoBehaviour
     {
         isTransitioning = true;
         transition.gameObject.SetActive(true);
+        transition.alpha = 0f;
 
-        yield return StartCoroutine(PlayTransitionEffect(0f, 1f));
+        yield return transition.DOFade(1f, transitionDuration).SetUpdate(true).WaitForCompletion();
 
         midAction?.Invoke();
+        
+        yield return new WaitForSecondsRealtime(0.75f);
 
-        yield return StartCoroutine(PlayTransitionEffect(1f, 0f));
+        yield return transition.DOFade(0f, transitionDuration).SetUpdate(true).WaitForCompletion();
 
-        isTransitioning = false;
         transition.gameObject.SetActive(false);
+        isTransitioning = false;
     }
 
     public void GoInside()
@@ -87,9 +93,10 @@ public class ViewManager : MonoBehaviour
         Time.timeScale = 0f;
 
         transition.gameObject.SetActive(true);
+        transition.alpha = 0f;
 
         // 1. 페이드 아웃 (화면 가리기 - Progress를 0에서 1로)
-        yield return StartCoroutine(PlayTransitionEffect(0f, 1f));
+        yield return transition.DOFade(1f, transitionDuration).SetUpdate(true).WaitForCompletion();
 
         isInsideTruck = toInside;
         SwitchUI(isInsideTruck);
@@ -121,34 +128,16 @@ public class ViewManager : MonoBehaviour
             Debug.Log("<color=cyan>[ViewManager] 트럭 외부 진입: 카메라 이동 완료</color>");
         }
 
+        yield return new WaitForSecondsRealtime(1f);
+
         // 3. 페이드 인 (화면 보이기 - Progress를 1에서 0으로)
-        yield return StartCoroutine(PlayTransitionEffect(1f, 0f));
+        yield return transition.DOFade(0f, transitionDuration).SetUpdate(true).WaitForCompletion();
+
+        transition.gameObject.SetActive(false);
 
         // 시간 재개
         Time.timeScale = originalTimeScale;
         isTransitioning = false;
-        transition.gameObject.SetActive(false);
-    }
-
-    private IEnumerator PlayTransitionEffect(float startValue, float endValue)
-    {
-        float elapsedTime = 0f;
-        
-        // 구조체를 한 번만 복사하여 로컬 변수로 캐싱
-        Color targetColor = _transitionDefaultColor; 
-
-        while (elapsedTime < transitionDuration)
-        {
-            elapsedTime += Time.unscaledDeltaTime;
-            
-            targetColor.a = Mathf.Lerp(startValue, endValue, elapsedTime / transitionDuration);
-            transition.color = targetColor;
-            
-            yield return null;
-        }
-
-        targetColor.a = endValue;
-        transition.color = targetColor;
     }
 
     private void SetCanvasGroupState(CanvasGroup cg, bool isActive)
