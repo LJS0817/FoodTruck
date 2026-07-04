@@ -14,16 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 17
   ingredientName: Tortilla
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: 2061108682, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
   volume: 1
-  description: "\uBAA8\uB4E0 \uC7AC\uB8CC\uB97C \uB465\uAE00\uAC8C \uB9D0\uC544 \uAC10\uC2F8\uBC84\uB9AC\uB294
-    \uBA55\uC2DC\uCF54\uC758 \uB9C8\uBC95 \uBCF4\uC790\uAE30. \uBB50\uB4E0 \uB9CE\uC774
-    \uB123\uC744\uC218\uB85D \uB9DB\uC788\uC9C0\uB9CC, \uD130\uC9C0\uC9C0 \uC54A\uAC8C
-    \uB9C8\uB294 \uAC83\uC740 \uC628\uC804\uD788 \uC694\uB9AC\uC0AC\uC758 \uBAAB\uC785\uB2C8\uB2E4."
+  description: "\uBAA8\uB4E0 \uC7AC\uB8CC\uB97C \uB465\uAE00\uAC8C \uB9D0\uC544 \uAC10\uC2F8\uBC84\uB9AC\uB294 \uBA55\uC2DC\uCF54\uC758 \uB9C8\uBC95 \uBCF4\uC790\uAE30. \uBB50\uB4E0 \uB9CE\uC774 \uB123\uC744\uC218\uB85D \uB9DB\uC788\uC9C0\uB9CC, \uD130\uC9C0\uC9C0 \uC54A\uAC8C \uB9C8\uB294 \uAC83\uC740 \uC628\uC804\uD788 \uC694\uB9AC\uC0AC\uC758 \uBAAB\uC785\uB2C8\uB2E4."
   basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99
   requiredEquipment: 0
   requiredMiniGame: 0
-  flavorTags: 00000000
-  processMethods: []
+  flavorTags: 00000000i
+  processMethods:
+  - processType: 0
+    requiredMiniGame: 0
+    requiredStamina: 2
+    stateSteps:
+    - state: 0
+      timeThreshold: 0
+      stateSprite: {fileID: 2061108682, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
+    - state: 4
+      timeThreshold: 2
+      stateSprite: {fileID: 126446074, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
+    - state: 5
+      timeThreshold: 5
+      stateSprite: {fileID: -375769485, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}

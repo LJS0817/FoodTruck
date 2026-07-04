@@ -14,16 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 21
   ingredientName: Mustard
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: 1008193850, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
   volume: 1
-  description: "\uB178\uB780\uC0C9\uC758 \uD1A1 \uC3D8\uB294 \uB9E4\uB825\uC73C\uB85C
-    \uCF00\uCCA9\uC758 \uC601\uC6D0\uD55C \uB77C\uC774\uBC8C\uC774\uC790 \uB2E8\uC9DD.
-    \uD56B\uB3C4\uADF8 \uC704\uC5D0 \uC9C0\uADF8\uC7AC\uADF8\uB85C \uBFCC\uB9AC\uB294
-    \uC21C\uAC04 \uC694\uB9AC\uC0AC\uC758 \uC608\uC220\uC801 \uAC10\uAC01\uC774 \uD3ED\uBC1C\uD569\uB2C8\uB2E4."
+  description: "\uB178\uB780\uC0C9\uC758 \uD1A1 \uC3D8\uB294 \uB9E4\uB825\uC73C\uB85C \uCF00\uCCA9\uC758 \uC601\uC6D0\uD55C \uB77C\uC774\uBC8C\uC774\uC790 \uB2E8\uC9DD. \uD56B\uB3C4\uADF8 \uC704\uC5D0 \uC9C0\uADF8\uC7AC\uADF8\uB85C \uBFCC\uB9AC\uB294 \uC21C\uAC04 \uC694\uB9AC\uC0AC\uC758 \uC608\uC220\uC801 \uAC10\uAC01\uC774 \uD3ED\uBC1C\uD569\uB2C8\uB2E4."
   basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99
   requiredEquipment: 0
   requiredMiniGame: 0
-  flavorTags: 00000000
+  flavorTags: 00000000i
   processMethods: []

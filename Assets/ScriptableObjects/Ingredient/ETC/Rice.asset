@@ -14,16 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 18
   ingredientName: Rice
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: -1888787179, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
   volume: 1
-  description: "\uD0C4\uC218\uD654\uBB3C\uC758 \uBBFC\uC871, \uD55C\uAD6D\uC778\uC758
-    \uD608\uAD00\uC744 \uD750\uB974\uB294 \uC5D0\uB108\uC9C0\uC6D0! '\uBC25 \uD55C
-    \uBC88 \uBA39\uC790'\uB294 \uC778\uC0AC\uB9D0\uC5D0\uC11C \uC54C \uC218 \uC788\uB4EF
-    \uBAA8\uB4E0 \uC778\uAC04\uAD00\uACC4\uC758 \uC2DC\uC791\uC774\uC790 \uB05D\uC785\uB2C8\uB2E4."
+  description: "\uD0C4\uC218\uD654\uBB3C\uC758 \uBBFC\uC871, \uD55C\uAD6D\uC778\uC758 \uD608\uAD00\uC744 \uD750\uB974\uB294 \uC5D0\uB108\uC9C0\uC6D0! '\uBC25 \uD55C \uBC88 \uBA39\uC790'\uB294 \uC778\uC0AC\uB9D0\uC5D0\uC11C \uC54C \uC218 \uC788\uB4EF \uBAA8\uB4E0 \uC778\uAC04\uAD00\uACC4\uC758 \uC2DC\uC791\uC774\uC790 \uB05D\uC785\uB2C8\uB2E4."
   basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99
   requiredEquipment: 0
   requiredMiniGame: 0
-  flavorTags: 00000000
-  processMethods: []
+  flavorTags: 00000000i
+  processMethods:
+  - processType: 0
+    requiredMiniGame: 0
+    requiredStamina: 3
+    stateSteps:
+    - state: 0
+      timeThreshold: 0
+      stateSprite: {fileID: -1888787179, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
+    - state: 4
+      timeThreshold: 2
+      stateSprite: {fileID: 1279414312, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
+    - state: 5
+      timeThreshold: 5
+      stateSprite: {fileID: -1724056856, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}

@@ -14,16 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 20
   ingredientName: Ketchup
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: 1904994628, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
   volume: 1
-  description: "\uC0C8\uCF64\uB2EC\uCF64\uD568\uC73C\uB85C \uAC10\uC790\uD280\uAE40\uC758
-    \uC874\uC7AC \uAC00\uCE58\uB97C \uC99D\uBA85\uD574 \uC8FC\uB294 \uD1A0\uB9C8\uD1A0\uC758
-    \uD76C\uC0DD. \uC9DC\uBA39\uC744 \uB54C \uB098\uB294 \uBBFC\uB9DD\uD55C \uC18C\uB9AC\uB9C8\uC800
-    \uC6A9\uC11C\uB418\uB294 \uAD6D\uBBFC \uC18C\uC2A4\uC785\uB2C8\uB2E4."
+  description: "\uC0C8\uCF64\uB2EC\uCF64\uD568\uC73C\uB85C \uAC10\uC790\uD280\uAE40\uC758 \uC874\uC7AC \uAC00\uCE58\uB97C \uC99D\uBA85\uD574 \uC8FC\uB294 \uD1A0\uB9C8\uD1A0\uC758 \uD76C\uC0DD. \uC9DC\uBA39\uC744 \uB54C \uB098\uB294 \uBBFC\uB9DD\uD55C \uC18C\uB9AC\uB9C8\uC800 \uC6A9\uC11C\uB418\uB294 \uAD6D\uBBFC \uC18C\uC2A4\uC785\uB2C8\uB2E4."
   basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99
   requiredEquipment: 0
   requiredMiniGame: 0
-  flavorTags: 00000000
+  flavorTags: 00000000i
   processMethods: []

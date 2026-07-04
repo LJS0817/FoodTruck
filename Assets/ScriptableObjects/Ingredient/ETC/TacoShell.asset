@@ -14,16 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientID: 16
   ingredientName: TacoShell
-  ingredientSprite: {fileID: 0}
+  ingredientSprite: {fileID: 1129287832, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
   volume: 1
-  description: "\uBC14\uC0AD\uD558\uAC8C \uD280\uACA8\uC838 U\uC790 \uBAA8\uC591\uC73C\uB85C
-    \uAD73\uC5B4\uBC84\uB9B0 \uBD88\uC30D\uD558\uC9C0\uB9CC \uB9DB\uC788\uB294 \uC625\uC218\uC218
-    \uC258. \uBA39\uC744 \uB54C\uB9C8\uB2E4 \uD30C\uC0AC\uC0AD \uBD80\uC11C\uC9C0\uBA70
-    \uCC45\uC0C1\uC744 \uB09C\uC7A5\uD310\uC73C\uB85C \uB9CC\uB4DC\uB294 \uBC94\uC778\uC785\uB2C8\uB2E4."
+  description: "\uBC14\uC0AD\uD558\uAC8C \uD280\uACA8\uC838 U\uC790 \uBAA8\uC591\uC73C\uB85C \uAD73\uC5B4\uBC84\uB9B0 \uBD88\uC30D\uD558\uC9C0\uB9CC \uB9DB\uC788\uB294 \uC625\uC218\uC218 \uC258. \uBA39\uC744 \uB54C\uB9C8\uB2E4 \uD30C\uC0AC\uC0AD \uBD80\uC11C\uC9C0\uBA70 \uCC45\uC0C1\uC744 \uB09C\uC7A5\uD310\uC73C\uB85C \uB9CC\uB4DC\uB294 \uBC94\uC778\uC785\uB2C8\uB2E4."
   basePrice: 100
   maxShelfLifeDays: 7
   maxPurchaseAmount: 99
   requiredEquipment: 0
   requiredMiniGame: 0
-  flavorTags: 00000000
-  processMethods: []
+  flavorTags: 00000000i
+  processMethods:
+  - processType: 0
+    requiredMiniGame: 0
+    requiredStamina: 3
+    stateSteps:
+    - state: 0
+      timeThreshold: 0
+      stateSprite: {fileID: 1129287832, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
+    - state: 4
+      timeThreshold: 3
+      stateSprite: {fileID: 727440705, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
+    - state: 5
+      timeThreshold: 5
+      stateSprite: {fileID: 2124385969, guid: 3401d837a2a6fac41809ee2964ddda9f, type: 3}
