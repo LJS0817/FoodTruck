@@ -14,13 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentData
   type: 3
   equipmentName: "\uD760\uC9D1 \uD22C\uC131\uC774 \uB3C4\uB9C8"
-  equipmentSprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  equipmentSprite: {fileID: 2173887176973512725, guid: 8838877b6ce6c114192cfe647ead0136, type: 3}
   tier: 1
   price: 0
   tradeInValue: 0
   maxPurchaseAmount: 1
-  description: "\uCE7C\uC790\uAD6D\uC774 \uB108\uBB34 \uB9CE\uC544 \uC138\uADE0 \uBC88\uC2DD\uC774
-    \uC758\uC2EC\uB418\uB294 \uB0A1\uC740 \uB098\uBB34 \uB3C4\uB9C8\uC785\uB2C8\uB2E4."
+  maxLevel: 5
+  baseUpgradeCost: 1000
+  upgradeCostMultiplier: 1.5
+  description: "\uCE7C\uC790\uAD6D\uC774 \uB108\uBB34 \uB9CE\uC544 \uC138\uADE0 \uBC88\uC2DD\uC774 \uC758\uC2EC\uB418\uB294 \uB0A1\uC740 \uB098\uBB34 \uB3C4\uB9C8\uC785\uB2C8\uB2E4."
   supportedProcessTypes:
   - processType: 4
     timeMultiplier: 1
